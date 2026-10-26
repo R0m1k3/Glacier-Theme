@@ -1,0 +1,72 @@
+Menu="Buttons"
+Link="nav-user"
+Title="Glacier Theme"
+---
+<?php
+// Unraid evaluates every "Buttons" page inside <head> on each page, after its own stylesheets,
+// so this is where the theme attaches its files. Link="nav-user" keeps it from adding a button.
+$glacier = parse_plugin_cfg('Glacier-Theme');
+$glacierCustomDir = '/boot/config/plugins/Glacier-Theme';
+
+// Emergency switch: any page opened with ?glacier=off stops the theme in this browser
+// (remembered in a cookie) until a page is opened with ?glacier=on.
+$glacierSwitch = $_GET['glacier'] ?? '';
+$glacierOff = $glacierSwitch == 'off' || ($glacierSwitch != 'on' && !empty($_COOKIE['glacier_off']));
+if (($glacier['theme'] ?? 'yes') != 'yes') $glacierOff = true;
+// Glacier is a light theme drawn over Dynamix "White"; every other Dynamix theme is left alone.
+if (($display['theme'] ?? '') != 'white') $glacierOff = true;
+?>
+<?php if ($glacierSwitch == 'off'): ?>
+<script>document.cookie = 'glacier_off=1; path=/; max-age=31536000; SameSite=Lax';</script>
+<?php elseif ($glacierSwitch == 'on'): ?>
+<script>document.cookie = 'glacier_off=; path=/; max-age=0; SameSite=Lax';</script>
+<?php endif; ?>
+<?php if (!$glacierOff): ?>
+<?php
+$glacierClasses = ['glacier'];
+if (($glacier['hero'] ?? 'yes') == 'yes') $glacierClasses[] = 'gl-hero-on';
+$glacierPage = preg_replace('/[^A-Za-z0-9_-]/', '', (string) ($myPage['name'] ?? ''));
+if ($glacierPage !== '') $glacierClasses[] = 'gl-page-' . $glacierPage;
+?>
+<script>document.documentElement.classList.add(...<?= json_encode($glacierClasses) ?>);</script>
+<link type="text/css" rel="stylesheet" href="<?php autov('/plugins/Glacier-Theme/styles/glacier.css') ?>">
+<?php
+// Accent colour from the settings page ("#0f766e"). The lighter shades are mixed in CSS; here
+// the text colour on accent buttons is chosen (white or near-black, whichever reads better)
+// and a light tint is made for the buttons on the dark Dashboard card.
+$glacierAccent = strtolower(ltrim(trim((string) ($glacier['accent'] ?? '')), '#'));
+if (preg_match('/^[0-9a-f]{3}$/', $glacierAccent)) $glacierAccent = preg_replace('/(.)/', '$1$1', $glacierAccent);
+if (preg_match('/^[0-9a-f]{6}$/', $glacierAccent)):
+    $glacierLuminance = function ($hex) {
+        $channels = [];
+        foreach (str_split($hex, 2) as $pair) {
+            $v = hexdec($pair) / 255;
+            $channels[] = $v <= 0.03928 ? $v / 12.92 : (($v + 0.055) / 1.055) ** 2.4;
+        }
+        return 0.2126 * $channels[0] + 0.7152 * $channels[1] + 0.0722 * $channels[2];
+    };
+    $glacierL = $glacierLuminance($glacierAccent);
+    $glacierOnWhite = 1.05 / ($glacierL + 0.05);
+    $glacierOnInk = ($glacierL + 0.05) / ($glacierLuminance('0f172a') + 0.05);
+    $glacierText = $glacierOnWhite >= $glacierOnInk ? '#ffffff' : '#0f172a';
+?>
+<style id="glacier-accent">
+html.glacier { --gl-accent: #<?= $glacierAccent ?>; --gl-accent-text: <?= $glacierText ?>; --gl-accent-bright: color-mix(in oklab, #<?= $glacierAccent ?>, white 55%); }
+</style>
+<?php endif; ?>
+<script defer src="<?php autov('/plugins/Glacier-Theme/scripts/glacier.js') ?>"></script>
+<?php if (is_file("$glacierCustomDir/custom.css")): ?>
+<style id="glacier-custom-css">
+<?= str_ireplace('</style', '<\/style', file_get_contents("$glacierCustomDir/custom.css")) ?>
+
+</style>
+<?php endif; ?>
+<?php if (is_file("$glacierCustomDir/custom.js")): ?>
+<script id="glacier-custom-js">
+document.addEventListener('DOMContentLoaded', function () {
+<?= str_ireplace('</script', '<\/script', file_get_contents("$glacierCustomDir/custom.js")) ?>
+
+});
+</script>
+<?php endif; ?>
+<?php endif; ?>

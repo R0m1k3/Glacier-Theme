@@ -1,0 +1,1601 @@
+/*
+ * Glacier Theme for the Unraid webGUI (7.3.x, Dynamix "White" theme).
+ *
+ * Loaded by GlacierTheme.page after Unraid's own stylesheets. Every rule is scoped to
+ * html.glacier, which the same page sets, so the theme switches off cleanly with ?glacier=off.
+ * Sizes are in rem: the webGUI roots at 62.5% (1rem = 10px) and scales with the font size
+ * chosen in Display Settings.
+ */
+
+/* ==========================================================================
+   Fonts: Plus Jakarta Sans, bundled (SIL Open Font License, fonts/plus-jakarta-sans-LICENSE.txt).
+   Unraid's own families, clear-sans and bitstream, are pointed at the same files, so text that
+   asks for them by name follows the theme. Icon fonts are left alone.
+   ========================================================================== */
+@font-face {
+    font-family: "Plus Jakarta Sans";
+    font-style: normal;
+    font-weight: 200 800;
+    font-display: swap;
+    src: url("/plugins/Glacier-Theme/fonts/plus-jakarta-sans-latin-wght-normal.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: "Plus Jakarta Sans";
+    font-style: normal;
+    font-weight: 200 800;
+    font-display: swap;
+    src: url("/plugins/Glacier-Theme/fonts/plus-jakarta-sans-latin-ext-wght-normal.woff2") format("woff2");
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+    font-family: "Plus Jakarta Sans";
+    font-style: italic;
+    font-weight: 200 800;
+    font-display: swap;
+    src: url("/plugins/Glacier-Theme/fonts/plus-jakarta-sans-latin-wght-italic.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: clear-sans;
+    font-style: normal;
+    font-weight: 200 800;
+    font-display: swap;
+    src: url("/plugins/Glacier-Theme/fonts/plus-jakarta-sans-latin-wght-normal.woff2") format("woff2");
+}
+@font-face {
+    font-family: clear-sans;
+    font-style: italic;
+    font-weight: 200 800;
+    font-display: swap;
+    src: url("/plugins/Glacier-Theme/fonts/plus-jakarta-sans-latin-wght-italic.woff2") format("woff2");
+}
+@font-face {
+    font-family: bitstream;
+    font-style: normal;
+    font-weight: 200 800;
+    font-display: swap;
+    src: url("/plugins/Glacier-Theme/fonts/plus-jakarta-sans-latin-wght-normal.woff2") format("woff2");
+}
+
+/* ==========================================================================
+   Tokens
+   ========================================================================== */
+html.glacier {
+    --gl-bg: #edf1f5;
+    --gl-surface: #ffffff;
+    --gl-subtle: #f8fafc;
+    --gl-subtle-2: #f1f5f9;
+    --gl-border: #e2e8f0;
+    --gl-input: #cbd5e1;
+    --gl-text: #0f172a;
+    --gl-text-2: #334155;
+    --gl-muted: #475569;
+    --gl-ink: #0f172a;
+    --gl-ink-text: #ffffff;
+
+    /* Accent: GlacierTheme.page overrides these three from the settings page. */
+    --gl-accent: #0f766e;
+    --gl-accent-text: #ffffff;
+    --gl-accent-bright: #5eead4;
+    --gl-accent-soft: color-mix(in srgb, var(--gl-accent) 12%, transparent);
+    --gl-accent-ring: color-mix(in srgb, var(--gl-accent) 28%, transparent);
+    --gl-accent-mid: color-mix(in srgb, var(--gl-accent) 65%, white);
+    --gl-accent-light: color-mix(in srgb, var(--gl-accent) 40%, white);
+
+    --gl-success: #10b981;
+    --gl-success-bg: #d1fae5;
+    --gl-success-text: #047857;
+    --gl-warn: #ea580c;
+    --gl-warn-bg: #ffedd5;
+    --gl-warn-text: #9a3412;
+    --gl-danger: #dc2626;
+    --gl-danger-bg: #fee2e2;
+    --gl-danger-text: #b91c1c;
+    --gl-info-bg: #e0f2fe;
+    --gl-info-text: #075985;
+
+    --gl-r-sm: 1rem;
+    --gl-r-md: 1.4rem;
+    --gl-r-lg: 1.8rem;
+    --gl-r-xl: 2.4rem;
+    --gl-r-full: 999px;
+    --gl-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --gl-shadow-md: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 24px -12px rgba(15, 23, 42, 0.16);
+    --gl-shadow-lg: 0 24px 56px -20px rgba(15, 23, 42, 0.32);
+    --gl-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --gl-font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --gl-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+
+    --gl-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+
+    /* ---- Unraid's own variables (themes/white.css), pointed at the tokens above */
+    --font-sans: var(--gl-font);
+    --default-font-family: var(--gl-font);
+
+    --text-color: var(--gl-text);
+    --blockquote-text-color: var(--gl-text-2);
+    --alt-text-color: var(--gl-muted);
+    --disabled-text-color: var(--gl-muted);
+    --inverse-text-color: var(--gl-text);
+    --link-text-color: var(--gl-accent);
+
+    --background-color: var(--gl-bg);
+    --opac-background-color: color-mix(in srgb, var(--gl-bg) 94%, transparent);
+    --mild-background-color: var(--gl-surface);
+    --usage-bar-background-color: var(--gl-border);
+    --usage-bar-used-background-color: var(--gl-muted);
+    --usage-disk-background-color: var(--gl-border);
+    --inverse-background-color: var(--gl-ink);
+    --radio-background-color: var(--gl-border);
+    --dashboard-background-color: var(--gl-surface);
+    --dashboard-title-action-color: var(--gl-subtle-2);
+    --dashboard-icon-color: var(--gl-text-2);
+    --dashstats-pie-after-bg-color: var(--gl-surface);
+
+    --border-color: var(--gl-border);
+    --disabled-border-color: var(--gl-border);
+    --input-border-color: var(--gl-input);
+    --disabled-input-border-color: var(--gl-border);
+    --textarea-border-color: var(--gl-input);
+    --inverse-border-color: var(--gl-border);
+    --table-border-color: var(--gl-border);
+    --table-background-color: var(--gl-surface);
+    --table-header-background-color: var(--gl-subtle);
+    --hover-table-row-background-color: var(--gl-subtle);
+
+    --footer-text: var(--gl-muted);
+    --footer-background-color: transparent;
+    --small-shadow: var(--gl-shadow-sm);
+    --hr-color: var(--gl-border);
+    --checkbox-color: var(--gl-input);
+    --checkbox-hover-color: var(--gl-muted);
+
+    --brand-orange: var(--gl-accent);
+    --brand-red: var(--gl-accent);
+
+    --header-text-color: var(--gl-text-2);
+    --header-background-color: transparent;
+    --header-text-primary: var(--gl-text);
+    --header-text-secondary: var(--gl-muted);
+    --title-header-background-color: transparent;
+
+    --scrollbar-color: var(--gl-input);
+    --scrollbar-hover-color: var(--gl-muted);
+    --bg-opacity-10: rgba(15, 23, 42, 0.04);
+    --bg-opacity-30: rgba(15, 23, 42, 0.1);
+
+    --button-text-color: var(--gl-text);
+    --button-border: 1px solid var(--gl-input);
+    --button-background: var(--gl-surface);
+    --button-background-size: auto;
+    --hover-button-border: var(--gl-accent);
+    --hover-button-text-color: var(--gl-accent);
+    --hover-button-background: var(--gl-surface);
+
+    --input-bg-color: var(--gl-surface);
+    --focus-input-bg-color: var(--gl-surface);
+    --shade-bg-color: var(--gl-subtle);
+
+    --dynamix-tablesorter-thead-row-border-color: var(--gl-border);
+    --dynamix-tablesorter-thead-th-text-color: var(--gl-muted);
+    --dynamix-tablesorter-thead-th-bg-color: var(--gl-subtle);
+    --dynamix-tablesorter-tbody-row-alt-bg-color: var(--gl-surface);
+    --dynamix-tablesorter-tbody-row-bg-color: var(--gl-surface);
+    --dynamix-tablesorter-tbody-row-border-color: var(--gl-border);
+    --dynamix-select-box-shadow: none;
+    --dynamix-select-disabled-bg-color: var(--gl-subtle-2);
+    --dynamix-select-disabled-border-color: var(--gl-border);
+    --dynamix-select-disabled-color: var(--gl-muted);
+    --dynamix-sweet-alert-text-color: var(--gl-text);
+    --dynamix-sweet-alert-icon-bg-color: var(--gl-surface);
+    --dynamix-ui-dropdownchecklist-color: var(--gl-text);
+    --dynamix-ui-dropdownchecklist-color-alt1: var(--gl-subtle);
+    --dynamix-ui-dropdownchecklist-color-alt2: var(--gl-input);
+
+    font-family: var(--gl-font);
+    accent-color: var(--gl-accent);
+    color-scheme: light;
+}
+
+/* Unraid's Vue components (header, notifications, dropdowns) read a primary colour scale. */
+html.glacier .unapi {
+    --color-primary-50: color-mix(in oklab, var(--gl-accent), white 92%);
+    --color-primary-100: color-mix(in oklab, var(--gl-accent), white 84%);
+    --color-primary-200: color-mix(in oklab, var(--gl-accent), white 68%);
+    --color-primary-300: color-mix(in oklab, var(--gl-accent), white 48%);
+    --color-primary-400: color-mix(in oklab, var(--gl-accent), white 24%);
+    --color-primary-500: var(--gl-accent);
+    --color-primary-600: color-mix(in oklab, var(--gl-accent), black 8%);
+    --color-primary-700: color-mix(in oklab, var(--gl-accent), black 24%);
+    --color-primary-800: color-mix(in oklab, var(--gl-accent), black 40%);
+    --color-primary-900: color-mix(in oklab, var(--gl-accent), black 54%);
+    --ui-color-primary-500: var(--gl-accent);
+    --ui-color-primary-600: color-mix(in oklab, var(--gl-accent), black 8%);
+    --ui-color-primary-700: color-mix(in oklab, var(--gl-accent), black 24%);
+    font-family: var(--gl-font);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+html.glacier body {
+    font-family: var(--gl-font);
+    font-size: 1.4rem;
+    line-height: 1.5;
+    color: var(--gl-text);
+    background-color: var(--gl-bg);
+}
+
+html.glacier :is(h1, h2, h3, h4, h5) {
+    font-family: var(--gl-font);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--gl-text);
+}
+
+html.glacier a:where(:not(.unapi *)) {
+    color: var(--gl-accent);
+}
+
+html.glacier a:where(:not(.unapi *)):hover {
+    color: color-mix(in oklab, var(--gl-accent), black 20%);
+}
+
+html.glacier ::selection {
+    color: var(--gl-text);
+    background: var(--gl-accent-ring);
+}
+
+html.glacier hr {
+    border: 0;
+    border-top: 1px solid var(--gl-border);
+}
+
+html.glacier :focus-visible {
+    outline: 2px solid var(--gl-accent);
+    outline-offset: 2px;
+}
+
+html.glacier ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+html.glacier ::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: var(--gl-r-full);
+    background: var(--gl-input) padding-box;
+}
+
+html.glacier ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--gl-muted);
+}
+
+html.glacier pre,
+html.glacier code,
+html.glacier .font-mono {
+    font-family: var(--gl-mono);
+}
+
+html.glacier pre:where(:not(.unapi *)) {
+    padding: 1.2rem 1.4rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-md);
+    background: var(--gl-subtle);
+    font-size: 1.25rem;
+}
+
+/* Status colours used as text across the webGUI */
+html.glacier :is(.green, .green-text, .passed) { color: var(--gl-success-text); }
+html.glacier :is(.orange, .orange-text, .warning) { color: var(--gl-warn-text); }
+html.glacier :is(.red, .red-text, .failed) { color: var(--gl-danger-text); }
+html.glacier :is(.blue, .blue-text) { color: var(--gl-info-text); }
+html.glacier .grey-text { color: var(--gl-muted); }
+html.glacier .green-orb { color: var(--gl-success); }
+html.glacier .yellow-orb { color: #f59e0b; }
+html.glacier .red-orb { color: var(--gl-danger); }
+html.glacier .grey-orb { color: #94a3b8; }
+html.glacier .blue-orb { color: #0ea5e9; }
+
+/* ==========================================================================
+   Header: logo and version on the left, server name and round buttons on the right,
+   on the page background instead of a dark band.
+   ========================================================================== */
+html.glacier #header {
+    min-height: 7.2rem;
+    padding: 0 2.8rem;
+    box-sizing: border-box;
+    color: var(--gl-text);
+    background: transparent;
+}
+
+html.glacier #header unraid-header-os-version > div {
+    flex-direction: row;
+    align-items: center;
+    gap: 1.2rem;
+    margin: 0;
+}
+
+html.glacier #header unraid-header-os-version > div > a :is(svg, img) {
+    width: auto;
+    height: 2rem;
+}
+
+html.glacier #header unraid-header-os-version span[role="button"] {
+    gap: 0.5rem;
+    padding: 0.4rem 1rem;
+    border-radius: var(--gl-r-full);
+    color: var(--gl-text-2);
+    font: 600 1.2rem/1.2 var(--gl-font);
+    text-decoration: none;
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-sm);
+}
+
+html.glacier #header unraid-header-os-version span[role="button"]:hover {
+    color: var(--gl-accent);
+}
+
+/* An available OS update stands out in the warm colour. */
+html.glacier #header unraid-header-os-version span[role="button"]:not([aria-haspopup]) {
+    color: var(--gl-warn-text);
+    background: var(--gl-warn-bg);
+}
+
+html.glacier #UserProfile {
+    flex-direction: row;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 0;
+}
+
+/* Licence / trial line */
+html.glacier #UserProfile > div:first-of-type {
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0.6rem 0.4rem 1.2rem;
+    border-radius: var(--gl-r-full);
+    color: var(--gl-muted);
+    font-weight: 500;
+    font-size: 1.2rem;
+    white-space: nowrap;
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-sm);
+}
+
+html.glacier #UserProfile > div:first-of-type em {
+    padding: 0.2rem 0.8rem;
+    border-radius: var(--gl-r-full);
+    color: var(--gl-accent-text);
+    font-style: normal;
+    font-weight: 700;
+    background: var(--gl-accent);
+}
+
+html.glacier #UserProfile > div:last-of-type {
+    align-items: center;
+    gap: 0.8rem;
+}
+
+/* Server name and description, with a dark squircle in front */
+html.glacier #UserProfile > div:last-of-type > div:first-child {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    column-gap: 1rem;
+    margin-right: 0.4rem;
+    text-align: left;
+}
+
+html.glacier #UserProfile > div:last-of-type > div:first-child::before {
+    display: grid;
+    grid-row: 1 / span 2;
+    place-items: center;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 1.4rem;
+    color: var(--gl-ink-text);
+    font: normal 1.6rem/1 FontAwesome;
+    background: var(--gl-ink);
+    content: "\f233";
+}
+
+html.glacier #UserProfile > div:last-of-type > div:first-child > span:nth-child(1) {
+    grid-row: 2;
+    grid-column: 2;
+    color: var(--gl-muted);
+    font-size: 1.2rem;
+}
+
+html.glacier #UserProfile > div:last-of-type > div:first-child > span:nth-child(2) {
+    display: none !important;
+}
+
+html.glacier #UserProfile > div:last-of-type > div:first-child > span:nth-child(3) {
+    grid-row: 1;
+    grid-column: 2;
+    color: var(--gl-text);
+    font: 700 1.5rem/1.3 var(--gl-font);
+}
+
+html.glacier #UserProfile > div:last-of-type > span[role="button"] {
+    justify-content: center;
+    width: 4.4rem;
+    height: 4.4rem;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: var(--gl-text);
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-sm);
+    transition: color 0.2s, box-shadow 0.2s;
+}
+
+html.glacier #UserProfile > div:last-of-type > span[role="button"]:hover,
+html.glacier #UserProfile > div:last-of-type > span[role="button"][data-state="open"] {
+    color: var(--gl-accent);
+    box-shadow: 0 0 0 3px var(--gl-accent-soft), var(--gl-shadow-sm);
+}
+
+html.glacier #UserProfile > div:last-of-type > span[role="button"] svg[data-slot="icon"]:first-child {
+    width: 1.8rem;
+    height: 1.8rem;
+}
+
+/* "Show banner" in Display Settings: the banner becomes a rounded band with light text. */
+html.glacier #header.image {
+    margin: 1.2rem 2.8rem 0;
+    width: auto;
+    border-radius: var(--gl-r-xl);
+    background: linear-gradient(90deg, rgba(15, 23, 42, 0.72), rgba(15, 23, 42, 0.2) 45%, rgba(15, 23, 42, 0.72)),
+        var(--customer-header-background-image) center / cover no-repeat var(--gl-ink);
+}
+
+html.glacier #header.image :is(#UserProfile > div:last-of-type > div:first-child > span:nth-child(3), #UserProfile > div:last-of-type > div:first-child > span:nth-child(1)) {
+    color: #ffffff;
+}
+
+/* ==========================================================================
+   Navigation: the main menu as a white pill bar with a dark active pill, the quick actions
+   as round white buttons. Sticky under a frosted strip.
+   ========================================================================== */
+html.glacier #menu {
+    position: sticky;
+    top: 0;
+    z-index: 101;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    box-sizing: border-box;
+    padding: 0.8rem 2.8rem 1.2rem;
+    background: color-mix(in srgb, var(--gl-bg) 86%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+html.glacier .nav-tile {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.2rem;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    font-family: var(--gl-font);
+    font-size: 1.4rem;
+    line-height: 1;
+    letter-spacing: 0;
+    background: transparent;
+}
+
+html.glacier .nav-tile:not(.right) {
+    flex: 0 1 auto;
+    min-width: 0;
+    padding: 0.5rem;
+    border-radius: var(--gl-r-full);
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-sm);
+}
+
+html.glacier .nav-tile.right {
+    flex: 0 0 auto;
+    margin-left: auto;
+    gap: 0.8rem;
+}
+
+html.glacier .nav-item:after,
+html.glacier .nav-user.show:after {
+    display: none;
+}
+
+html.glacier .nav-tile:not(.right) .nav-item a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 4rem;
+    padding: 0 1.6rem;
+    border-radius: var(--gl-r-full);
+    color: var(--gl-text-2);
+    font-weight: 500;
+    text-transform: none;
+    white-space: nowrap;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+html.glacier .nav-tile:not(.right) .nav-item:hover a {
+    color: var(--gl-text);
+    background: var(--gl-subtle-2);
+}
+
+html.glacier .nav-tile:not(.right) .nav-item.active a {
+    color: var(--gl-ink-text);
+    font-weight: 600;
+    background: var(--gl-ink);
+}
+
+/* Quick actions (lock, search, logout, terminal, feedback, info, log, help…) */
+html.glacier .nav-tile.right .nav-item.util a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.4rem;
+    height: 4.4rem;
+    padding: 0;
+    border-radius: 50%;
+    color: var(--gl-text);
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-sm);
+    transition: color 0.2s, box-shadow 0.2s;
+}
+
+html.glacier .nav-tile.right .nav-item.util a:hover {
+    color: var(--gl-accent);
+    box-shadow: 0 0 0 3px var(--gl-accent-soft), var(--gl-shadow-sm);
+}
+
+html.glacier .nav-tile.right .nav-item .system {
+    padding: 0;
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+html.glacier .nav-tile.right .nav-item img.system {
+    width: 1.8rem;
+    height: 1.8rem;
+}
+
+html.glacier .nav-tile.right .nav-item.LockButton b.green-text {
+    color: var(--gl-success-text);
+}
+
+/* Plugins that hook a "nav-user" link (like this theme) leave an empty div behind. */
+html.glacier .nav-tile.right > [class^="nav-user"]:empty {
+    display: none;
+}
+
+/* Array usage indicator in the menu bar ("Show array utilization indicator") */
+html.glacier #menu .usage-bar {
+    width: 12rem;
+    height: 2.8rem;
+    margin: 0 0.4rem 0 0;
+    border-radius: var(--gl-r-full);
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-sm);
+    overflow: hidden;
+}
+
+html.glacier #menu .usage-bar > span {
+    height: 100%;
+    line-height: 2.8rem;
+    color: var(--gl-text);
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: var(--gl-accent-light);
+}
+
+/* ==========================================================================
+   Page frame, tabs and section headings
+   ========================================================================== */
+html.glacier #displaybox {
+    max-width: 1440px;
+    padding: 0.8rem 2.8rem 8rem;
+}
+
+html.glacier .tabs {
+    margin-bottom: 1.6rem;
+}
+
+html.glacier .tabs-container {
+    width: auto;
+    max-width: 100%;
+    gap: 0.2rem;
+    padding: 0.5rem;
+    border-radius: var(--gl-r-full);
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-sm);
+}
+
+html.glacier .tabs button[role="tab"] {
+    min-height: 3.6rem;
+    padding: 0 1.6rem;
+    border: 0;
+    border-radius: var(--gl-r-full);
+    color: var(--gl-text-2);
+    font-size: 1.3rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    background: transparent;
+    opacity: 1;
+    box-shadow: none;
+}
+
+html.glacier .tabs button[role="tab"]:hover {
+    color: var(--gl-text);
+    background: var(--gl-subtle-2);
+}
+
+html.glacier .tabs button[role="tab"][aria-selected="true"] {
+    color: var(--gl-ink-text);
+    font-weight: 600;
+    background: var(--gl-ink);
+}
+
+html.glacier .tabs button[role="tab"] :is(i, img) {
+    margin-right: 0.6rem;
+}
+
+html.glacier .tabs button[role="tab"] img {
+    width: 1.6rem;
+    height: 1.6rem;
+}
+
+/* Page content sits on a white card. */
+html.glacier .tab-content,
+html.glacier #displaybox > .content {
+    padding: 2.4rem 2.8rem;
+    border-radius: var(--gl-r-xl);
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-md);
+    box-sizing: border-box;
+}
+
+/* …except the Dashboard, whose tiles are cards of their own. */
+html.glacier #displaybox > .content:has(> .frame > .grid) {
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+}
+
+html.glacier .tab-content form:first-of-type {
+    padding-top: 0;
+}
+
+/* Section headings ("div.title"): a bold line with the page icon in a tinted squircle. */
+html.glacier div.title {
+    gap: 1.2rem;
+    margin: 3.2rem 0 1.6rem;
+    padding: 0 0 1.2rem;
+    border: 0;
+    border-bottom: 1px solid var(--gl-border);
+    color: var(--gl-text);
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    background: transparent;
+}
+
+html.glacier div.title:first-of-type,
+html.glacier .content > div.title:first-child {
+    margin-top: 0;
+}
+
+html.glacier div.title > span.left {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+html.glacier div.title i.title {
+    display: inline-grid;
+    place-items: center;
+    width: 3.4rem;
+    height: 3.4rem;
+    margin: 0;
+    border-radius: 1.1rem;
+    color: var(--gl-accent);
+    font-size: 1.6rem;
+    background: var(--gl-accent-soft);
+}
+
+html.glacier div.title span img {
+    width: 2rem;
+    height: 2rem;
+    padding: 0.7rem;
+    border-radius: 1.1rem;
+    background: var(--gl-accent-soft);
+}
+
+/* Settings / Tools menu pages: the panels as tiles */
+html.glacier .Panels {
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 1rem;
+    margin-top: 0;
+}
+
+html.glacier .Panel {
+    max-width: none;
+    text-align: left;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-lg);
+    background: var(--gl-subtle);
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s var(--gl-ease);
+}
+
+html.glacier .Panel:hover {
+    border-color: var(--gl-accent-ring);
+    box-shadow: var(--gl-shadow-md);
+    transform: translateY(-1px);
+}
+
+html.glacier .Panel a {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 1.2rem;
+    height: 100%;
+    padding: 1.4rem;
+    box-sizing: border-box;
+    color: var(--gl-text);
+}
+
+html.glacier .Panel a > span {
+    display: grid;
+    place-items: center;
+    width: 4.4rem;
+    height: 4.4rem;
+    border-radius: 1.4rem;
+    color: var(--gl-accent);
+    background: var(--gl-accent-soft);
+}
+
+html.glacier .Panel .PanelIcon {
+    font-size: 2rem;
+    color: inherit;
+}
+
+html.glacier .Panel .PanelImg {
+    max-width: 2.6rem;
+    height: 2.6rem;
+}
+
+html.glacier .Panel .PanelText {
+    font-weight: 600;
+    font-size: 1.35rem;
+    line-height: 1.3;
+}
+
+html.glacier .Panel:hover .PanelText,
+html.glacier .Panel:focus .PanelText {
+    text-decoration: none;
+}
+
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+html.glacier dt {
+    color: var(--gl-text-2);
+    font-weight: 600;
+}
+
+html.glacier :is(
+    input[type="text"], input[type="password"], input[type="number"], input[type="email"],
+    input[type="url"], input[type="search"], input[type="tel"], input[type="date"],
+    input[type="time"], input:not([type])
+):where(:not(.unapi *)),
+html.glacier textarea:where(:not(.unapi *)),
+html.glacier select:where(:not(.unapi *)) {
+    min-height: 3.6rem;
+    padding: 0 1.2rem;
+    border: 1px solid var(--gl-input);
+    border-radius: var(--gl-r-sm);
+    color: var(--gl-text);
+    font-family: var(--gl-font);
+    font-size: 1.35rem;
+    background-color: var(--gl-surface);
+    box-shadow: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+html.glacier textarea:where(:not(.unapi *)) {
+    padding: 0.8rem 1.2rem;
+    line-height: 1.5;
+}
+
+html.glacier select:where(:not(.unapi *)) {
+    padding-right: 3.2rem;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: var(--gl-chevron);
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.4rem;
+}
+
+html.glacier select:where(:not(.unapi *))[multiple] {
+    padding-right: 1.2rem;
+    background-image: none;
+}
+
+html.glacier :is(input, textarea, select):where(:not(.unapi *)):hover:not(:disabled, [type="button"], [type="submit"], [type="reset"], [type="checkbox"], [type="radio"]) {
+    border-color: var(--gl-muted);
+}
+
+html.glacier :is(input, textarea, select):where(:not(.unapi *)):focus:not([type="button"], [type="submit"], [type="reset"], [type="checkbox"], [type="radio"]) {
+    border-color: var(--gl-accent);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--gl-accent-ring);
+}
+
+html.glacier :is(input, textarea, select):where(:not(.unapi *)):disabled:not([type="button"], [type="submit"], [type="reset"]) {
+    color: var(--gl-muted);
+    border-color: var(--gl-border);
+    background-color: var(--gl-subtle-2);
+}
+
+html.glacier input::placeholder,
+html.glacier textarea::placeholder {
+    color: #64748b;
+}
+
+html.glacier input[type="checkbox"],
+html.glacier input[type="radio"] {
+    accent-color: var(--gl-accent);
+    width: 1.6rem;
+    height: 1.6rem;
+}
+
+/* Unraid's custom checkbox (label.checkbox > input + span.checkmark) */
+html.glacier span.checkmark {
+    border-radius: 0.5rem;
+    background-color: var(--gl-surface);
+    box-shadow: inset 0 0 0 1px var(--gl-input);
+}
+
+html.glacier label.checkbox input:checked ~ .checkmark {
+    background-color: var(--gl-accent);
+    box-shadow: none;
+}
+
+/* On/off switches (jquery.switchButton) as pill toggles. The plugin positions the knob with
+   inline styles sized for its own track, so the knob is placed here by state. */
+html.glacier .switch-button-label {
+    color: var(--gl-muted);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+html.glacier .switch-button-label.on {
+    color: var(--gl-accent);
+}
+
+html.glacier .switch-button-background {
+    width: 3.8rem !important;
+    height: 2.2rem !important;
+    border: 0;
+    border-radius: var(--gl-r-full);
+    background-color: var(--gl-input);
+    transition: background-color 0.2s;
+}
+
+html.glacier .switch-button-background.checked {
+    background-color: var(--gl-accent);
+}
+
+html.glacier .switch-button-button {
+    top: 0.3rem !important;
+    left: 0.3rem !important;
+    width: 1.6rem !important;
+    height: 1.6rem !important;
+    border: 0;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.3);
+    transition: left 0.2s var(--gl-ease);
+}
+
+html.glacier .switch-button-background.checked .switch-button-button {
+    left: calc(100% - 1.9rem) !important;
+}
+
+/* A form's button row (Apply, Done…) sits on one line instead of one button per line. */
+@media (min-width: 769px) {
+    html.glacier dd:has(> input[type="submit"], > input[type="button"] + input[type="button"]) {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    html.glacier dd > :is(input[type="submit"], input[type="button"], input[type="reset"]) {
+        width: auto;
+    }
+}
+
+/* ==========================================================================
+   Buttons: white pills; submit buttons in the accent colour.
+   ========================================================================== */
+html.glacier :is(input[type="button"], input[type="reset"], input[type="submit"], a.button):where(:not(.unapi *)),
+html.glacier button:where(:not(.unapi *, [role="tab"], .ui-button, .sa-button-container *)) {
+    min-height: 3.6rem;
+    margin: 0.4rem 0.8rem 0.4rem 0;
+    padding: 0 1.8rem;
+    border: 1px solid var(--gl-input);
+    border-radius: var(--gl-r-full);
+    color: var(--gl-text);
+    font-family: var(--gl-font);
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    background: var(--gl-surface);
+    background-size: auto;
+    box-shadow: none;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background-color 0.15s, box-shadow 0.15s;
+}
+
+html.glacier a.button:where(:not(.unapi *)) {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+html.glacier :is(input[type="button"], input[type="reset"], a.button):where(:not(.unapi *)):hover:not(:disabled, [disabled]),
+html.glacier button:where(:not(.unapi *, [role="tab"], .ui-button, .sa-button-container *)):hover:not(:disabled) {
+    border-color: var(--gl-accent);
+    color: var(--gl-accent);
+    background: var(--gl-surface);
+}
+
+html.glacier input[type="submit"]:where(:not(.unapi *)) {
+    border-color: var(--gl-accent);
+    color: var(--gl-accent-text);
+    background: var(--gl-accent);
+}
+
+html.glacier input[type="submit"]:where(:not(.unapi *)):hover:not(:disabled) {
+    border-color: color-mix(in oklab, var(--gl-accent), black 14%);
+    color: var(--gl-accent-text);
+    background: color-mix(in oklab, var(--gl-accent), black 14%);
+}
+
+html.glacier :is(input[type="button"], input[type="reset"], input[type="submit"], button, a.button):where(:not(.unapi *)):is(:disabled, [disabled]) {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Tables: rounded, hairline rows, quiet header.
+   ========================================================================== */
+html.glacier :is(table.unraid, table.disk_status, table.share_status, table.tablesorter, table.legacy):where(:not(.unapi *)) {
+    border: 1px solid var(--gl-border);
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: var(--gl-r-md);
+    background: var(--gl-surface);
+    overflow: hidden;
+}
+
+html.glacier :is(table.unraid, table.disk_status, table.share_status, table.tablesorter, table.legacy) thead :is(td, th) {
+    padding: 1rem 1.2rem;
+    border: 0;
+    color: var(--gl-muted);
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    background: var(--gl-subtle);
+}
+
+html.glacier :is(table.unraid, table.disk_status, table.share_status, table.tablesorter, table.legacy) tbody td {
+    padding: 0.9rem 1.2rem;
+    border: 0;
+    border-top: 1px solid var(--gl-border);
+    background: transparent;
+}
+
+html.glacier table.unraid tbody tr:nth-child(even),
+html.glacier table.tablesorter tbody tr:nth-child(even) > td {
+    background: transparent;
+}
+
+html.glacier :is(table.unraid, table.disk_status, table.share_status, table.tablesorter) tbody tr:not(.tr_last):hover > td {
+    background: var(--gl-subtle);
+}
+
+html.glacier table.disk_status tbody tr.tr_last > td {
+    color: var(--gl-text);
+    font-weight: 600;
+    background: var(--gl-subtle);
+}
+
+html.glacier table tbody tr.alert > td { background: var(--gl-danger-bg); }
+html.glacier table tbody tr.warn > td { background: var(--gl-warn-bg); }
+
+html.glacier .TableContainer {
+    border-radius: var(--gl-r-md);
+}
+
+html.glacier img.img,
+html.glacier i.img {
+    border-radius: 1rem;
+}
+
+/* ==========================================================================
+   Usage bars
+   ========================================================================== */
+html.glacier .usage-disk {
+    height: 1.8rem;
+    border-radius: var(--gl-r-full);
+    background-color: var(--gl-border);
+    overflow: hidden;
+}
+
+html.glacier .usage-disk > span:first-child {
+    height: 100%;
+    border-radius: var(--gl-r-full);
+    background-color: var(--gl-accent-mid);
+}
+
+html.glacier .usage-disk > span:last-child {
+    display: block;
+    top: 0;
+    line-height: 1.8rem;
+    padding-right: 0.8rem;
+    color: var(--gl-text);
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+html.glacier .usage-disk.sys {
+    height: 0.8rem;
+    margin-top: -1.6rem;
+}
+
+html.glacier .usage-disk.mm {
+    height: 0.6rem;
+}
+
+html.glacier .usage-disk:is(.sys, .mm) > span {
+    height: 100%;
+}
+
+html.glacier .usage-bar {
+    border-radius: var(--gl-r-full);
+    overflow: hidden;
+}
+
+html.glacier :is(.greenbar, .usage-disk > span.greenbar) { background: var(--gl-accent-mid) !important; }
+html.glacier :is(.orangebar, .usage-disk > span.orangebar) { background: #fdba74 !important; }
+html.glacier :is(.redbar, .usage-disk > span.redbar) { background: #fca5a5 !important; }
+html.glacier .graybar { background: var(--gl-input) !important; }
+
+/* ==========================================================================
+   Dashboard: each tile section becomes a white card with a tinted icon squircle.
+   ========================================================================== */
+html.glacier div.grid {
+    gap: 1.6rem;
+}
+
+html.glacier .tile {
+    min-width: 0;
+}
+
+html.glacier table.dashboard {
+    display: block;
+    width: 100%;
+}
+
+/* Unraid puts a spacer row (thead.stopgap) before every section: it is the gap between cards. */
+html.glacier table.dashboard thead.stopgap {
+    display: block;
+    height: 1.6rem;
+}
+
+html.glacier table.dashboard thead.stopgap:first-child {
+    display: none;
+}
+
+html.glacier table.dashboard td.stopgap {
+    display: none;
+}
+
+html.glacier table.dashboard tbody {
+    display: block;
+    padding: 0.6rem 0 1.4rem;
+    border: 0;
+    border-radius: var(--gl-r-xl);
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-md);
+    overflow: hidden;
+}
+
+/* Each row lays out on its own, so tiles from other plugins with several cells still work. */
+html.glacier table.dashboard tbody > tr {
+    display: table;
+    width: 100%;
+    table-layout: auto;
+}
+
+html.glacier table.dashboard tbody td {
+    padding: 0.4rem 2rem;
+    line-height: 2.4rem;
+}
+
+html.glacier table.dashboard tr:first-child > td {
+    padding: 1.4rem 2rem 1rem;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+html.glacier table.dashboard .tile-header-left {
+    gap: 1.2rem;
+}
+
+html.glacier table.dashboard .tile-header-left > i:first-child,
+html.glacier table.dashboard tr:first-child > td > i.f32 {
+    display: inline-grid;
+    place-items: center;
+    width: 4.4rem;
+    height: 4.4rem;
+    margin-right: 0.4rem;
+    border-radius: 1.4rem;
+    color: var(--gl-accent);
+    font-size: 2.2rem;
+    background: var(--gl-accent-soft);
+    vertical-align: middle;
+}
+
+html.glacier table.dashboard h3.tile-header-main {
+    margin: 0 0 0.4rem;
+    line-height: 1.2;
+    text-transform: none;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+html.glacier table.dashboard td div.section {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--gl-muted);
+}
+
+html.glacier table.dashboard .control,
+html.glacier table.dashboard .tile-ctrl > span {
+    display: inline-grid;
+    place-items: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    padding: 0;
+    border-radius: 50%;
+    color: var(--gl-text-2);
+    font-size: 1.4rem !important;
+    background: var(--gl-subtle-2);
+    opacity: 1;
+    transition: color 0.2s, background-color 0.2s;
+}
+
+html.glacier table.dashboard .control:hover,
+html.glacier table.dashboard .tile-ctrl > span.hand:hover {
+    color: var(--gl-accent);
+    background: var(--gl-accent-soft);
+    opacity: 1;
+}
+
+html.glacier table.dashboard .tile-ctrl > span.fa-power-off:hover {
+    color: var(--gl-danger-text);
+    background: var(--gl-danger-bg);
+}
+
+html.glacier table.dashboard span.header {
+    color: var(--gl-muted);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+html.glacier #current_time {
+    font-size: 3.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+html.glacier div.pie span {
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   Dashboard greeting card (scripts/glacier.js builds it above the tiles)
+   ========================================================================== */
+html.glacier .gl-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 0 0 1.6rem;
+    padding: 2.8rem;
+    border-radius: var(--gl-r-xl);
+    color: #ffffff;
+    background: var(--gl-ink);
+}
+
+html.glacier .gl-hero-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 1.6rem;
+}
+
+html.glacier .gl-hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    min-width: 0;
+}
+
+html.glacier .gl-hero-status {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.4rem 1.2rem;
+    border-radius: var(--gl-r-full);
+    font-size: 1.2rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+html.glacier .gl-hero-status::before {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    background: var(--gl-hero-dot, #5eead4);
+    content: "";
+}
+
+html.glacier .gl-hero-status.is-warn { --gl-hero-dot: #fdba74; }
+html.glacier .gl-hero-status.is-stopped { --gl-hero-dot: #fca5a5; }
+
+html.glacier .gl-hero h1 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 3.2rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+}
+
+html.glacier .gl-hero p {
+    margin: 0;
+    color: #cbd5e1;
+}
+
+html.glacier .gl-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-left: auto;
+}
+
+html.glacier .gl-hero-actions a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 4.4rem;
+    padding: 0 1.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: var(--gl-r-full);
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+html.glacier .gl-hero-actions a:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+html.glacier .gl-hero-actions a.gl-primary {
+    border-color: var(--gl-accent-bright);
+    color: #0f172a;
+    font-weight: 700;
+    background: var(--gl-accent-bright);
+}
+
+html.glacier .gl-hero-actions a.gl-primary:hover {
+    color: #0f172a;
+    background: color-mix(in oklab, var(--gl-accent-bright), white 20%);
+}
+
+html.glacier .gl-hero-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1rem;
+    margin: 0;
+}
+
+html.glacier .gl-hero-facts > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.4rem;
+    border-radius: 1.6rem;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+html.glacier .gl-hero-facts dt {
+    text-align: left;
+    color: #cbd5e1;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+html.glacier .gl-hero-facts dd {
+    display: block;
+    margin: 0;
+    text-align: left;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   Help, notices and banners
+   ========================================================================== */
+html.glacier blockquote:where(:not(.unapi *)) {
+    margin: 0.8rem 0 1.2rem;
+    padding: 1.2rem 1.6rem;
+    border: 0;
+    border-radius: var(--gl-r-md);
+    color: var(--gl-text-2);
+    background: var(--gl-subtle-2);
+}
+
+html.glacier .notice {
+    display: flex;
+    align-items: center;
+    height: auto;
+    min-height: 5.2rem;
+    padding: 1rem 1.6rem 1rem 5.6rem;
+    border: 0;
+    border-radius: var(--gl-r-md);
+    color: var(--gl-warn-text);
+    font-size: 1.4rem;
+    line-height: 1.5;
+    background-color: var(--gl-warn-bg);
+    background-position: 1.6rem center;
+    background-size: 2.4rem;
+    box-sizing: border-box;
+}
+
+html.glacier .upgrade_notice,
+html.glacier .ca_element_notice {
+    border: 0;
+    border-radius: var(--gl-r-md);
+    color: var(--gl-info-text);
+    background: var(--gl-info-bg);
+}
+
+html.glacier .upgrade_notice.alert {
+    color: var(--gl-danger-text);
+    background: var(--gl-danger-bg);
+}
+
+/* ==========================================================================
+   Footer: a quiet frosted strip; the array status as a pill.
+   ========================================================================== */
+html.glacier #footer {
+    min-height: 3.6rem;
+    padding: 0.4rem 2.8rem;
+    border-top: 1px solid var(--gl-border);
+    color: var(--gl-muted);
+    font-size: 1.2rem;
+    background: color-mix(in srgb, var(--gl-bg) 88%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+html.glacier #copyright {
+    font-family: var(--gl-font);
+    font-size: 1.2rem;
+}
+
+html.glacier #copyright a {
+    color: var(--gl-text-2);
+}
+
+html.glacier #statusbar > span:first-child {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.2rem 1rem;
+    border-radius: var(--gl-r-full);
+    font-weight: 600;
+}
+
+html.glacier #statusbar > span.green:first-child { color: var(--gl-success-text); background: var(--gl-success-bg); }
+html.glacier #statusbar > span.orange:first-child { color: var(--gl-warn-text); background: var(--gl-warn-bg); }
+html.glacier #statusbar > span.red:first-child { color: var(--gl-danger-text); background: var(--gl-danger-bg); }
+
+/* ==========================================================================
+   Dialogs, menus, tooltips
+   ========================================================================== */
+html.glacier .sweet-overlay {
+    background-color: rgba(15, 23, 42, 0.4) !important;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+html.glacier .sweet-alert {
+    border-radius: var(--gl-r-xl);
+    font-family: var(--gl-font);
+    background-color: var(--gl-surface);
+    box-shadow: var(--gl-shadow-lg);
+}
+
+html.glacier .sweet-alert h2 {
+    color: var(--gl-text);
+    font-family: var(--gl-font);
+    font-weight: 700;
+}
+
+html.glacier .sweet-alert p {
+    color: var(--gl-text-2);
+}
+
+html.glacier .sweet-alert button {
+    min-height: 4rem;
+    margin: 0.4rem;
+    padding: 0 2rem;
+    border-radius: var(--gl-r-full) !important;
+    font-family: var(--gl-font);
+    font-size: 1.35rem;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+    box-shadow: none !important;
+}
+
+html.glacier .sweet-alert button.confirm {
+    border: 0;
+    color: var(--gl-accent-text);
+    background: var(--gl-accent) !important;
+}
+
+html.glacier .sweet-alert button.cancel {
+    border: 1px solid var(--gl-input);
+    color: var(--gl-text);
+    background: var(--gl-surface) !important;
+}
+
+html.glacier .ui-dialog {
+    padding: 0.8rem;
+    border: 0 !important;
+    border-radius: var(--gl-r-xl);
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-lg);
+}
+
+html.glacier .ui-dialog .ui-dialog-titlebar {
+    border: 0;
+    border-radius: var(--gl-r-lg);
+    color: var(--gl-text);
+    font-family: var(--gl-font);
+    font-weight: 700;
+    background: transparent;
+}
+
+html.glacier .ui-widget-overlay {
+    background: rgba(15, 23, 42, 0.4);
+    opacity: 1;
+}
+
+html.glacier :is(.dropdown-menu, .context-menu, ul.ui-menu) {
+    padding: 0.6rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-md);
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-lg);
+}
+
+html.glacier .dropdown-menu > li > a {
+    border-radius: 0.8rem;
+    color: var(--gl-text);
+}
+
+html.glacier .dropdown-menu > li > a:hover {
+    color: var(--gl-text);
+    background: var(--gl-subtle-2);
+}
+
+html.glacier a.info span,
+html.glacier .clipboard-tooltip {
+    border: 0;
+    border-radius: 0.8rem;
+    color: #ffffff;
+    background: var(--gl-ink);
+    box-shadow: var(--gl-shadow-md);
+}
+
+/* ==========================================================================
+   Phones and tablets
+   ========================================================================== */
+@media (max-width: 767px) {
+    html.glacier #header {
+        padding: 0 1.6rem;
+    }
+
+    html.glacier #menu {
+        position: relative;
+        flex-wrap: wrap;
+        padding: 0.4rem 1.6rem 1rem;
+    }
+
+    html.glacier .nav-tile:not(.right) {
+        flex: 1 1 100%;
+        overflow-x: auto;
+    }
+
+    html.glacier .nav-tile.right {
+        flex: 1 1 100%;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        margin-left: 0;
+    }
+
+    html.glacier #header {
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding-top: 1.2rem;
+        padding-bottom: 0.8rem;
+    }
+
+    html.glacier #UserProfile > div:first-of-type,
+    html.glacier #UserProfile > div:last-of-type > div:first-child > span:nth-child(1) {
+        display: none !important;
+    }
+
+    html.glacier #displaybox {
+        padding: 0.4rem 1.2rem 8rem;
+    }
+
+    html.glacier .tab-content,
+    html.glacier #displaybox > .content {
+        padding: 1.6rem;
+        border-radius: var(--gl-r-lg);
+    }
+
+    html.glacier .gl-hero {
+        padding: 2rem;
+    }
+
+    html.glacier .gl-hero h1 {
+        font-size: 2.4rem;
+    }
+
+    html.glacier .gl-hero-actions {
+        margin-left: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.glacier *,
+    html.glacier *::before,
+    html.glacier *::after {
+        transition-duration: 0.01ms !important;
+    }
+}

@@ -1,0 +1,62 @@
+Menu="Utilities"
+Title="Glacier Theme"
+Icon="paint-brush"
+Tag="paint-brush"
+---
+<?php
+$glacier = parse_plugin_cfg('Glacier-Theme');
+$glacierAccent = preg_match('/^#[0-9a-fA-F]{6}$/', $glacier['accent'] ?? '') ? $glacier['accent'] : '#0f766e';
+$glacierOnWhite = ($display['theme'] ?? '') == 'white';
+?>
+<?php if (!$glacierOnWhite): ?>
+<p class="notice">_(Glacier is drawn over the Dynamix White theme. Choose White in Settings > Display Settings to see it.)_</p>
+<?php endif; ?>
+<form markdown="1" method="POST" action="/update.php" target="progressFrame">
+<input type="hidden" name="#file" value="Glacier-Theme/Glacier-Theme.cfg">
+
+_(Theme)_:
+: <select name="theme">
+  <?=mk_option($glacier['theme'] ?? 'yes', "yes", _("Enabled"))?>
+  <?=mk_option($glacier['theme'] ?? 'yes', "no", _("Disabled"))?>
+  </select>
+
+:glacier_theme_help:
+> Applies Glacier's colours, font, menu, cards, buttons, tables and dialogs on every page while the
+> Dynamix theme is **White**. Add `?glacier=off` to any address to switch it off in one browser,
+> `?glacier=on` to bring it back.
+:end
+
+_(Accent colour)_:
+: <input type="color" id="glacier-accent-pick" aria-label="_(Pick the accent colour)_" value="<?= htmlspecialchars($glacierAccent) ?>" style="width:4.4rem;height:3.6rem;padding:0.2rem;vertical-align:middle"> <input type="text" name="accent" id="glacier-accent" maxlength="7" class="narrow" placeholder="#0f766e" pattern="#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})" title="_(Colour code such as #0f766e; empty for the theme's teal)_" value="<?= htmlspecialchars($glacier['accent'] ?? '') ?>"> <input type="button" value="_(Default)_" onclick="glacierAccent('')">
+
+:glacier_accent_help:
+> The colour of highlights: submit buttons, links, switches, icons and bars. Leave it empty for
+> Glacier's teal. The text on accent buttons switches between white and dark by itself.
+:end
+
+_(Dashboard greeting card)_:
+: <select name="hero">
+  <?=mk_option($glacier['hero'] ?? 'yes', "yes", _("Shown"))?>
+  <?=mk_option($glacier['hero'] ?? 'yes', "no", _("Hidden"))?>
+  </select>
+
+:glacier_hero_help:
+> A dark card above the Dashboard tiles with a greeting, the server name, the array status and
+> the uptime.
+:end
+
+&nbsp;
+: <input type="submit" value="_(Apply)_"><input type="button" value="_(Done)_" onclick="done()">
+
+</form>
+
+<script>
+function glacierAccent(value) {
+  document.getElementById('glacier-accent').value = value;
+  if (value) document.getElementById('glacier-accent-pick').value = value;
+  $('#glacier-accent').trigger('change');
+}
+document.getElementById('glacier-accent-pick').addEventListener('input', function () {
+  glacierAccent(this.value);
+});
+</script>

@@ -1,0 +1,38 @@
+page: DiskSettings
+active: Settings
+---
+<div id="displaybox">
+<nav class="tabs" role="tablist" aria-label="Page Tabs">
+  <div class="tabs-container">
+    <button role="tab" id="tab1" aria-selected="true" tabindex="0"><i class="icon-disk"></i>Disk Settings</button>
+    <button role="tab" id="tab2" aria-selected="false" tabindex="-1"><i class="fa fa-gears"></i>Global Share Settings</button>
+    <button role="tab" id="tab3" aria-selected="false" tabindex="-1"><i class="fa fa-tasks"></i>Scheduler</button>
+  </div>
+</nav>
+<section id="tab1-panel" role="tabpanel" class="tab-content content" style="display:block">
+<form method="POST" action="#">
+<dl><dt>Enable auto start:</dt><dd><select name="startArray"><option>Yes</option><option>No</option></select></dd></dl>
+<dl><dt>Default spin down delay:</dt><dd><select><option>30 minutes</option><option>Never</option></select></dd></dl>
+<dl><dt>Tunable (md_num_stripes):</dt><dd><input type="text" value="1280" class="narrow"></dd></dl>
+<dl><dt>Comments:</dt><dd><input type="text" placeholder="Optional description"></dd></dl>
+<dl><dt>Enable hot-plug:</dt><dd><input type="checkbox" id="hp" class="switch" style="display:none" checked><span class="switch-button-label off">Off</span><div class="switch-button-background checked" style="width: 25px; height: 11px;"><div class="switch-button-button" style="width: 12px; height: 11px; left: 13px;"></div></div><span class="switch-button-label on">On</span></dd></dl>
+<blockquote class="inline_help">Disk spin down delay sets the default period of inactivity before a disk is spun down. Individual disks may override this value.</blockquote>
+<dl><dt>&nbsp;</dt><dd><input type="submit" value="Apply"><input type="button" value="Done"><input type="button" value="Reset" disabled></dd></dl>
+</form>
+
+<div class="title"><span class="left"><i class="fa fa-hdd-o title"></i>Array Devices</span><span class="right inline-flex flex-row items-center gap-1"></span></div>
+<div class="TableContainer">
+<table class="disk_status wide">
+<thead><tr><td>Device</td><td>Identification</td><td>Temp.</td><td>Reads</td><td>Writes</td><td>Errors</td><td>FS</td><td>Size</td><td>Used</td><td>Free</td></tr></thead>
+<tbody>
+<tr><td><i class="fa fa-circle orb green-orb"></i> Parity</td><td>WDC_WD180EDGZ - 2VH7Y4AL (sdb)</td><td>34 °C</td><td>1,204</td><td>8,312</td><td>0</td><td></td><td>18 TB</td><td></td><td></td></tr>
+<tr><td><i class="fa fa-circle orb green-orb"></i> Disk 1</td><td>WDC_WD180EDGZ - 3FJ8K2RT (sdc)</td><td>36 °C</td><td>9,881</td><td>2,004</td><td>0</td><td>xfs</td><td>18 TB</td><td><div class="usage-disk"><span style="width:72%" class="greenbar"></span><span>13.0 TB</span></div></td><td>5.0 TB</td></tr>
+<tr><td><i class="fa fa-circle orb green-orb"></i> Disk 2</td><td>ST16000NM001G - ZL2B91QX (sdd)</td><td>38 °C</td><td>4,522</td><td>1,180</td><td>0</td><td>xfs</td><td>16 TB</td><td><div class="usage-disk"><span style="width:88%" class="orangebar"></span><span>14.1 TB</span></div></td><td>1.9 TB</td></tr>
+<tr><td><i class="fa fa-circle orb grey-orb"></i> Disk 3</td><td>ST16000NM001G - ZL2C04MV (sde)</td><td>*</td><td>310</td><td>12</td><td>0</td><td>xfs</td><td>16 TB</td><td><div class="usage-disk"><span style="width:41%" class="greenbar"></span><span>6.6 TB</span></div></td><td>9.4 TB</td></tr>
+<tr class="tr_last"><td>Array of four devices</td><td></td><td></td><td>15,917</td><td>11,508</td><td>0</td><td></td><td>68 TB</td><td>33.7 TB</td><td>16.3 TB</td></tr>
+</tbody>
+</table>
+</div>
+<p class="notice">Parity check scheduled for Sunday at 03:00.</p>
+</section>
+</div>

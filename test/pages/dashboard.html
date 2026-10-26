@@ -1,0 +1,138 @@
+page: Dashboard
+active: Dashboard
+sheet: DashStats.css
+---
+<div id="displaybox">
+<div class="content">
+<div class='frame'>
+<div class='grid'>
+
+<div class='tile' id='tile1'>
+<table id='db_box1' class='dashboard'>
+<thead class="stopgap"><tr><td class="stopgap"></td></tr></thead>
+<tbody class='system'>
+<tr><td>
+  <span class='tile-header'>
+    <span class='tile-header-left'>
+      <i class='icon-performance f32'></i>
+      <div class='section'>
+        <h3 class='tile-header-main'>Tower</h3>
+        <span>Media &amp; backups</span>
+        <span id="current_time_" class="switch head_time"></span><br>
+      </div>
+    </span>
+    <span class='tile-header-right'>
+      <span class='tile-ctrl flex flex-row items-center gap-4'>
+        <span class='fa fa-fw fa-stop-circle hand' title="Stop the array"></span>
+        <span class='fa fa-fw fa-refresh hand' title="Reboot the system"></span>
+        <span class='fa fa-fw fa-power-off hand' title="Shutdown the system"></span>
+      </span>
+      <span class='tile-header-right-controls'>
+        <a href='#'><i class='fa fa-fw fa-cog control' title="Go to identification settings"></i></a>
+        <i class='fa fa-fw fa-wrench control tile' title="Tile Management"></i>
+      </span>
+    </span>
+  </span>
+</td></tr>
+<tr><td>
+  <div class='leftside'>
+    <a href="#" class="hand none"><span id="current_time">21:42</span></a><br>
+    <span id="current_date">lundi 26 octobre 2026</span><br><br>
+    <span class='header'><i class='indent fa fa-file-text-o'></i>Model</span><br>
+    <i class='indent'></i>Custom<br><br>
+    <span class='header'><i class='indent fa fa-id-badge'></i>Registration</span><br>
+    <i class='indent'></i>Unraid OS <b><em>Pro</em></b><br><br>
+    <span class='header'><i class='indent fa fa-clock-o'></i>Uptime</span><br>
+    <i class='indent'></i><span class='uptime'>12 days, 4 hours, 18 minutes</span>
+  </div>
+</td></tr>
+</tbody>
+<thead class="stopgap"><tr><td class="stopgap"></td></tr></thead>
+<tbody title="Processor Information">
+<tr><td>
+  <span class='tile-header'>
+    <span class='tile-header-left'>
+      <i class='icon-cpu f32'></i>
+      <div class='section'><h3 class='tile-header-main'>Processor</h3><span>AMD Ryzen 9 7950X 16-Core @ 4.5 GHz</span></div>
+    </span>
+    <span class='tile-header-right'><span class='tile-header-right-controls'><i class='fa fa-fw fa-cog control'></i></span></span>
+  </span>
+</td></tr>
+<tr><td><span class='w26'>Overall Load:</span><span class='w72'><span class='cpu load resize'>23%</span><div class='usage-disk sys'><span style='width:23%'></span><span></span></div></span></td></tr>
+<tr><td><span class='w26'>CPU 0 - HT 16:</span><span class='w72'><span class='cpu load resize'>34%</span><div class='usage-disk sys'><span style='width:34%'></span><span></span></div></span></td></tr>
+<tr><td><span class='w26'>CPU 1 - HT 17:</span><span class='w72'><span class='cpu load resize'>12%</span><div class='usage-disk sys'><span style='width:12%'></span><span></span></div></span></td></tr>
+<tr><td><span class='w26'>CPU 2 - HT 18:</span><span class='w72'><span class='cpu load resize'>58%</span><div class='usage-disk sys'><span style='width:58%'></span><span></span></div></span></td></tr>
+<tr><td><span class='w26'>CPU 3 - HT 19:</span><span class='w72'><span class='cpu load resize'>21%</span><div class='usage-disk sys'><span style='width:21%'></span><span></span></div></span></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class='tile' id='tile2'>
+<table id='db_box2' class='dashboard'>
+<thead class="stopgap"><tr><td class="stopgap"></td></tr></thead>
+<tbody id='docker_view' title="Docker Containers">
+<tr><td>
+  <span class='tile-header'>
+    <span class='tile-header-left'>
+      <i class='icon-docker f32'></i>
+      <div class='section'><h3 class='tile-header-main'>Docker Containers</h3><span>7 started, 1 stopped</span></div>
+    </span>
+    <span class='tile-header-right'><span class='tile-header-right-controls'><i class='fa fa-fw fa-cog control'></i></span></span>
+  </span>
+</td></tr>
+<tr><td>
+  <span class='outer solid apps started'><span class='hand'><img src='/webGui/images/plg.png' class='img' width='30' height='30'></span><span class='inner'><span class='appname'>plex</span><br><i class='fa fa-play started green-text'></i><span class='state'>started</span></span></span>
+  <span class='outer solid apps started'><span class='hand'><img src='/webGui/images/plg.png' class='img' width='30' height='30'></span><span class='inner'><span class='appname'>immich</span><br><i class='fa fa-play started green-text'></i><span class='state'>started</span></span></span>
+  <span class='outer solid apps started'><span class='hand'><img src='/webGui/images/plg.png' class='img' width='30' height='30'></span><span class='inner'><span class='appname'>nextcloud</span><br><i class='fa fa-play started green-text'></i><span class='state'>started</span></span></span>
+  <span class='outer solid apps stopped'><span class='hand'><img src='/webGui/images/plg.png' class='img' width='30' height='30'></span><span class='inner'><span class='appname'>jellyfin</span><br><i class='fa fa-square stopped red-text'></i><span class='state'>stopped</span></span></span>
+</td></tr>
+</tbody>
+<thead class="stopgap"><tr><td class="stopgap"></td></tr></thead>
+<tbody id='vm_view' title="Virtual Machines">
+<tr><td>
+  <span class='tile-header'>
+    <span class='tile-header-left'>
+      <i class='icon-virtualization f32'></i>
+      <div class='section'><h3 class='tile-header-main'>Virtual Machines</h3><span>2 started, 1 stopped</span></div>
+    </span>
+    <span class='tile-header-right'><span class='tile-header-right-controls'><i class='fa fa-fw fa-cog control'></i></span></span>
+  </span>
+</td></tr>
+<tr><td>
+  <span class='outer solid vms started'><span class='hand'><img src='/webGui/images/plg.png' class='img' width='30' height='30'></span><span class='inner'><span class='appname'>Windows 11</span><br><i class='fa fa-play started green-text'></i><span class='state'>started</span></span></span>
+  <span class='outer solid vms stopped'><span class='hand'><img src='/webGui/images/plg.png' class='img' width='30' height='30'></span><span class='inner'><span class='appname'>Ubuntu Server</span><br><i class='fa fa-square stopped red-text'></i><span class='state'>stopped</span></span></span>
+</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class='tile' id='tile3'>
+<table id='db_box3' class='dashboard'>
+<thead class="stopgap"><tr><td class="stopgap"></td></tr></thead>
+<tbody id='array_list' title="Array Information">
+<tr><td>
+  <span class='tile-header'>
+    <span class='tile-header-left'>
+      <i class='icon-disks f32'></i>
+      <div class='section'><h3 class='tile-header-main'>Array</h3><span>Started &bull; Parity is valid</span></div>
+    </span>
+    <span class='tile-header-right'><span class='tile-header-right-controls'><i class='fa fa-fw fa-cog control'></i></span></span>
+  </span>
+</td></tr>
+<tr><td><span class='w18'><i class='fa fa-circle orb green-orb'></i> Parity</span><span class='w26'>34 °C</span><span class='w44'>18 TB</span></td></tr>
+<tr><td><span class='w18'><i class='fa fa-circle orb green-orb'></i> Disk 1</span><span class='w26'>36 °C</span><div class='usage-disk mm'><span style='width:72%' class='greenbar'></span><span></span></div></td></tr>
+<tr><td><span class='w18'><i class='fa fa-circle orb green-orb'></i> Disk 2</span><span class='w26'>38 °C</span><div class='usage-disk mm'><span style='width:58%' class='greenbar'></span><span></span></div></td></tr>
+<tr><td><span class='w18'><i class='fa fa-circle orb green-orb'></i> Disk 3</span><span class='w26'>35 °C</span><div class='usage-disk mm'><span style='width:88%' class='orangebar'></span><span></span></div></td></tr>
+<tr><td><span class='w18'><i class='fa fa-circle orb grey-orb'></i> Disk 4</span><span class='w26'>*</span><div class='usage-disk mm'><span style='width:23%' class='greenbar'></span><span></span></div></td></tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Unraid hides the tiles in CSS and shows them from its Dashboard script once laid out.
+  document.querySelectorAll('div.tile').forEach(function (tile) { tile.style.display = 'block'; });
+</script>
