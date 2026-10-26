@@ -7,14 +7,17 @@ Title="Glacier Theme"
 // so this is where the theme attaches its files. Link="nav-user" keeps it from adding a button.
 $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierCustomDir = '/boot/config/plugins/Glacier-Theme';
+$glacierVersion = '@@VERSION@@';
 
 // Emergency switch: any page opened with ?glacier=off stops the theme in this browser
 // (remembered in a cookie) until a page is opened with ?glacier=on.
 $glacierSwitch = $_GET['glacier'] ?? '';
 $glacierOff = $glacierSwitch == 'off' || ($glacierSwitch != 'on' && !empty($_COOKIE['glacier_off']));
 if (($glacier['theme'] ?? 'yes') != 'yes') $glacierOff = true;
-// Glacier is a light theme drawn over Dynamix "White"; every other Dynamix theme is left alone.
-if (($display['theme'] ?? '') != 'white') $glacierOff = true;
+// Glacier is drawn over the Dynamix top-menu themes, White and Black. Azure and Gray (Unraid's
+// own sidebar layouts) are left alone.
+$glacierDynamix = (string) ($display['theme'] ?? '');
+if (!in_array($glacierDynamix, ['white', 'black'], true)) $glacierOff = true;
 ?>
 <?php if ($glacierSwitch == 'off'): ?>
 <script>document.cookie = 'glacier_off=1; path=/; max-age=31536000; SameSite=Lax';</script>
@@ -24,12 +27,16 @@ if (($display['theme'] ?? '') != 'white') $glacierOff = true;
 <?php if (!$glacierOff): ?>
 <?php
 $glacierClasses = ['glacier'];
+// Light or dark: "auto" follows the Dynamix theme (White light, Black dark).
+$glacierMode = (string) ($glacier['mode'] ?? 'auto');
+if ($glacierMode == 'dark' || ($glacierMode != 'light' && $glacierDynamix == 'black')) $glacierClasses[] = 'gl-dark';
 if (($glacier['hero'] ?? 'yes') == 'yes') $glacierClasses[] = 'gl-hero-on';
 $glacierPage = preg_replace('/[^A-Za-z0-9_-]/', '', (string) ($myPage['name'] ?? ''));
 if ($glacierPage !== '') $glacierClasses[] = 'gl-page-' . $glacierPage;
 ?>
 <script>document.documentElement.classList.add(...<?= json_encode($glacierClasses) ?>);</script>
 <?php // Disk temperature warning and critical thresholds (°C, Disk Settings), for the temperature badges. ?>
+<script>window.glacierVersion = <?= json_encode($glacierVersion) ?>;</script>
 <script>window.glacierTemp = <?= json_encode(['hot' => (int) ($display['hot'] ?? 45), 'max' => (int) ($display['max'] ?? 55)]) ?>;</script>
 <?php
 // Waiting updates, for the counters on the Docker and Plugins menu entries and the Dashboard card.
@@ -70,7 +77,7 @@ if (preg_match('/^[0-9a-f]{6}$/', $glacierAccent)):
     $glacierText = $glacierOnWhite >= $glacierOnInk ? '#ffffff' : '#0f172a';
 ?>
 <style id="glacier-accent">
-html.glacier { --gl-accent: #<?= $glacierAccent ?>; --gl-accent-text: <?= $glacierText ?>; --gl-accent-bright: color-mix(in oklab, #<?= $glacierAccent ?>, white 55%); }
+html.glacier, html.glacier.gl-dark { --gl-accent: #<?= $glacierAccent ?>; --gl-accent-text: <?= $glacierText ?>; --gl-accent-bright: color-mix(in oklab, #<?= $glacierAccent ?>, white 55%); }
 </style>
 <?php endif; ?>
 <script defer src="<?php autov('/plugins/Glacier-Theme/scripts/glacier.js') ?>"></script>

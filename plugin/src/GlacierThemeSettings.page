@@ -6,10 +6,11 @@ Tag="paint-brush"
 <?php
 $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierAccent = preg_match('/^#[0-9a-fA-F]{6}$/', $glacier['accent'] ?? '') ? $glacier['accent'] : '#0f766e';
-$glacierOnWhite = ($display['theme'] ?? '') == 'white';
+$glacierOnTopTheme = in_array($display['theme'] ?? '', ['white', 'black'], true);
 ?>
-<?php if (!$glacierOnWhite): ?>
-<p class="notice">_(Glacier is drawn over the Dynamix White theme. Choose White in Settings > Display Settings to see it.)_</p>
+<p class="gl-version">_(Version)_ <strong>@@VERSION@@</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
+<?php if (!$glacierOnTopTheme): ?>
+<p class="notice">_(Glacier is drawn over the Dynamix White and Black themes. Choose one of them in Settings > Display Settings to see it.)_</p>
 <?php endif; ?>
 <form markdown="1" method="POST" action="/update.php" target="progressFrame">
 <input type="hidden" name="#file" value="Glacier-Theme/Glacier-Theme.cfg">
@@ -22,8 +23,21 @@ _(Theme)_:
 
 :glacier_theme_help:
 > Applies Glacier's colours, font, menu, cards, buttons, tables and dialogs on every page while the
-> Dynamix theme is **White**. Add `?glacier=off` to any address to switch it off in one browser,
-> `?glacier=on` to bring it back.
+> Dynamix theme is **White** or **Black**. Add `?glacier=off` to any address to switch it off in one
+> browser, `?glacier=on` to bring it back.
+:end
+
+_(Light or dark)_:
+: <select name="mode">
+  <?=mk_option($glacier['mode'] ?? 'auto', "auto", _("Follow the Dynamix theme"))?>
+  <?=mk_option($glacier['mode'] ?? 'auto', "light", _("Always light"))?>
+  <?=mk_option($glacier['mode'] ?? 'auto', "dark", _("Always dark"))?>
+  </select>
+
+:glacier_mode_help:
+> **Follow the Dynamix theme**: light with White, dark with Black, so changing the theme in
+> Display Settings changes both. The other two choices keep one
+> mode whatever the Dynamix theme; Unraid's charts and pop-up panels keep the Dynamix colours.
 :end
 
 _(Accent colour)_:

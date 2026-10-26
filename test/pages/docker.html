@@ -1,0 +1,31 @@
+page: Docker
+active: Docker
+---
+<div id="displaybox">
+<div class="content">
+<div class="title"><span class="left"><i class="fa fa-cubes title"></i>Conteneurs Docker</span><span class="right inline-flex flex-row items-center gap-1"></span></div>
+<!-- Row markup as written by dynamix.docker.manager/include/DockerContainers.php (7.3.4) -->
+<table id="docker_containers" class="tablesorter shift">
+<thead><tr><th>Application</th><th>Version</th><th>Réseau</th><th>Container IP</th><th>Port du conteneur</th><th>LAN IP:Port</th><th>Mappages des volumes</th><th>Démarrage automatique</th><th>Disponibilité</th></tr></thead>
+<tbody id="docker_list">
+<tr class='sortable'><td class='ct-name' style='width:220px;padding:8px'><i class='fa fa-arrows-v mover orange-text' style='display:none'></i><span class='outer'><span id='a1' class='hand'><img src='/webGui/images/plg.png' class='img'></span><span class='inner'><span class='appname '>1abd7c13d767_podcastic-redis</span><br><i id='load-a1' class='fa fa-play started green-text'></i><span class='state'>démarré</span></span></span></td>
+<td class='updatecolumn'><div><span><i class='fa fa-docker fa-fw'></i> 3rd Party</span></div></td>
+<td>podcastic_podcastic_net</td><td>172.26.0.2</td><td></td><td></td>
+<td style='word-break:break-all'><span class='docker_readmore'>/data<i class="fa fa-arrows-h" style="margin:0 6px"></i>podcastic_redis_data</span></td>
+<td><i class='fa fa-docker fa-fw'></i> 3rd Party</td><td>Disponibilité: 4 heures<br>Créé: il y a 1 jour</td></tr>
+<tr class='sortable'><td class='ct-name' style='width:220px;padding:8px'><span class='outer'><span id='a2' class='hand'><img src='/webGui/images/plg.png' class='img'></span><span class='inner'><span class='appname '><a class='exec'>ACE-Step</a></span><br><i id='load-a2' class='fa fa-square stopped red-text'></i><span class='state'>arrêté</span></span></span></td>
+<td class='updatecolumn'><span class='green-text' style='white-space:nowrap;'><i class='fa fa-check fa-fw'></i> à jour</span><div class='advanced' style='display:none'><a class='exec'><span style='white-space:nowrap;'><i class='fa fa-cloud-download fa-fw'></i> force update</span></a></div></td>
+<td>bridge</td><td></td><td><span class='docker_readmore'>7860:TCP</span></td><td><span class='docker_readmore'>192.168.1.16:7860</span></td>
+<td style='word-break:break-all'><span class='docker_readmore' style='display:block;max-height:32px;overflow:hidden'>/app/checkpoints<i class="fa fa-arrows-h" style="margin:0 6px"></i>/mnt/user/appdata/ace-step/checkpoints<br>/app/outputs<i class="fa fa-arrows-h" style="margin:0 6px"></i>/mnt/user/appdata/ace-step/outputs<br>/app/models<i class="fa fa-arrows-h" style="margin:0 6px"></i>/mnt/user/appdata/ace-step/models</span></td>
+<td><input type='checkbox' class='autostart' style='display:none'><span class='switch-button-label off'>Éteint</span><div class='switch-button-background' style='width:25px;height:11px'><div class='switch-button-button' style='width:12px;height:11px;left:-1px'></div></div><span class='switch-button-label on'>Allumé</span></td>
+<td>Sortir (137): il y a 2 semaines<br>Créé: il y a 7 mois</td></tr>
+<tr class='sortable'><td class='ct-name' style='width:220px;padding:8px'><span class='outer'><span id='a3' class='hand'><img src='/webGui/images/plg.png' class='img'></span><span class='inner'><span class='appname blue-text'><a class='exec'>CloudCommander</a></span><br><i id='load-a3' class='fa fa-square stopped red-text'></i><span class='state'>arrêté</span></span></span></td>
+<td class='updatecolumn'><div class='advanced' style='display:none'><span class='orange-text' style='white-space:nowrap;'><i class='fa fa-flash fa-fw'></i> update ready</span></div><a class='exec'><span style='white-space:nowrap;'><i class='fa fa-cloud-download fa-fw'></i> Appliquer la mise à jour</span></a></td>
+<td>bridge</td><td></td><td><span class='docker_readmore'>8000:TCP</span></td><td><span class='docker_readmore'>192.168.1.16:8765</span></td>
+<td style='word-break:break-all'><span class='docker_readmore'>/UNRAID<i class="fa fa-arrows-h" style="margin:0 6px"></i>/mnt/user<br>/root<i class="fa fa-arrows-h" style="margin:0 6px"></i>/mnt/user/appdata/cloudcmd</span></td>
+<td><input type='checkbox' class='autostart' style='display:none' checked><span class='switch-button-label off'>Éteint</span><div class='switch-button-background checked' style='width:25px;height:11px'><div class='switch-button-button' style='width:12px;height:11px;left:13px'></div></div><span class='switch-button-label on'>Allumé</span></td>
+<td>Créé<br>Créé: il y a 2 jours</td></tr>
+</tbody>
+</table>
+</div>
+</div>

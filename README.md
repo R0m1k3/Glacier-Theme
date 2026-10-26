@@ -1,12 +1,16 @@
 # Glacier Theme pour Unraid
 
-Un thème clair et moderne pour le webGUI d'Unraid 7.3 : fond bleu-gris doux, cartes blanches très arrondies, menu en pilule, accent sarcelle et police Plus Jakarta Sans.
+Un thème moderne, clair ou sombre, pour le webGUI d'Unraid 7.3 : fond bleu-gris doux, cartes blanches très arrondies, menu en pilule, accent sarcelle et police Plus Jakarta Sans.
 
 ![Tableau de bord avec Glacier](docs/dashboard.png)
 
-| Réglages | Formulaire et tableau des disques |
+| Mode sombre | Plugins |
 | --- | --- |
-| ![Page Réglages](docs/settings.png) | ![Formulaire](docs/form.png) |
+| ![Tableau de bord en mode sombre](docs/dashboard-dark.png) | ![Page Plugins](docs/plugins.png) |
+
+| Docker | Réglages |
+| --- | --- |
+| ![Page Docker](docs/docker.png) | ![Page Réglages](docs/settings.png) |
 
 ## Installation
 
@@ -17,7 +21,7 @@ Un thème clair et moderne pour le webGUI d'Unraid 7.3 : fond bleu-gris doux, ca
    ```
 
    En SSH : `plugin install https://raw.githubusercontent.com/R0m1k3/Glacier-Theme/main/Glacier-Theme.plg`
-2. Dans **Settings → Display Settings**, choisir le thème Dynamix **White**.
+2. Dans **Settings → Display Settings**, choisir le thème Dynamix **White** (Glacier clair) ou **Black** (Glacier sombre).
 
 Le `.plg` contient tous les fichiers du thème, polices comprises : une fois le fichier récupéré, l'installation ne télécharge rien d'autre. Les mises à jour apparaissent ensuite dans la page **Plugins** d'Unraid.
 
@@ -30,11 +34,14 @@ Sans accès internet, copiez `Glacier-Theme.plg` dans `/boot/config/plugins/` (p
 Dans **Settings → User Utilities → Glacier Theme** :
 
 - **Theme** : active ou désactive le thème.
+- **Light or dark** : suivre le thème Dynamix (White → clair, Black → sombre), toujours clair ou toujours sombre.
 - **Accent colour** : la couleur des boutons de validation, liens, interrupteurs, icônes et barres. Laissez vide pour garder le sarcelle. Le texte sur les boutons passe tout seul au blanc ou au foncé selon la couleur choisie.
 - **Dashboard greeting card** : affiche ou masque la carte d'accueil au-dessus des tuiles du tableau de bord.
 
 ## Ce que le thème change
 
+- **Mode sombre** : les mêmes cartes et badges en couleurs de nuit, avec l'accent sarcelle plus lumineux.
+- **Version** : affichée sur la page de réglages et en pied de page.
 - **Couleurs et police** : palette Glacier sur toutes les variables du thème White d'Unraid, et Plus Jakarta Sans embarquée (aucune requête externe).
 - **En-tête** : sur le fond de page plutôt qu'en bandeau noir. Le nom du serveur s'affiche derrière une pastille sombre, et les boutons sont ronds et blancs. Une bannière éventuelle devient un bandeau arrondi.
 - **Menu** : sur grand écran, une carte à gauche du contenu, avec une icône par entrée et l'entrée active en foncé. Les actions rapides (cadenas, recherche, terminal…) sont en boutons ronds, centrés sous l'en-tête. Sur tablette et téléphone, le menu redevient une barre en pilule.
@@ -55,7 +62,7 @@ Dans **Settings → User Utilities → Glacier Theme** :
 
 ## Limites connues
 
-- **Thème clair uniquement** : le thème ne s'applique qu'avec Dynamix White. Avec Black, Azure ou Gray, Unraid reste tel quel.
+- Le thème s'applique avec Dynamix White ou Black. Avec Azure ou Gray, Unraid reste tel quel. En mode forcé (toujours clair ou toujours sombre), les graphiques et panneaux d'Unraid gardent les couleurs du thème Dynamix.
 - Les couleurs personnalisées d'en-tête de Display Settings ne sont pas reprises.
 - Les composants Vue d'Unraid (en-tête, notifications) sont restylés à partir de leur structure en 7.3.x. Une future version d'Unraid pourra demander des ajustements.
 - La page de connexion n'est pas modifiée.

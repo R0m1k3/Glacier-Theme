@@ -42,7 +42,7 @@ for target, path in sorted(files.items()):
         encoded = base64.encodebytes(path.read_bytes()).decode("ascii")
         install.append(f"base64 -d > {EMHTTP}/{target} <<'{DELIMITER}'\n{encoded}{DELIMITER}")
         continue
-    text = path.read_text(encoding="utf-8")
+    text = path.read_text(encoding="utf-8").replace("@@VERSION@@", version)
     if not text.endswith("\n"):
         text += "\n"
     for forbidden in ("]]>", DELIMITER):
@@ -79,6 +79,15 @@ plg = f"""<?xml version='1.0' standalone='yes'?>
 
 <CHANGES>
 ###{version}
+- Dark mode: follows the Dynamix theme (White light, Black dark), or always light / always dark (new setting).
+- Theme version on the settings page and in the footer.
+- Logo and version in a dark card above the menu card.
+- Plugins page: title and description laid out, support link as a pill, icon in a tinted squircle.
+- Docker page: icon and name side by side, folded ports and volume paths no longer cut mid-line, wide tables scroll instead of being clipped.
+- Apps (Community Applications): the category menu as a list with the selected entry highlighted, rounded app cards.
+- Paragraphs and table cells left-aligned instead of justified.
+
+###2026.10.26.1550
 - Wide screens: the main menu in a card on the left with an icon per entry, the quick actions centred under the header. Tablets: the menu bar on its own row.
 - Badges: container and VM states, update and check status (Docker, Plugins), disk temperatures (warm or red past the Disk Settings thresholds), file systems, licence type.
 - Waiting updates: counters on the Docker and Plugins menu entries and on the Dashboard card; Plugins Update button, new version and Docker "apply update" stand out.

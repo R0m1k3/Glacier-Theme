@@ -1,0 +1,44 @@
+page: Plugins
+active: Plugins
+---
+<div id="displaybox">
+<nav class="tabs" role="tablist" aria-label="Page Tabs">
+  <div class="tabs-container">
+    <button role="tab" id="tab1" aria-selected="true" tabindex="0"><i class="fa fa-puzzle-piece"></i>Plugins installés</button>
+    <button role="tab" id="tab2" aria-selected="false" tabindex="-1"><i class="fa fa-download"></i>Installer un Plugin</button>
+    <input type="button" value="Vérifier les mises à jour">
+  </div>
+</nav>
+<section id="tab1-panel" role="tabpanel" class="tab-content content" style="display:block">
+<!-- Row markup as written by dynamix.plugin.manager/include/ShowPlugins.php (7.3.4) -->
+<table class='unraid tablesorter plugins shift' id='plugin_table'>
+<thead><tr><th></th><th>Plugin</th><th>Auteur</th><th>Version</th><th>État</th><th>Désinstaller</th></tr></thead>
+<tbody>
+<tr id="appdatacleanupplus">
+<td><a href='#' class='list'><i class='fa fa-archive list'></i></a></td>
+<td><span class='desc_readmore' style='display:block;max-height:80px;overflow:hidden'><p><strong>Appdata Cleanup Plus</strong></p><p>Appdata Cleanup Plus recherche les dossiers Docker appdata inutilisés et les jeux de données ZFS candidats avec une correspondance exacte. Le tableau de nettoyage permet de les examiner, de simuler les actions sans modification, de les mettre en quarantaine, de les supprimer.</p></span> <a href='#' target='_blank'>Fil de Support</a></td>
+<td>alexphillips-dev</td>
+<td id='vid-a' data='20261015'>2026.10.15.07&nbsp;<span class='fa fa-info-circle fa-fw big blue-text'></span></td>
+<td id='sid-a'><span class='green-text'><i class='fa fa-check fa-fw'></i>&nbsp;à jour</span></td>
+<td><input type='checkbox' class='remove'><input type='button' class='remove' value="Supprimer" disabled></td>
+</tr>
+<tr id="caautoupdate">
+<td><a href='#' class='list'><i class='fa fa-refresh list'></i></a></td>
+<td><span class='desc_readmore' style='display:block'><p><strong>CA Auto Update Applications</strong></p><p>Part of the CA family, Auto Update Applications will keep your selected plugins and docker applications up to date</p></span> <a href='#' target='_blank'>Fil de Support</a></td>
+<td>Andrew Zawadzki</td>
+<td id='vid-b' data='20260414'>2026.04.14&nbsp;<span class='fa fa-info-circle fa-fw big blue-text'></span></td>
+<td id='sid-b'><span class='green-text'><i class='fa fa-check fa-fw'></i>&nbsp;à jour</span></td>
+<td><input type='checkbox' class='remove'><input type='button' class='remove' value="Supprimer" disabled></td>
+</tr>
+<tr id="glacier">
+<td><a href='#' class='list'><i class='fa fa-paint-brush list'></i></a></td>
+<td><span class='desc_readmore' style='display:block'><p><strong>Glacier Theme</strong></p></span> <a href='#' target='_blank'>Fil de Support</a></td>
+<td>R0m1k3</td>
+<td id='vid-c' data='20261026'>2026.10.26.1550<br><span class='red-text'>2026.11.02.0900</span>&nbsp;<span class='fa fa-info-circle fa-fw big blue-text'></span></td>
+<td id='sid-c'><input type='button' class='update' value="Update"></td>
+<td><input type='checkbox' class='remove'><input type='button' class='remove' value="Supprimer" disabled></td>
+</tr>
+</tbody>
+</table>
+</section>
+</div>

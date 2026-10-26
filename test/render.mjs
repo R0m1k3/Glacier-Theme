@@ -30,14 +30,17 @@ fs.mkdirSync(shots, { recursive: true });
 const template = fs.readFileSync(path.join(here, 'layout.html'), 'utf8');
 const types = { '.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/woff2', '.woff': 'font/woff', '.png': 'image/png', '.svg': 'image/svg+xml', '.html': 'text/html' };
 
-function page(name, glacier) {
+function page(name, mode) {
+  const glacier = mode !== 'stock';
   const body = fs.readFileSync(path.join(pagesDir, `${name}.html`), 'utf8');
   const [meta, content] = body.split('\n---\n');
   const opts = Object.fromEntries(meta.split('\n').filter(Boolean).map((l) => l.split(/:\s*/, 2)));
   return template
-    .replaceAll('{{CLASSES}}', glacier ? `glacier gl-hero-on gl-page-${opts.page}` : '')
+    .replaceAll('{{CLASSES}}', glacier ? `glacier gl-hero-on gl-page-${opts.page}${mode === 'dark' ? ' gl-dark' : ''}` : '')
+    .replaceAll('Theme--white', mode === 'dark' ? 'Theme--black' : 'Theme--white')
+    .replaceAll('themes/white.css', mode === 'dark' ? 'themes/black.css' : 'themes/white.css')
     .replaceAll('{{GLACIER}}', glacier
-      ? '<script>window.glacierTemp = {"hot":45,"max":55}; window.glacierUpdates = {"docker":1,"plugins":2};</script><link rel="stylesheet" href="/plugins/Glacier-Theme/styles/glacier.css"><script defer src="/plugins/Glacier-Theme/scripts/glacier.js"></script>'
+      ? '<script>window.glacierTemp = {"hot":45,"max":55}; window.glacierUpdates = {"docker":1,"plugins":2}; window.glacierVersion = "2026.10.26.dev";</script><link rel="stylesheet" href="/plugins/Glacier-Theme/styles/glacier.css"><script defer src="/plugins/Glacier-Theme/scripts/glacier.js"></script>'
       : '')
     .replaceAll('{{SHEET}}', opts.sheet ? `<link rel="stylesheet" href="/webGui/sheets/${opts.sheet}">` : '')
     .replace(`<div class="nav-item"><a href="/${opts.active}">`, `<div class="nav-item active"><a href="/${opts.active}">`)
@@ -50,7 +53,7 @@ const server = http.createServer((req, res) => {
   if (url.pathname.startsWith('/page/')) {
     const [, , name, mode] = url.pathname.split('/');
     res.writeHead(200, { 'content-type': 'text/html' });
-    res.end(page(name, mode === 'glacier'));
+    res.end(page(name, mode));
     return;
   }
   if (url.pathname.startsWith('/webGui/')) file = path.join(dynamix, url.pathname.slice('/webGui/'.length));
@@ -66,8 +69,9 @@ const browser = await chromium.launch();
 const names = process.env.PAGES ? process.env.PAGES.split(',') : fs.readdirSync(pagesDir).filter((f) => f.endsWith('.html')).map((f) => f.slice(0, -5));
 const widths = { wide: 1920, desktop: 1440, tablet: 900, phone: 390 };
 for (const name of names) {
-  for (const mode of ['glacier', 'stock']) {
+  for (const mode of (process.env.MODES ? process.env.MODES.split(',') : ['glacier', 'dark', 'stock'])) {
     for (const [label, width] of Object.entries(widths)) {
+      if (mode !== 'glacier' && label !== 'wide' && !(mode === 'stock' && label === 'desktop')) continue;
       if (mode === 'stock' && label !== 'desktop') continue;
       const ctx = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 1 });
       const tab = await ctx.newPage();

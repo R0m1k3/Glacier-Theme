@@ -203,7 +203,18 @@
     });
   }
 
+  // ---- Theme credit with its version at the end of the footer ---------------------------
+  function addCredit() {
+    var footer = document.getElementById('copyright');
+    if (!footer || footer.querySelector('.gl-credit')) return;
+    var link = el('a', 'gl-credit', 'Glacier ' + (window.glacierVersion || ''));
+    link.href = '/Settings/GlacierThemeSettings';
+    link.title = 'Glacier Theme';
+    footer.append(link);
+  }
+
   markMenuCounts();
+  addCredit();
   buildHero();
   watchBadges();
 })();
