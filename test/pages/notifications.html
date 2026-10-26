@@ -1,0 +1,83 @@
+page: Docker
+active: Docker
+---
+<div id="displaybox"><div class="content"><p>Page behind the notifications panel.</p></div></div>
+<!-- Unraid 7.3 notifications sheet (unraid/api web/src/components/Notifications/Sidebar.vue),
+     with a minimal stand-in for the Tailwind utilities and shadcn variables it uses. -->
+<style>
+@layer theme, unapi-base, utilities;
+@layer theme {
+  :root { --background: 0 0% 100%; --foreground: 0 0% 3.9%; --muted: 0 0% 96.1%; --muted-foreground: 0 0% 45.1%;
+    --border: 0 0% 89.8%; --input: 0 0% 89.8%; --primary: 24 100% 50%; --primary-foreground: 0 0% 98%;
+    --secondary-foreground: 0 0% 9%; --accent: 0 0% 96.1%; --accent-foreground: 0 0% 9%; --radius: .5rem; }
+}
+@layer unapi-base {
+  .unapi *, .unapi { box-sizing: border-box; }
+  .unapi h2, .unapi h3, .unapi h4, .unapi p { margin: 0; }
+  .unapi button { font: inherit; border: 0; background: none; cursor: pointer; }
+}
+unraid-modals.unapi, #unraid-api-modals-virtual { position: relative; z-index: 999999; isolation: isolate; }
+@layer utilities {
+  .fixed { position: fixed } .inset-0 { inset: 0 } .inset-y-0 { top: 0; bottom: 0 } .right-0 { right: 0 } .z-50 { z-index: 50 }
+  .bg-black\/60 { background: rgb(0 0 0 / .6) }
+  .bg-background { background-color: hsl(var(--background)) } .text-foreground { color: hsl(var(--foreground)) }
+  .border-l { border-left: 1px solid hsl(var(--border)) } .shadow-lg { box-shadow: 0 10px 15px -3px rgb(0 0 0 / .1) }
+  .flex { display: flex } .flex-col { flex-direction: column } .h-screen { height: 100vh } .w-full { width: 100% } .gap-5 { gap: 2rem }
+  .relative { position: relative } .absolute { position: absolute } .h-full { height: 100% } .px-3 { padding-inline: 1.2rem } .pb-2 { padding-bottom: .8rem }
+  .text-lg { font-size: 1.8rem } .font-medium { font-weight: 500 } .text-sm { font-size: 1.4rem } .text-xs { font-size: 1.2rem }
+  .justify-between { justify-content: space-between } .items-center { align-items: center } .gap-3 { gap: 1.2rem } .gap-1 { gap: .4rem } .gap-2 { gap: .8rem } .mt-3 { margin-top: 1.2rem }
+  .bg-input { background-color: hsl(var(--input)) } .rounded-md { border-radius: calc(var(--radius) - 2px) } .p-1\.5 { padding: .6rem } .p-1 { padding: .4rem }
+  .tab { display: inline-flex; padding: .4rem 1.2rem; border-radius: calc(var(--radius) - 2px); color: hsl(var(--foreground)) }
+  .tab[data-state=active] { background-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)) }
+  .border-border\/60 { border: 1px solid color-mix(in oklab, hsl(var(--border)) 60%, transparent) } .bg-muted\/60 { background: color-mix(in oklab, hsl(var(--muted)) 60%, transparent) }
+  .rounded-xl { border-radius: calc(var(--radius) + 4px) } .rounded-lg { border-radius: var(--radius) } .h-8 { height: 3.2rem }
+  .flt { padding: 0 1.2rem; font-size: 1.2rem; border: 1px solid transparent; color: hsl(var(--muted-foreground)) }
+  .flt[aria-pressed=true] { border-color: hsl(var(--border)); background: hsl(var(--background)); color: hsl(var(--foreground)) }
+  .py-3 { padding-block: 1.2rem } .divide-y > * + * { border-top: 1px solid hsl(var(--border)) } .text-secondary-foreground { color: hsl(var(--secondary-foreground)) }
+  .text-primary { color: hsl(var(--primary)) } .text-green-600 { color: #16a34a } .text-orange-500 { color: #f97316 } .justify-end { justify-content: flex-end }
+  .btn { display: inline-flex; align-items: center; padding: .6rem 1.4rem; border-radius: calc(var(--radius) - 2px); background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-size: 1.4rem }
+  .font-semibold { font-weight: 600 } .flex-1 { flex: 1 } .overflow-y-scroll { overflow-y: auto } .min-h-0 { min-height: 0 }
+}
+</style>
+<div id="unraid-api-modals-virtual" class="unapi">
+  <div data-state="open" class="fixed inset-0 z-50 bg-black/60"></div>
+  <div role="dialog" data-state="open" id="reka-dialog-content-v-1" class="fixed z-50 bg-background gap-4 shadow-lg border-border inset-y-0 right-0 h-full border-l p-4 flex h-screen max-h-screen min-h-screen w-full max-w-screen flex-col gap-5 px-0 pb-0 sm:max-w-[540px]" style="max-width: 540px; padding-inline: 0">
+    <div class="relative flex h-full w-full flex-col">
+      <div class="flex flex-col px-3 pb-2"><h2 id="reka-dialog-title-v-2" class="text-foreground text-lg font-medium">Notifications</h2></div>
+      <div class="flex flex-col flex-1 min-h-0">
+        <div class="flex items-center justify-between gap-3 px-3">
+          <div role="tablist" class="bg-input text-foreground inline-flex items-center rounded-md p-1.5 flex">
+            <button role="tab" data-state="active" class="tab text-sm font-medium">Non lu&nbsp;<span>(2)</span></button>
+            <button role="tab" data-state="inactive" class="tab text-sm font-medium">Archivé&nbsp;<span>(3)</span></button>
+          </div>
+          <button class="text-foreground text-sm">Archiver tout</button>
+        </div>
+        <div class="mt-3 flex items-center justify-between gap-3 px-3">
+          <div role="group" class="border-border/60 bg-muted/60 flex items-center gap-1 rounded-xl p-1">
+            <button class="flt h-8 rounded-lg" aria-pressed="true">Tous types</button>
+            <button class="flt h-8 rounded-lg" aria-pressed="false">Alerte</button>
+            <button class="flt h-8 rounded-lg" aria-pressed="false">Info</button>
+            <button class="flt h-8 rounded-lg" aria-pressed="false">Avertissement</button>
+          </div>
+          <button class="flt h-8">⚙</button>
+        </div>
+        <div class="flex flex-col flex-1 min-h-0 overflow-y-scroll px-3 mt-3">
+          <div class="divide-y">
+            <div class="group/item relative flex flex-col gap-2 py-3 text-sm">
+              <div class="flex justify-between gap-2"><h3 class="text-sm font-semibold"><span class="text-orange-500">▲</span> Unraid Status</h3><p class="text-secondary-foreground text-xs">il y a 5 min</p></div>
+              <h4 style="font-weight:400">Disque 3 : température élevée</h4>
+              <div>Le disque 3 (WDC_WD80) atteint 52 °C.</div>
+              <div class="flex justify-end gap-2"><a class="text-primary text-sm">Voir</a><button class="btn">Archiver</button></div>
+            </div>
+            <div class="group/item relative flex flex-col gap-2 py-3 text-sm">
+              <div class="flex justify-between gap-2"><h3 class="text-sm font-semibold"><span class="text-green-600">●</span> Docker</h3><p class="text-secondary-foreground text-xs">hier</p></div>
+              <h4 style="font-weight:400">Mise à jour disponible : plex</h4>
+              <div>Une nouvelle image est disponible.</div>
+              <div class="flex justify-end gap-2"><button class="btn">Archiver</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

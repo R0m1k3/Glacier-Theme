@@ -95,6 +95,9 @@ plg = f"""<?xml version='1.0' standalone='yes'?>
 
 <CHANGES>
 ###{version}
+- Notifications panel in Glacier's style, light and dark: a floating rounded card, Unread/Archived as a segmented control, filter pills in the accent tint, each notification on its own soft card, accent buttons and links instead of Unraid's orange. Confirm dialogs, menus and toasts of Unraid's Vue components take the theme colours too.
+
+###2026.10.26.1947
 - Busy dialogs: Unraid's three green falling dots become a small comet in the accent colour (light and dark), circling over the faded confirm button.
 
 ###2026.10.26.1934

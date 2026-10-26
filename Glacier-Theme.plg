@@ -3,7 +3,7 @@
 
 <PLUGIN name="Glacier-Theme"
         author="R0m1k3"
-        version="2026.10.26.1947"
+        version="2026.10.26.2003"
         launch="Settings/GlacierThemeSettings"
         pluginURL="https://raw.githubusercontent.com/R0m1k3/Glacier-Theme/main/Glacier-Theme.plg"
         support="https://github.com/R0m1k3/Glacier-Theme/issues"
@@ -11,6 +11,9 @@
         min="7.2.0">
 
 <CHANGES>
+###2026.10.26.2003
+- Notifications panel in Glacier's style, light and dark: a floating rounded card, Unread/Archived as a segmented control, filter pills in the accent tint, each notification on its own soft card, accent buttons and links instead of Unraid's orange. Confirm dialogs, menus and toasts of Unraid's Vue components take the theme colours too.
+
 ###2026.10.26.1947
 - Busy dialogs: Unraid's three green falling dots become a small comet in the accent colour (light and dark), circling over the faded confirm button.
 
@@ -72,7 +75,7 @@ Title="Glacier Theme"
 // so this is where the theme attaches its files. Link="nav-user" keeps it from adding a button.
 $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierCustomDir = '/boot/config/plugins/Glacier-Theme';
-$glacierVersion = '2026.10.26.1947';
+$glacierVersion = '2026.10.26.2003';
 
 // Emergency switch: any page opened with ?glacier=off stops the theme in this browser
 // (remembered in a cookie) until a page is opened with ?glacier=on.
@@ -205,7 +208,7 @@ $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierAccent = preg_match('/^#[0-9a-fA-F]{6}$/', $glacier['accent'] ?? '') ? $glacier['accent'] : '#0f766e';
 $glacierOnTopTheme = in_array($display['theme'] ?? '', ['white', 'black'], true);
 ?>
-<p class="gl-version">_(Version)_ <strong>2026.10.26.1947</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
+<p class="gl-version">_(Version)_ <strong>2026.10.26.2003</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
 <?php if (!$glacierOnTopTheme): ?>
 <p class="notice">_(Glacier is drawn over the Dynamix White and Black themes. Choose one of them in Settings > Display Settings to see it.)_</p>
 <?php endif; ?>
@@ -10468,6 +10471,51 @@ html.glacier .unapi {
     font-family: var(--gl-font);
 }
 
+/* Their surfaces and text (notifications panel, confirm dialogs, menus, toasts) come from
+   shadcn-style variables holding bare HSL numbers, used as hsl(var(--background)). Relative
+   colour syntax turns each Glacier token into such a triplet, so light, dark and a custom accent
+   all follow. Browsers without it keep Unraid's colours. */
+@supports (color: hsl(from red h s l)) {
+    html.glacier .unapi {
+        --background: from var(--gl-surface) h s l;
+        --foreground: from var(--gl-text) h s l;
+        --muted: from var(--gl-subtle) h s l;
+        --muted-foreground: from var(--gl-muted) h s l;
+        --popover: from var(--gl-surface) h s l;
+        --popover-foreground: from var(--gl-text) h s l;
+        --card: from var(--gl-surface) h s l;
+        --card-foreground: from var(--gl-text) h s l;
+        --border: from var(--gl-border) h s l;
+        --input: from var(--gl-subtle-2) h s l;
+        --primary: from var(--gl-accent) h s l;
+        --primary-foreground: from var(--gl-accent-text) h s l;
+        --secondary: from var(--gl-subtle) h s l;
+        --secondary-foreground: from var(--gl-text) h s l;
+        --accent: from var(--gl-subtle-2) h s l;
+        --accent-foreground: from var(--gl-text) h s l;
+        --destructive: from var(--gl-danger) h s l;
+        --destructive-foreground: 0 0% 100%;
+        --ring: from var(--gl-accent) h s l;
+    }
+}
+
+html.glacier .unapi {
+    --ui-primary: var(--gl-accent);
+    --ui-text-dimmed: var(--gl-placeholder);
+    --ui-text-muted: var(--gl-muted);
+    --ui-text-toned: var(--gl-text-2);
+    --ui-text: var(--gl-text);
+    --ui-text-highlighted: var(--gl-ink);
+    --ui-bg: var(--gl-surface);
+    --ui-bg-muted: var(--gl-subtle);
+    --ui-bg-elevated: var(--gl-subtle);
+    --ui-bg-accented: var(--gl-subtle-2);
+    --ui-border: var(--gl-border);
+    --ui-border-muted: var(--gl-border);
+    --ui-border-accented: var(--gl-input);
+    --ui-radius: 1rem;
+}
+
 /* ==========================================================================
    Dark mode (html.gl-dark, set by GlacierTheme.page): the same tokens, night values.
    Unraid's own variables follow, since they point at the tokens.
@@ -12722,6 +12770,118 @@ html.glacier .la-ball-fall > div:nth-child(3) {
     }
 }
 
+/* Unraid's notifications panel (a sheet sliding in from the right, teleported to the end of
+   the page): a floating card with Glacier's tabs, filters and focus ring. */
+html.glacier .unapi [role="dialog"].fixed.inset-y-0.right-0 {
+    top: 1.2rem;
+    right: 1.2rem;
+    bottom: 1.2rem;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    width: calc(100% - 2.4rem);
+    padding-top: 2rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-xl);
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-lg);
+    overflow: hidden;
+    font-family: var(--gl-font);
+}
+
+@media (min-width: 640px) {
+    html.glacier .unapi [role="dialog"].fixed.inset-y-0.right-0 {
+        width: 54rem;
+    }
+}
+
+html.glacier .unapi .fixed.inset-0.z-50:not([role]) {
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(3px);
+}
+
+html.glacier .unapi [role="dialog"] :is(h2, [id^="reka-dialog-title"]) {
+    color: var(--gl-ink);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+/* Unread / Archived: a segmented control, the active segment on a white pill. */
+html.glacier .unapi [role="dialog"] [role="tablist"] {
+    gap: 0.2rem;
+    padding: 0.4rem;
+    border-radius: var(--gl-r-full);
+    background: var(--gl-subtle-2);
+}
+
+html.glacier .unapi [role="dialog"] [role="tab"],
+html.glacier .unapi [role="dialog"] [role="tablist"] button {
+    border-radius: var(--gl-r-full);
+    color: var(--gl-muted);
+    font-weight: 600;
+}
+
+html.glacier .unapi [role="dialog"] [role="tab"][data-state="active"],
+html.glacier .unapi [role="dialog"] [role="tablist"] [data-state="active"],
+html.glacier .unapi [role="dialog"] [role="tablist"] [data-state="active"] button {
+    background: var(--gl-surface);
+    color: var(--gl-ink);
+    box-shadow: var(--gl-shadow-sm);
+}
+
+/* Importance filters: pills, the selected one in the accent tint. */
+html.glacier .unapi [role="dialog"] [role="group"] {
+    border-color: var(--gl-border);
+    border-radius: var(--gl-r-full);
+    background: var(--gl-subtle);
+}
+
+html.glacier .unapi [role="dialog"] [role="group"] button {
+    border-radius: var(--gl-r-full);
+    white-space: nowrap;
+}
+
+html.glacier .unapi [role="dialog"] [role="group"] button[aria-pressed="true"] {
+    border-color: transparent;
+    background: var(--gl-accent-soft);
+    color: var(--gl-accent-bright, var(--gl-accent));
+}
+
+html.glacier:not(.gl-dark) .unapi [role="dialog"] [role="group"] button[aria-pressed="true"] {
+    color: var(--gl-accent);
+}
+
+html.glacier .unapi [role="dialog"] button:focus-visible,
+html.glacier .unapi [role="dialog"] [role="tab"]:focus-visible {
+    outline: 2px solid var(--gl-accent);
+    outline-offset: 2px;
+}
+
+html.glacier .unapi [role="dialog"] a.text-primary {
+    color: var(--gl-accent);
+}
+
+/* Each notification on its own soft card instead of hairline separators. */
+html.glacier .unapi [role="dialog"] .divide-y > * {
+    border: 0;
+}
+
+html.glacier .unapi [role="dialog"] .group\/item {
+    margin: 0 0 1rem;
+    padding: 1.4rem 1.6rem 1.2rem;
+    border-radius: var(--gl-r-lg);
+    background: var(--gl-subtle);
+}
+
+html.glacier .unapi [role="dialog"] .group\/item button {
+    border-radius: var(--gl-r-full);
+}
+
+html.glacier .unapi [role="dialog"] .text-green-500,
+html.glacier .unapi [role="dialog"] .text-green-600 {
+    color: var(--gl-accent);
+}
+
 html.glacier .ui-dialog {
     padding: 0.8rem;
     border: 0 !important;
@@ -13153,7 +13313,7 @@ done
 find /usr/local/emhttp/plugins/Glacier-Theme -type d -exec chmod 755 {} +
 find /usr/local/emhttp/plugins/Glacier-Theme -type f -exec chmod 644 {} +
 echo ""
-echo "Glacier-Theme 2026.10.26.1947 is installed."
+echo "Glacier-Theme 2026.10.26.2003 is installed."
 echo "Settings: Settings > User Utilities > Glacier Theme"
 echo "The theme shows while Settings > Display Settings > Dynamix color theme is White."
 echo ""
