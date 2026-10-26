@@ -28,6 +28,15 @@ const shots = path.join(here, 'shots');
 fs.mkdirSync(shots, { recursive: true });
 
 const template = fs.readFileSync(path.join(here, 'layout.html'), 'utf8');
+
+// The same files GlacierTheme.page loads: every styles/gl-*.css, then scripts/gl-core.js and
+// every other scripts/gl-*.js. (Data from include/head-*.php is stubbed in the mock pages.)
+function enhancements() {
+  const list = (dir, ext) => fs.readdirSync(path.join(pluginSrc, dir)).filter((f) => f.startsWith('gl-') && f.endsWith(ext)).sort();
+  const css = list('styles', '.css').map((f) => `<link rel="stylesheet" href="/plugins/Glacier-Theme/styles/${f}">`);
+  const js = ['gl-core.js', ...list('scripts', '.js').filter((f) => f !== 'gl-core.js')].map((f) => `<script defer src="/plugins/Glacier-Theme/scripts/${f}"></script>`);
+  return css.join('') + js.join('');
+}
 const types = { '.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/woff2', '.woff': 'font/woff', '.png': 'image/png', '.svg': 'image/svg+xml', '.html': 'text/html' };
 
 function page(name, mode) {
@@ -40,7 +49,10 @@ function page(name, mode) {
     .replaceAll('Theme--white', mode === 'dark' ? 'Theme--black' : 'Theme--white')
     .replaceAll('themes/white.css', mode === 'dark' ? 'themes/black.css' : 'themes/white.css')
     .replaceAll('{{GLACIER}}', glacier
-      ? '<script>window.glacierTemp = {"hot":45,"max":55}; window.glacierUpdates = {"docker":1,"plugins":2}; window.glacierVersion = "2026.10.26.dev";</script><link rel="stylesheet" href="/plugins/Glacier-Theme/styles/glacier.css"><script defer src="/plugins/Glacier-Theme/scripts/glacier.js"></script>'
+      ? '<script>window.glacierTemp = {"hot":45,"max":55}; window.glacierUpdates = {"docker":1,"plugins":2}; window.glacierVersion = "2026.10.26.dev";</script>'
+      + '<link rel="stylesheet" href="/plugins/Glacier-Theme/styles/glacier.css">'
+      + enhancements()
+      + '<script defer src="/plugins/Glacier-Theme/scripts/glacier.js"></script>'
       : '')
     .replaceAll('{{SHEET}}', opts.sheet ? `<link rel="stylesheet" href="/webGui/sheets/${opts.sheet}">` : '')
     .replace(`<div class="nav-item"><a href="/${opts.active}">`, `<div class="nav-item active"><a href="/${opts.active}">`)

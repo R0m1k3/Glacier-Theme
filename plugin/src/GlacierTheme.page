@@ -80,6 +80,38 @@ if (preg_match('/^[0-9a-f]{6}$/', $glacierAccent)):
 html.glacier, html.glacier.gl-dark { --gl-accent: #<?= $glacierAccent ?>; --gl-accent-text: <?= $glacierText ?>; --gl-accent-bright: color-mix(in oklab, #<?= $glacierAccent ?>, white 55%); }
 </style>
 <?php endif; ?>
+<?php
+// The page enhancements: the shared kit first, then every styles/gl-*.css and scripts/gl-*.js.
+// An enhancement that needs data from the server puts it in the page from include/head-*.php.
+$glacierDir = '/usr/local/emhttp/plugins/Glacier-Theme';
+$glacierTitle = '';
+try {
+    // The page's own title ("CPU Pinning", "UPS Settings") for the page heading, made the way
+    // Unraid makes its section titles.
+    $glacierTitle = (string) ($myPage['Title'] ?? '');
+    if ($glacierTitle !== '' && function_exists('processTitle')) $glacierTitle = processTitle($glacierTitle);
+    if ($glacierTitle !== '' && function_exists('parse_text')) $glacierTitle = _(parse_text(html_entity_decode($glacierTitle)));
+    $glacierTitle = trim(preg_replace('/\s+/', ' ', strip_tags($glacierTitle)));
+    if (strpos($glacierTitle, '$') !== false || mb_strlen($glacierTitle) > 60) $glacierTitle = '';
+} catch (Throwable $glacierError) {
+    $glacierTitle = '';
+}
+?>
+<?php if ($glacierTitle !== ''): ?>
+<script>window.glacierPageTitle = <?= json_encode($glacierTitle, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;</script>
+<?php endif; ?>
+<?php foreach (glob("$glacierDir/styles/gl-*.css") ?: [] as $glacierSheet): ?>
+<link type="text/css" rel="stylesheet" href="<?php autov('/plugins/Glacier-Theme/styles/' . basename($glacierSheet)) ?>">
+<?php endforeach; ?>
+<script defer src="<?php autov('/plugins/Glacier-Theme/scripts/gl-core.js') ?>"></script>
+<?php foreach (glob("$glacierDir/scripts/gl-*.js") ?: [] as $glacierScript): ?>
+<?php if (basename($glacierScript) !== 'gl-core.js'): ?>
+<script defer src="<?php autov('/plugins/Glacier-Theme/scripts/' . basename($glacierScript)) ?>"></script>
+<?php endif; ?>
+<?php endforeach; ?>
+<?php foreach (glob("$glacierDir/include/head-*.php") ?: [] as $glacierHead): ?>
+<?php try { include $glacierHead; } catch (Throwable $glacierError) { error_log('Glacier Theme: ' . basename($glacierHead) . ': ' . $glacierError->getMessage()); } ?>
+<?php endforeach; ?>
 <script defer src="<?php autov('/plugins/Glacier-Theme/scripts/glacier.js') ?>"></script>
 <?php if (is_file("$glacierCustomDir/custom.css")): ?>
 <style id="glacier-custom-css">

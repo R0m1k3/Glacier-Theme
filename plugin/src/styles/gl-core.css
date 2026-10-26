@@ -1,0 +1,215 @@
+/*
+ * Glacier Theme: shared components for the page enhancements (scripts/gl-core.js).
+ * Component structure adapted from Aurora Theme (MIT, Copyright (c) 2026 Chris (Tunefish)); see NOTICE.md.
+ */
+
+/* ---- Round icon button */
+html.glacier .gl-icon-button {
+    display: inline-grid;
+    place-items: center;
+    width: 3.4rem;
+    height: 3.4rem;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--gl-border);
+    border-radius: 50%;
+    color: var(--gl-text-2);
+    font-size: 1.4rem;
+    background: var(--gl-surface);
+    box-shadow: none;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s, background-color 0.15s;
+}
+
+html.glacier .gl-icon-button:hover:not(:disabled) {
+    border-color: var(--gl-accent);
+    color: var(--gl-accent);
+    background: var(--gl-surface);
+}
+
+html.glacier .gl-icon-button.gl-danger:hover:not(:disabled) {
+    border-color: var(--gl-danger);
+    color: var(--gl-danger-text);
+    background: var(--gl-danger-bg);
+}
+
+html.glacier .gl-icon-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ---- Key figures strip */
+html.glacier .gl-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    gap: 1.2rem;
+    margin: 0 0 1.6rem;
+}
+
+html.glacier .gl-summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    min-width: 0;
+    padding: 1.6rem 1.8rem;
+    border-radius: var(--gl-r-lg);
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-md);
+}
+
+html.glacier .gl-summary-label {
+    color: var(--gl-muted);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+html.glacier .gl-summary-value {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.6rem;
+    min-width: 0;
+}
+
+html.glacier .gl-summary-number {
+    color: var(--gl-text);
+    font-size: 2.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+html.glacier .gl-summary-detail {
+    min-width: 0;
+    color: var(--gl-muted);
+    font-size: 1.25rem;
+}
+
+html.glacier .gl-summary-value.gl-tone-accent .gl-summary-number { color: var(--gl-accent); }
+html.glacier .gl-summary-value.gl-tone-success .gl-summary-number { color: var(--gl-success-text); }
+html.glacier .gl-summary-value.gl-tone-warn .gl-summary-number { color: var(--gl-warn-text); }
+html.glacier .gl-summary-value.gl-tone-danger .gl-summary-number { color: var(--gl-danger-text); }
+
+/* Inside a white content card the strip's cells are soft panels instead of raised cards. */
+html.glacier :is(.tab-content, #displaybox > .content:not(:has(> .frame > .grid))) .gl-summary-item {
+    background: var(--gl-subtle);
+    box-shadow: inset 0 0 0 1px var(--gl-border);
+}
+
+/* ---- Dialog */
+html.glacier .gl-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 10050;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+html.glacier .gl-modal {
+    box-sizing: border-box;
+    width: min(44rem, 100%);
+    max-height: calc(100vh - 4rem);
+    overflow: auto;
+    padding: 2.4rem;
+    border-radius: var(--gl-r-xl);
+    color: var(--gl-text);
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-lg);
+}
+
+html.glacier .gl-modal.gl-modal-wide {
+    width: min(64rem, 100%);
+}
+
+html.glacier .gl-modal-title {
+    margin: 0 0 1rem;
+    font-size: 1.9rem;
+    font-weight: 700;
+}
+
+html.glacier .gl-modal-message {
+    margin: 0 0 0.8rem;
+    color: var(--gl-text-2);
+    text-align: left;
+}
+
+html.glacier input.gl-modal-input {
+    width: 100%;
+    margin-top: 0.8rem;
+}
+
+html.glacier .gl-modal-problem {
+    min-height: 1.8rem;
+    margin: 0.6rem 0 0;
+    color: var(--gl-danger-text);
+    font-size: 1.25rem;
+}
+
+html.glacier .gl-modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.8rem;
+    margin-top: 1.6rem;
+}
+
+html.glacier .gl-modal-actions .gl-modal-button {
+    margin: 0;
+}
+
+html.glacier button.gl-modal-button.gl-modal-primary {
+    border-color: var(--gl-accent);
+    color: var(--gl-accent-text);
+    background: var(--gl-accent);
+}
+
+html.glacier button.gl-modal-button.gl-modal-primary:hover:not(:disabled) {
+    color: var(--gl-accent-text);
+    background: color-mix(in oklab, var(--gl-accent), black 14%);
+}
+
+html.glacier button.gl-modal-button.gl-modal-danger {
+    border-color: var(--gl-danger);
+    color: #ffffff;
+    background: var(--gl-danger);
+}
+
+html.glacier button.gl-modal-button.gl-modal-danger:hover:not(:disabled) {
+    color: #ffffff;
+    background: color-mix(in oklab, var(--gl-danger), black 14%);
+}
+
+/* ---- Small shared pieces */
+html.glacier .gl-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.1rem 0.9rem;
+    border-radius: var(--gl-r-full);
+    color: var(--gl-text-2);
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.7;
+    white-space: nowrap;
+    background: var(--gl-subtle-2);
+}
+
+html.glacier .gl-pill.gl-tone-success { color: var(--gl-success-text); background: var(--gl-success-bg); }
+html.glacier .gl-pill.gl-tone-warn { color: var(--gl-warn-text); background: var(--gl-warn-bg); }
+html.glacier .gl-pill.gl-tone-danger { color: var(--gl-danger-text); background: var(--gl-danger-bg); }
+html.glacier .gl-pill.gl-tone-accent { color: var(--gl-accent); background: var(--gl-accent-soft); }
+
+html.glacier input.gl-search {
+    min-width: 0;
+    padding-left: 3.4rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 1.1rem center;
+    background-size: 1.6rem;
+}
