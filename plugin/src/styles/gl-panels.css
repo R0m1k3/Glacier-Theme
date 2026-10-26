@@ -1,0 +1,195 @@
+/*
+ * Glacier Theme: Settings and Tools search and favourite panels (scripts/gl-panels.js).
+ * Adapted from Aurora Theme (https://github.com/Tunefish92/Aurora-Theme),
+ * Copyright (c) 2026 Chris (Tunefish), MIT License; see NOTICE.md.
+ */
+
+/* ---- Search field (in the page heading, else above the first section) */
+html.glacier .gl-panel-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1 1 32rem;
+    min-width: 0;
+    max-width: 46rem;
+}
+
+html.glacier #displaybox > .content > .gl-panel-search,
+html.glacier .tab-content > .gl-panel-search {
+    margin: 0 0 2rem;
+}
+
+html.glacier .gl-panel-search input.gl-panel-search-input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 4.4rem;
+    margin: 0;
+    padding-right: 9rem;
+    border-radius: var(--gl-r-full);
+    font-size: 1.4rem;
+    background-color: var(--gl-surface);
+    box-shadow: var(--gl-shadow-sm);
+}
+
+html.glacier .gl-panel-search input.gl-panel-search-input:focus {
+    border-color: var(--gl-accent);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--gl-accent-ring);
+}
+
+/* The browser's own clear cross: Escape does the same, and the count sits there. */
+html.glacier .gl-panel-search input.gl-panel-search-input::-webkit-search-cancel-button {
+    display: none;
+}
+
+html.glacier .gl-panel-search-key,
+html.glacier .gl-panel-search-count {
+    position: absolute;
+    right: 1.4rem;
+    pointer-events: none;
+}
+
+html.glacier .gl-panel-search-key {
+    display: inline-grid;
+    place-items: center;
+    min-width: 2.2rem;
+    height: 2.2rem;
+    padding: 0 0.5rem;
+    box-sizing: border-box;
+    border: 1px solid var(--gl-border);
+    border-radius: 0.6rem;
+    color: var(--gl-muted);
+    font: 600 1.15rem/1 var(--gl-mono);
+    background: var(--gl-subtle);
+}
+
+html.glacier .gl-panel-search input:focus ~ .gl-panel-search-key,
+html.glacier .gl-panel-search.is-searching .gl-panel-search-key {
+    display: none;
+}
+
+html.glacier .gl-panel-search-count {
+    color: var(--gl-muted);
+    font-size: 1.2rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+html.glacier .gl-panel-search-empty {
+    margin: 0 0 2rem;
+    padding: 1.6rem 1.8rem;
+    border: 1px dashed var(--gl-input);
+    border-radius: var(--gl-r-md);
+    color: var(--gl-muted);
+    font-size: 1.3rem;
+    text-align: left;
+}
+
+html.glacier #displaybox .gl-filtered-out,
+html.glacier #displaybox .gl-empty-section {
+    display: none !important;
+}
+
+/* ---- Favourites */
+html.glacier .Panels > .Panel.gl-fav-card {
+    position: relative;
+}
+
+/* Unraid's own heart (Display Settings, Favorites) gives way to the star. */
+html.glacier .Panel.gl-fav-card i.favo {
+    display: none !important;
+}
+
+html.glacier .Panel button.gl-fav-toggle {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 3.2rem;
+    min-width: 0;
+    height: 3.2rem;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--gl-r-full);
+    color: var(--gl-muted);
+    font-size: 1.5rem;
+    background: transparent;
+    box-shadow: none;
+    opacity: 0;
+    cursor: pointer;
+    transition: opacity 0.2s, color 0.2s, background-color 0.2s, transform 0.2s var(--gl-ease);
+}
+
+html.glacier .Panel:hover button.gl-fav-toggle,
+html.glacier .Panel:focus-within button.gl-fav-toggle,
+html.glacier .Panel button.gl-fav-toggle.is-on {
+    opacity: 1;
+}
+
+html.glacier .Panel button.gl-fav-toggle:hover,
+html.glacier .Panel button.gl-fav-toggle:focus-visible {
+    color: var(--gl-warn);
+    background: var(--gl-warn-bg);
+    transform: scale(1.06);
+}
+
+html.glacier .Panel button.gl-fav-toggle:focus-visible {
+    outline: 2px solid var(--gl-accent);
+    outline-offset: 1px;
+}
+
+html.glacier .Panel button.gl-fav-toggle.is-on {
+    color: var(--gl-warn);
+}
+
+html.glacier #displaybox div.title.gl-fav-title i.title {
+    color: var(--gl-warn);
+    background: var(--gl-warn-bg);
+}
+
+html.glacier .gl-fav-hint {
+    margin: 0;
+    padding: 1.4rem 1.8rem;
+    border: 1px dashed var(--gl-input);
+    border-radius: var(--gl-r-md);
+    color: var(--gl-muted);
+    font-size: 1.3rem;
+    text-align: left;
+}
+
+html.glacier .gl-fav-hint::before {
+    margin-right: 0.8rem;
+    color: var(--gl-warn);
+    font: normal 1.3rem/1 FontAwesome;
+    content: "\f005";
+}
+
+html.glacier #displaybox .gl-fav-panels:empty {
+    display: none;
+}
+
+html.glacier #displaybox .gl-fav-panels.gl-filtered-out + .gl-fav-hint {
+    display: none;
+}
+
+/* Phones and touch screens have no hover: the star is always there. */
+@media (hover: none) {
+    html.glacier .Panel button.gl-fav-toggle {
+        opacity: 1;
+    }
+
+    html.glacier .gl-panel-search-key {
+        display: none;
+    }
+}
+
+@media (max-width: 767px) {
+    html.glacier .gl-panel-search {
+        flex-basis: 100%;
+        max-width: none;
+    }
+}

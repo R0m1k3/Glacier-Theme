@@ -1,0 +1,62 @@
+page: ArrayOperation
+active: Main
+sheet: ArrayOperation.css
+---
+<!-- Unraid 7.3.4 ArrayOperation.page as rendered (tabbed Main page, French webGUI): array
+     started, parity valid, no operation running, user shares with a pool (Mover row). -->
+<div id="displaybox">
+<nav class="tabs" role="tablist" aria-label="Page Tabs">
+  <div class="tabs-container">
+    <button role="tab" id="tab1" aria-controls="tab1-panel" aria-selected="false" tabindex="-1"><i class="fa fa-hdd-o"></i>Périphériques de la matrice</button>
+    <button role="tab" id="tab2" aria-controls="tab2-panel" aria-selected="false" tabindex="-1"><i class="fa fa-bullseye"></i>Périphériques de pool</button>
+    <button role="tab" id="tab3" aria-controls="tab3-panel" aria-selected="false" tabindex="-1"><i class="fa fa-usb"></i>Périphérique de démarrage</button>
+    <button role="tab" id="tab4" aria-controls="tab4-panel" aria-selected="true" tabindex="0"><i class="fa fa-snowflake-o"></i>Opération sur la matrice</button>
+  </div>
+  <span class="status"><a style="cursor:pointer" class="tooltip_diskio" title="Basculer l'affichage lectures/écritures"><i class="toggle fa fa-tachometer"></i></a></span>
+</nav>
+<section id="tab1-panel" role="tabpanel" aria-labelledby="tab1" class="tab-content content" tabindex="0" style="display:none"></section>
+<section id="tab2-panel" role="tabpanel" aria-labelledby="tab2" class="tab-content content" tabindex="0" style="display:none"></section>
+<section id="tab3-panel" role="tabpanel" aria-labelledby="tab3" class="tab-content content" tabindex="0" style="display:none"></section>
+<section id="tab4-panel" role="tabpanel" aria-labelledby="tab4" class="tab-content content" tabindex="0" style="display:block">
+<script>/* ArrayOperation.page's inline script (nchan subscribers) is not part of the mock. */</script>
+<form name="arrayOps" method="POST" action="/update.htm" target="progressFrame">
+<input type="hidden" name="startState" value="STARTED">
+<input type="hidden" name="file" value="">
+
+<table markdown="1" class="ArrayOperation-Table array_status">
+    <tr><td><a class='info'><i class='fa fa-circle orb green-orb'></i><span>Démarrée, matrice protégée</span></a><strong>Démarrée</strong></td>
+    <td><input type="button" id="stop-button" value="Arrêter" onclick="stopArray(this.form)"></td>
+    <td><strong>Arrêter</strong> mettra la matrice hors ligne.<span id="stop-text"></span></td></tr>
+          <tr><td>La parité est valide.</td><td><input type="submit" name="cmdCheck" value="Vérifier"></td><td><strong>Vérifier</strong> lancera le <strong>contrôle de parité</strong>.&nbsp;<a href="/Main/Settings/Scheduler" onclick="$.cookie('one','tab1')">(Planifier)</a>
+          <br><input type="checkbox" name="optionCorrect" value="correct" checked><small>Écrire les corrections sur la parité</small></td></tr>
+        <tr><td></td><td><input type="button" value="Historique" onclick="parityHistory()"></td>
+          <td class="whitespace-normal">Dernier contrôle terminé le <strong>dim. 04/10/2026 03:00</strong> (il y a 22 jours)
+          <br><i class="fa fa-fw fa-clock-o"></i> Durée : 1 jour, 1 heure, 46 minutes, 12 secondes. Vitesse moyenne : 193,8 Mo/s
+          <br><i class="fa fa-fw fa-search"></i> <strong>0</strong> erreur trouvée</td></tr>
+  <tr><td></td><td class="line" colspan="2"></td></tr>
+</table>
+</form>
+<!-- markdown fix -->
+<table markdown="1" class="ArrayOperation-Table array_status noshift">
+ <tr><td></td><td><span class="buttons-spaced"><input type="button" id="spinup-button" onclick="$('[id^=button-]').prop('disabled',true);toggle_state('up')" value="Réveiller"><input type="button" id="spindown-button" onclick="$('[id^=button-]').prop('disabled',true);toggle_state('down')" value="Mettre en veille"></span></td>
+ <td><strong>Réveiller</strong> lancera immédiatement la rotation de tous les disques.<br><strong>Mettre en veille</strong> arrêtera immédiatement la rotation de tous les disques.</td></tr>
+ <tr id="clearstats" class="hidden"><td></td><td><input type="button" value="Effacer les stats" onclick="toggle_state('Clear')"></td><td><strong>Effacer les stats</strong> effacera immédiatement toutes les statistiques des disques.</td></tr>
+ <tr><td></td><td class="line" colspan="2"></td></tr>
+</table>
+<form name="mover_schedule" method="POST" action="/update.htm" target="progressFrame">
+<table markdown="1" class="ArrayOperation-Table array_status noshift">
+<tr><td></td><td><input type="submit" id="mover-button" name="cmdStartMover" value="Déplacer"></td><td id="mover-text"><b>Déplacer</b> lancera immédiatement le Mover.&nbsp;<a href="/Main/Settings/Scheduler" onclick="$.cookie('one','tab2')">(Planifier)</a></td></tr>
+</table>
+</form>
+<!-- markdown fix -->
+<form name="shutdownOps" method="POST" action="/webGui/include/Boot.php">
+<table markdown="1" class="ArrayOperation-Table array_status noshift">
+ <tr><td></td><td><span class="buttons-spaced"><input type="button" name="reboot" value="Redémarrer" onclick="shutdown_now(this.form,'reboot')"><input type="button" name="shutdown" value="Arrêter le système" onclick="shutdown_now(this.form,'shutdown')"></span></td>
+ <td><strong>Redémarrer</strong> effectuera une réinitialisation <em>propre</em> du système.<br><strong>Arrêter le système</strong> effectuera une mise hors tension <em>propre</em> du système.<br><label class="flex flex-row items-center gap-2"><input type="checkbox" name="safemode">Redémarrer en mode sans échec</label></td></tr>
+ <tr><td></td><td class="line" colspan="2"></td></tr>
+</table>
+</form>
+<!-- markdown fix --><p></p>
+<blockquote class="inline_help" style="display:none"><p>Le bouton <strong>Arrêter</strong> met la matrice hors ligne.</p></blockquote>
+</section>
+</div>

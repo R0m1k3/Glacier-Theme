@@ -79,6 +79,14 @@ plg = f"""<?xml version='1.0' standalone='yes'?>
 
 <CHANGES>
 ###{version}
+- Page enhancements adapted from Aurora Theme (MIT, see NOTICE.md), in French and English:
+- Page headings on every tab. Dashboard: key figures strip, processor cores as tiles, charts and rings in theme colours, fan and VM-usage cards, an update badge on container icons, and a container dialog with all actions.
+- Settings and Tools: search ("/" to focus) and favourites with a star. Users: cards with initials, roles, search and Add user.
+- Main: Array Operation as cards, with parity-check progress and danger buttons.
+- Docker: summary, filters, search, Basic/Advanced, compact view with WebUI, CPU, memory and actions, phone cards; port check in the container editor.
+- Application groups for Docker and VMs (also on the Dashboard), VM details and snapshot buttons. Off when FolderView is installed.
+
+###2026.10.26.1607
 - Dark mode: follows the Dynamix theme (White light, Black dark), or always light / always dark (new setting).
 - Theme version on the settings page and in the footer.
 - Logo and version in a dark card above the menu card.

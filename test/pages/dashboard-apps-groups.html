@@ -1,0 +1,97 @@
+page: Dashboard
+active: Dashboard
+sheet: DashStats.css
+---
+<!-- Dashboard, Docker and VM tiles as Unraid 7.3.4 builds them (DashStats.page); the chips are
+     include/DashboardApps.php's, generated with its own format strings, and arrive a moment
+     after the page like DashStats' loadlist(). -->
+<script>
+window.glacierFolderView = false;
+window.glacierDecimalMark = '.';
+window.glacierGroups = {"docker":[{"name":"Médias","containers":["plex","jellyfin-with-a-really-long-container-name","immich"]},{"name":"Maison","containers":["homeassistant"]}],"vm":[{"name":"Réseau","containers":["pfSense","Home Assistant OS"]}]};
+window.csrf_token = 'mock-token';
+window.mockCalls = [];
+['eventControl', 'openTerminal', 'editContainer', 'updateContainer', 'rmContainer', 'addDockerContainerContext', 'addVMContext', 'ajaxVMDispatch'].forEach(function (name) {
+  window[name] = function () { window.mockCalls.push([name].concat([].slice.call(arguments))); };
+});
+window.loadlist = function () { window.mockCalls.push(['loadlist']); };
+</script>
+<div id="displaybox">
+<div class="content">
+<div class='frame'>
+<div class='grid'>
+<div class='tile' id='tile2'>
+<table id='db_box2' class='dashboard'>
+<thead class="stopgap"><tr><td class="stopgap"></td></tr></thead>
+<tbody id='docker_view' title="Conteneurs Docker" data="noApps()">
+<tr>
+    <td>
+        <span class='tile-header'>
+            <span class='tile-header-left'>
+                <i class='icon-docker f32'></i>
+                <div class='section'>
+                    <h3 class='tile-header-main'>Conteneurs Docker</h3>
+                    <span class='apps button'>
+                        <input type='checkbox' id='apps' style='display: none;'><div class='switch-button-background' style='width: 25px; height: 11px;'><div class='switch-button-button' style='width: 12px; height: 11px; left: -1px;'></div></div><span class='switch-button-label off'>Toutes les applis</span><span class='switch-button-label on' style='display: none;'>Démarrées seulement</span><div style='clear: left;'></div>
+                    </span>
+                    <span class='apps switch'></span><br>
+                </div>
+            </span>
+            <span class='tile-header-right'>
+                <span class='tile-header-right-controls'>
+                    <a href='/Dashboard/Settings/DockerSettings' title="Aller aux réglages"><i class='fa fa-fw fa-cog control'></i></a>
+                </span>
+            </span>
+        </span>
+    </td>
+</tr>
+</tbody>
+<thead class="stopgap"><tr><td class="stopgap"></td></tr></thead>
+<tbody id='vm_view' title="Machines virtuelles" data="noVMs()">
+<tr>
+    <td>
+        <span class='tile-header'>
+            <span class='tile-header-left'>
+                <i class='icon-virtualization f32'></i>
+                <div class='section'>
+                    <h3 class='tile-header-main'>Machines virtuelles</h3>
+                    <span class='vms button'>
+                        <input type='checkbox' id='vms' style='display: none;'><div class='switch-button-background' style='width: 25px; height: 11px;'><div class='switch-button-button' style='width: 12px; height: 11px; left: -1px;'></div></div><span class='switch-button-label off'>Toutes les VMs</span><span class='switch-button-label on' style='display: none;'>Démarrées seulement</span><div style='clear: left;'></div>
+                    </span>
+                    <span class='vms switch'></span><br>
+                </div>
+            </span>
+            <span class='tile-header-right'>
+                <span class='tile-header-right-controls'>
+                    <a href='/Dashboard/Settings/VMSettings' title="Aller aux réglages"><i class='fa fa-fw fa-cog control'></i></a>
+                </span>
+            </span>
+        </span>
+    </td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<template id="mock-apps"><tr title='' class='updated'><td><span class='outer solid apps started'><span id='a1b2c3d4e5f6' onclick="addDockerContainerContext('plex','sha256:0f1e2d3c4b5a','/boot/config/plugins/dockerMan/templates-user/my-plex.xml',1,0,0,true,'http://192.168.1.16:32400/web','','sh','a1b2c3d4e5f6','https://forums.unraid.net/topic/40463-support-plex/','https://www.plex.tv/','https://hub.docker.com/r/plexinc/pms-docker/','','')" class='hand'><img src='data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2048%2048%27%3E%3Crect%20width%3D%2748%27%20height%3D%2748%27%20rx%3D%2710%27%20fill%3D%27%23e5a00d%27%2F%3E%3Ctext%20x%3D%2724%27%20y%3D%2732%27%20font-family%3D%27Arial%27%20font-size%3D%2722%27%20font-weight%3D%27700%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EP%3C%2Ftext%3E%3C%2Fsvg%3E' class='img' onerror=this.src='/plugins/dynamix.docker.manager/images/question.png';></span><span class='inner'><span class=''>plex</span><br><i class='fa fa-play started green-text'></i><span class='state'>démarré</span></span></span><span class='outer solid apps started'><span id='b2c3d4e5f6a1' onclick="addDockerContainerContext('immich','sha256:1e2d3c4b5a6f','/boot/config/plugins/dockerMan/templates-user/my-immich.xml',1,0,1,true,'http://192.168.1.16:8080/','','bash','b2c3d4e5f6a1','https://github.com/imagegenius/docker-immich/issues','https://immich.app','','https://github.com/sponsors/immich-app','https://github.com/imagegenius/docker-immich#readme')" class='hand'><img src='data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2048%2048%27%3E%3Crect%20width%3D%2748%27%20height%3D%2748%27%20rx%3D%2710%27%20fill%3D%27%234250af%27%2F%3E%3Ctext%20x%3D%2724%27%20y%3D%2732%27%20font-family%3D%27Arial%27%20font-size%3D%2722%27%20font-weight%3D%27700%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EI%3C%2Ftext%3E%3C%2Fsvg%3E' class='img' onerror=this.src='/plugins/dynamix.docker.manager/images/question.png';></span><span class='inner'><span class='blue-text'>immich</span><br><i class='fa fa-play started green-text'></i><span class='state'>démarré</span></span></span><span class='outer solid apps paused'><span id='c3d4e5f6a1b2' onclick="addDockerContainerContext('nextcloud','sha256:2d3c4b5a6f7e','/boot/config/plugins/dockerMan/templates-user/my-nextcloud.xml',1,1,0,false,'https://192.168.1.16:444/','','bash','c3d4e5f6a1b2','','https://nextcloud.com','https://hub.docker.com/r/linuxserver/nextcloud/','','')" class='hand'><img src='data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2048%2048%27%3E%3Crect%20width%3D%2748%27%20height%3D%2748%27%20rx%3D%2710%27%20fill%3D%27%230082c9%27%2F%3E%3Ctext%20x%3D%2724%27%20y%3D%2732%27%20font-family%3D%27Arial%27%20font-size%3D%2722%27%20font-weight%3D%27700%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EN%3C%2Ftext%3E%3C%2Fsvg%3E' class='img' onerror=this.src='/plugins/dynamix.docker.manager/images/question.png';></span><span class='inner'><span class=''>nextcloud</span><br><i class='fa fa-pause paused orange-text'></i><span class='state'>en pause</span></span></span><span class='outer solid apps stopped'><span id='d4e5f6a1b2c3' onclick="addDockerContainerContext('jellyfin-with-a-really-long-container-name','sha256:3c4b5a6f7e8d','/boot/config/plugins/dockerMan/templates-user/my-jellyfin.xml',0,0,0,false,'http://[IP]:[PORT:8096]/','','bash','d4e5f6a1b2c3','','','','','')" class='hand'><img src='data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2048%2048%27%3E%3Crect%20width%3D%2748%27%20height%3D%2748%27%20rx%3D%2710%27%20fill%3D%27%23aa5cc3%27%2F%3E%3Ctext%20x%3D%2724%27%20y%3D%2732%27%20font-family%3D%27Arial%27%20font-size%3D%2722%27%20font-weight%3D%27700%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EJ%3C%2Ftext%3E%3C%2Fsvg%3E' class='img' onerror=this.src='/plugins/dynamix.docker.manager/images/question.png';></span><span class='inner'><span class=''>jellyfin-with-a-really-long-container-name</span><br><i class='fa fa-square stopped red-text'></i><span class='state'>arrêté</span></span></span><span class='outer solid apps started'><span id='e5f6a1b2c3d4' onclick="addDockerContainerContext('podcastic-redis','sha256:4b5a6f7e8d9c','',1,0,3,false,'','','sh','e5f6a1b2c3d4','','','','','')" class='hand'><img src='/webGui/images/plg.png' class='img' onerror=this.src='/plugins/dynamix.docker.manager/images/question.png';></span><span class='inner'><span class=''>podcastic-redis</span><br><i class='fa fa-play started green-text'></i><span class='state'>démarré</span></span></span><span class='outer solid apps stopped'><span id='f6a1b2c3d4e5' onclick="addDockerContainerContext('homeassistant','sha256:5a6f7e8d9c0b','/boot/config/plugins/dockerMan/templates-user/my-homeassistant.xml',0,0,1,true,'http://[IP]:[PORT:8123]','','bash','f6a1b2c3d4e5','','https://www.home-assistant.io/','https://github.com/home-assistant/core','','')" class='hand'><img src='data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2048%2048%27%3E%3Crect%20width%3D%2748%27%20height%3D%2748%27%20rx%3D%2710%27%20fill%3D%27%2318bcf2%27%2F%3E%3Ctext%20x%3D%2724%27%20y%3D%2732%27%20font-family%3D%27Arial%27%20font-size%3D%2722%27%20font-weight%3D%27700%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EH%3C%2Ftext%3E%3C%2Fsvg%3E' class='img' onerror=this.src='/plugins/dynamix.docker.manager/images/question.png';></span><span class='inner'><span class='blue-text'>homeassistant</span><br><i class='fa fa-square stopped red-text'></i><span class='state'>arrêté</span></span></span><span id='no_apps' style='display:none'>Aucun conteneur démarré<br><br></span></td></tr></template>
+<template id="mock-vms"><tr title='' class='updated'><td><span class='outer solid vms started'><span id='vm-6f1d2c3b-4a5e-6f70-8192-a3b4c5d6e7f8' onclick="addVMContext('Windows 11','6f1d2c3b-4a5e-6f70-8192-a3b4c5d6e7f8','Windows 11','running','/plugins/dynamix.vm.manager/vnc.html?v=1&resize=scale&autoconnect=true&host=tower&port=&path=/wsproxy/5700/','VNC','libvirt/qemu/Windows 11.log','QEMU','web;no','','','','')" class='hand'><img src='data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2048%2048%27%3E%3Crect%20width%3D%2748%27%20height%3D%2748%27%20rx%3D%2710%27%20fill%3D%27%230078d4%27%2F%3E%3Ctext%20x%3D%2724%27%20y%3D%2732%27%20font-family%3D%27Arial%27%20font-size%3D%2722%27%20font-weight%3D%27700%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EW%3C%2Ftext%3E%3C%2Fsvg%3E' class='img'></span><span class='inner'>Windows 11<br><i class='fa fa-play started green-text'></i><span class='state'>démarré</span></span></span><span class='outer solid vms stopped'><span id='vm-7a2e3d4c-5b6f-7081-92a3-b4c5d6e7f809' onclick="addVMContext('Ubuntu Server','7a2e3d4c-5b6f-7081-92a3-b4c5d6e7f809','Ubuntu','shutoff','','VNC','libvirt/qemu/Ubuntu Server.log','ZFS','web;no','','','','')" class='hand'><img src='data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2048%2048%27%3E%3Crect%20width%3D%2748%27%20height%3D%2748%27%20rx%3D%2710%27%20fill%3D%27%23e95420%27%2F%3E%3Ctext%20x%3D%2724%27%20y%3D%2732%27%20font-family%3D%27Arial%27%20font-size%3D%2722%27%20font-weight%3D%27700%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EU%3C%2Ftext%3E%3C%2Fsvg%3E' class='img'></span><span class='inner'>Ubuntu Server<br><i class='fa fa-square stopped red-text'></i><span class='state'>arrêté</span></span></span><span class='outer solid vms paused'><span id='vm-8b3f4e5d-6c70-8192-a3b4-c5d6e7f8091a' onclick="addVMContext('Home Assistant OS','8b3f4e5d-6c70-8192-a3b4-c5d6e7f8091a','Linux','paused','/plugins/dynamix.vm.manager/vnc.html?v=1&resize=scale&autoconnect=true&host=tower&port=&path=/wsproxy/5701/','VNC','','QEMU','web;no','','','','')" class='hand'><img src='data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2048%2048%27%3E%3Crect%20width%3D%2748%27%20height%3D%2748%27%20rx%3D%2710%27%20fill%3D%27%2318bcf2%27%2F%3E%3Ctext%20x%3D%2724%27%20y%3D%2732%27%20font-family%3D%27Arial%27%20font-size%3D%2722%27%20font-weight%3D%27700%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EH%3C%2Ftext%3E%3C%2Fsvg%3E' class='img'></span><span class='inner'>Home Assistant OS<br><i class='fa fa-pause paused orange-text'></i><span class='state'>en pause</span></span></span><span class='outer solid vms stopped'><span id='vm-9c405f6e-7d81-92a3-b4c5-d6e7f8091a2b' onclick="addVMContext('pfSense','9c405f6e-7d81-92a3-b4c5-d6e7f8091a2b','FreeBSD','shutoff','','VNC','','QEMU','web;no','','','1','')" class='hand'><img src='data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2048%2048%27%3E%3Crect%20width%3D%2748%27%20height%3D%2748%27%20rx%3D%2710%27%20fill%3D%27%23212121%27%2F%3E%3Ctext%20x%3D%2724%27%20y%3D%2732%27%20font-family%3D%27Arial%27%20font-size%3D%2722%27%20font-weight%3D%27700%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EF%3C%2Ftext%3E%3C%2Fsvg%3E' class='img'></span><span class='inner'>pfSense<i class="fa fa-warning fa-fw orange-text" title="PCI modifié
+Démarrage désactivé"></i><br><i class='fa fa-square stopped red-text'></i><span class='state'>arrêté</span></span></span><span id='no_vms' style='display:none'>Aucune machine virtuelle démarrée<br><br></span></td></tr></template>
+<script>
+  // Unraid hides the tiles in CSS and shows them from its Dashboard script once laid out.
+  document.querySelectorAll('div.tile').forEach(function (tile) { tile.style.display = 'block'; });
+  // DashStats' loadlist(): the tiles' rows are replaced with DashboardApps.php's answer.
+  window.mockReload = function () {
+    ['docker_view', 'vm_view'].forEach(function (id) {
+      var body = document.getElementById(id);
+      var old = body.querySelector('tr.updated');
+      if (old) old.remove();
+      body.insertAdjacentHTML('beforeend', document.getElementById(id === 'docker_view' ? 'mock-apps' : 'mock-vms').innerHTML);
+    });
+    document.querySelector('.apps.switch').textContent = 'Conteneurs -- Démarrés: 4, Arrêtés: 2, En pause: 1';
+    document.querySelector('.vms.switch').textContent = 'VMs -- Démarrées: 1, Arrêtées: 2, En pause: 1';
+  };
+  setTimeout(window.mockReload, 200);
+</script>

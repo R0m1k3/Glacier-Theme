@@ -1,0 +1,554 @@
+/*
+ * Glacier Theme: Main, Array Operation as cards (scripts/gl-array-operation.js).
+ *
+ * Adapted from Aurora Theme (https://github.com/Tunefish92/Aurora-Theme),
+ * Copyright (c) 2026 Chris (Tunefish), MIT License; see NOTICE.md.
+ *
+ * The forms and tables stay in place but take no room (display: contents), so their rows become
+ * the cards of one wrapping grid. The Array card spans the full width as the status card.
+ */
+
+html.glacier .gl-ops {
+    /* Wrapping rows that always fill the width, however many cards there are. */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.4rem;
+    margin: 0 0 2.4rem;
+}
+
+html.glacier .gl-ops > form,
+html.glacier .gl-ops table.ArrayOperation-Table,
+html.glacier .gl-ops table.ArrayOperation-Table > tbody {
+    display: contents;
+}
+
+html.glacier .gl-ops > .gl-ops-extra {
+    flex: 1 1 100%;
+    min-width: 0;
+    margin: 0;
+}
+
+/* Only the card rows: the key rows inside the Encryption card are shown and hidden by Unraid
+   with inline styles, which an !important rule here would override. */
+html.glacier .gl-ops table.ArrayOperation-Table > tbody > tr:is(.hidden, [hidden], .gl-op-skip),
+html.glacier .gl-ops td.gl-op-blank,
+html.glacier .gl-ops tr.gl-op > td:empty,
+html.glacier .gl-ops td.gl-op-stats[hidden],
+html.glacier .gl-ops .gl-stat[hidden],
+html.glacier .gl-ops .gl-progress[hidden],
+html.glacier .gl-ops .gl-progress-label[hidden] {
+    display: none !important;
+}
+
+/* ---- Cards */
+html.glacier .gl-ops tr.gl-op {
+    display: flex;
+    flex: 1 1 28rem;
+    flex-direction: column;
+    gap: 1.2rem;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 1.8rem 2rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-lg);
+    background: var(--gl-subtle);
+    transition: border-color 0.2s;
+}
+
+html.glacier .gl-ops tr.gl-op:hover {
+    border-color: var(--gl-input);
+}
+
+html.glacier .gl-ops tr.gl-op > td {
+    display: block;
+    width: auto !important;
+    min-width: 0;
+    height: auto;
+    padding: 0 !important;
+    border: 0;
+    color: var(--gl-text);
+    font-size: 1.35rem;
+    line-height: 1.55;
+    text-align: left;
+    white-space: normal;
+    background: none;
+}
+
+/* Card order: status first, then parity, last check, disks, statistics, mover, power. */
+html.glacier .gl-ops tr.gl-op-array,
+html.glacier .gl-ops tr.gl-op-keys { order: 0; }
+html.glacier .gl-ops tr.gl-op-format,
+html.glacier .gl-ops tr.gl-op-running,
+html.glacier .gl-ops tr.gl-op-other { order: 1; }
+html.glacier .gl-ops tr.gl-op-sync,
+html.glacier .gl-ops tr.gl-op-parity { order: 2; }
+html.glacier .gl-ops tr.gl-op-history { order: 3; }
+html.glacier .gl-ops tr.gl-op-disks { order: 4; }
+html.glacier .gl-ops tr.gl-op-stats { order: 5; }
+html.glacier .gl-ops tr.gl-op-keyfile { order: 6; }
+html.glacier .gl-ops tr.gl-op-mover { order: 6; }
+html.glacier .gl-ops tr.gl-op-power { order: 7; }
+
+html.glacier .gl-ops tr.gl-op > td.gl-op-head {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+html.glacier .gl-op-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 3.6rem;
+    height: 3.6rem;
+    border-radius: var(--gl-r-sm);
+    color: var(--gl-accent);
+    font-size: 1.6rem;
+    background: var(--gl-accent-soft);
+}
+
+html.glacier .gl-op-title {
+    min-width: 0;
+    color: var(--gl-text);
+    font-size: 1.55rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+}
+
+html.glacier .gl-ops tr.gl-op-power .gl-op-icon {
+    color: var(--gl-danger-text);
+    background: var(--gl-danger-bg);
+}
+
+html.glacier .gl-ops tr.gl-op-format .gl-op-icon {
+    color: var(--gl-warn-text);
+    background: var(--gl-warn-bg);
+}
+
+html.glacier .gl-ops tr.gl-op-running .gl-op-icon {
+    color: var(--gl-accent-text);
+    background: var(--gl-accent);
+}
+
+/* ---- Cells: state, explanation, actions */
+html.glacier .gl-ops tr.gl-op > td.gl-op-state {
+    order: 1;
+    font-weight: 600;
+}
+
+html.glacier .gl-ops tr.gl-op > td.gl-op-desc {
+    order: 2;
+    color: var(--gl-muted);
+    font-size: 1.3rem;
+    line-height: 1.7;
+}
+
+html.glacier .gl-ops td.gl-op-desc :is(strong, b) {
+    color: var(--gl-text);
+    font-weight: 700;
+}
+
+html.glacier .gl-ops td.gl-op-desc i.fa {
+    width: 1.6rem;
+    margin-right: 0.4rem;
+    color: var(--gl-accent);
+    text-align: center;
+}
+
+html.glacier .gl-ops td.gl-op-desc small {
+    font-size: 1.25rem;
+}
+
+html.glacier .gl-ops .gl-op-option {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    width: fit-content;
+    max-width: 100%;
+    margin: 1rem 0 0;
+    color: var(--gl-text);
+    font-size: 1.3rem;
+    font-weight: 500;
+    line-height: 1.4;
+    cursor: pointer;
+}
+
+html.glacier .gl-ops .gl-op-option small {
+    font-size: inherit;
+}
+
+html.glacier .gl-ops .gl-op-option input[type="checkbox"],
+html.glacier .gl-ops td.gl-op-desc a.info input[type="checkbox"] {
+    flex: none;
+    margin: 0;
+    vertical-align: middle;
+}
+
+html.glacier .gl-ops tr.gl-op > td.gl-op-actions {
+    order: 3;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    max-width: 52rem;
+    margin-top: auto;
+    padding-top: 0.4rem !important;
+}
+
+html.glacier .gl-ops td.gl-op-actions .buttons-spaced {
+    display: contents;
+}
+
+html.glacier .gl-ops td.gl-op-actions :is(input[type="button"], input[type="submit"], button) {
+    flex: 1 1 auto;
+    min-width: min(11rem, 100%);
+    max-width: 100%;
+    margin: 0 !important;
+}
+
+/* Main action in the accent colour; Stop, Cancel, Reboot, Shutdown in red. */
+html.glacier .gl-ops :is(input, button).gl-op-primary:not(:disabled) {
+    border-color: var(--gl-accent);
+    color: var(--gl-accent-text);
+    background: var(--gl-accent);
+}
+
+html.glacier .gl-ops :is(input, button).gl-op-primary:not(:disabled):hover {
+    border-color: color-mix(in oklab, var(--gl-accent), black 14%);
+    color: var(--gl-accent-text);
+    background: color-mix(in oklab, var(--gl-accent), black 14%);
+}
+
+html.glacier .gl-ops :is(input, button).gl-op-danger:not(:disabled) {
+    border-color: color-mix(in srgb, var(--gl-danger) 45%, transparent);
+    color: var(--gl-danger-text);
+    background: var(--gl-surface);
+}
+
+html.glacier .gl-ops :is(input, button).gl-op-danger:not(:disabled):hover {
+    border-color: var(--gl-danger);
+    color: var(--gl-surface);
+    background: var(--gl-danger);
+}
+
+/* State as a pill: green for a protected array or valid parity, amber when it needs a look. */
+html.glacier .gl-ops tr.gl-op > td.gl-op-pill {
+    display: block;
+    align-self: flex-start;
+    width: fit-content !important;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 0.3rem 1.2rem !important;
+    border-radius: var(--gl-r-full);
+    color: var(--gl-text-2);
+    font-size: 1.25rem;
+    line-height: 1.6;
+    background: var(--gl-subtle-2);
+}
+
+html.glacier .gl-ops td.gl-op-pill strong {
+    font-weight: 700;
+}
+
+html.glacier .gl-ops td.gl-op-pill a.info {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 0.6rem;
+    vertical-align: 0.1rem;
+    color: inherit;
+}
+
+html.glacier .gl-ops td.gl-op-pill i.orb {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--gl-muted);
+}
+
+html.glacier .gl-ops tr.gl-op > td.gl-op-tone-success { color: var(--gl-success-text); background: var(--gl-success-bg); }
+html.glacier .gl-ops tr.gl-op > td.gl-op-tone-warn { color: var(--gl-warn-text); background: var(--gl-warn-bg); }
+html.glacier .gl-ops tr.gl-op > td.gl-op-tone-danger { color: var(--gl-danger-text); background: var(--gl-danger-bg); }
+html.glacier .gl-ops tr.gl-op > td.gl-op-tone-accent { color: var(--gl-accent); background: var(--gl-accent-soft); }
+html.glacier .gl-ops td.gl-op-tone-success i.orb { color: var(--gl-success); }
+html.glacier .gl-ops td.gl-op-tone-warn i.orb { color: var(--gl-warn); }
+html.glacier .gl-ops td.gl-op-tone-danger i.orb { color: var(--gl-danger); }
+
+html.glacier .gl-ops td.gl-op-mark::before,
+html.glacier .gl-ops td.gl-op-spin::before {
+    display: inline-block;
+    margin-right: 0.6rem;
+    font: normal 1.2rem/1 FontAwesome;
+    content: "\f058";
+}
+
+html.glacier .gl-ops td.gl-op-mark.gl-op-tone-warn::before {
+    content: "\f071";
+}
+
+html.glacier .gl-ops td.gl-op-spin::before {
+    content: "\f110";
+    animation: fa-spin 2s linear infinite;
+}
+
+/* Unmountable disks: the list of disks as a quiet panel. */
+html.glacier .gl-ops tr.gl-op > td.gl-op-list {
+    padding: 1rem 1.2rem !important;
+    border-radius: var(--gl-r-sm);
+    color: var(--gl-text-2);
+    font-size: 1.25rem;
+    font-weight: 500;
+    background: var(--gl-surface);
+    box-shadow: inset 0 0 0 1px var(--gl-border);
+}
+
+/* ---- Array: the status card across the full width; status, text and button in one row. */
+html.glacier .gl-ops tr.gl-op-array {
+    flex-basis: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.2rem 2.4rem;
+    background:
+        radial-gradient(120% 160% at 0% 0%, var(--gl-accent-soft), transparent 55%),
+        var(--gl-subtle);
+}
+
+html.glacier .gl-ops tr.gl-op-array > td.gl-op-head {
+    flex: 0 0 auto;
+}
+
+html.glacier .gl-ops tr.gl-op-array > td.gl-op-pill {
+    align-self: center;
+    padding: 0.5rem 1.4rem !important;
+    font-size: 1.35rem;
+}
+
+html.glacier .gl-ops tr.gl-op-array > td.gl-op-desc {
+    flex: 1 1 26rem;
+}
+
+html.glacier .gl-ops tr.gl-op-array > td.gl-op-actions {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0 !important;
+}
+
+html.glacier .gl-ops tr.gl-op-array td.gl-op-actions :is(input, button) {
+    min-width: 14rem;
+}
+
+/* ---- Encryption: the key fields as a small form inside the card. */
+html.glacier .gl-ops tr.gl-op-keys {
+    flex-basis: 100%;
+}
+
+html.glacier .gl-ops table.gl-op-fields {
+    width: 100%;
+    margin: 0;
+    border: 0;
+    table-layout: auto;
+    background: transparent;
+}
+
+html.glacier .gl-ops table.gl-op-fields td {
+    width: auto;
+    height: auto;
+    padding: 0.5rem 1.6rem 0.5rem 0 !important;
+    color: var(--gl-text);
+    font-size: 1.3rem;
+    line-height: 1.5;
+    white-space: normal;
+    vertical-align: middle;
+}
+
+html.glacier .gl-ops table.gl-op-fields td:first-child {
+    width: 22rem !important;
+    color: var(--gl-text-2);
+    font-weight: 600;
+}
+
+html.glacier .gl-ops table.gl-op-fields td:last-child {
+    width: auto !important;
+    padding-right: 0 !important;
+}
+
+html.glacier .gl-ops table.gl-op-fields :is(input[type="password"], input[type="text"], input[type="file"], select) {
+    width: 100%;
+    max-width: 40rem;
+    margin: 0;
+}
+
+html.glacier .gl-ops table.gl-op-fields label {
+    margin: 0;
+}
+
+html.glacier .gl-ops table.gl-op-fields td > div.flex {
+    flex-wrap: wrap;
+}
+
+html.glacier .gl-ops table.gl-op-fields td > div.flex > input {
+    flex: 1 1 20rem;
+}
+
+/* ---- A running operation: state pill, progress bar and the figures as tiles. */
+html.glacier .gl-ops tr.gl-op-running {
+    flex-basis: 100%;
+}
+
+html.glacier .gl-ops tr.gl-op > td.gl-op-stats {
+    order: 3;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem 1.4rem;
+}
+
+html.glacier .gl-ops tr.gl-op-running > td.gl-op-actions,
+html.glacier .gl-ops tr.gl-op-mover > td.gl-op-actions {
+    order: 4;
+}
+
+html.glacier .gl-ops tr.gl-op-running > td.gl-op-actions {
+    flex: 0 0 auto;
+    width: 100% !important;
+    max-width: 36rem;
+}
+
+html.glacier .gl-ops tr.gl-op-mover.gl-op-busy {
+    flex-basis: 100%;
+}
+
+html.glacier .gl-progress {
+    grid-column: 1;
+    grid-row: 1;
+    height: 1rem;
+    overflow: hidden;
+    border-radius: var(--gl-r-full);
+    background: var(--gl-border);
+}
+
+html.glacier .gl-progress > span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: var(--gl-r-full);
+    background: var(--gl-accent);
+    transition: width 0.8s var(--gl-ease);
+}
+
+html.glacier .gl-progress-label {
+    grid-column: 2;
+    grid-row: 1;
+    color: var(--gl-text);
+    font-size: 1.6rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+html.glacier .gl-stats {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 0.8rem;
+}
+
+html.glacier .gl-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+    padding: 1.1rem 1.3rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-md);
+    background: var(--gl-surface);
+}
+
+html.glacier .gl-stat.gl-stat-wide {
+    grid-column: 1 / -1;
+}
+
+html.glacier .gl-ops .gl-stat > td {
+    display: block;
+    width: auto !important;
+    height: auto;
+    padding: 0 !important;
+    border: 0;
+    text-align: left;
+    background: none;
+}
+
+html.glacier .gl-ops .gl-stat-label {
+    color: var(--gl-muted);
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+
+html.glacier .gl-ops .gl-stat-label span {
+    font: inherit;
+}
+
+html.glacier .gl-ops .gl-stat > .gl-stat-value {
+    color: var(--gl-text);
+    font-size: 1.45rem;
+    font-weight: 700;
+    line-height: 1.3;
+    font-variant-numeric: tabular-nums;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+/* Until the first live update fills it. */
+html.glacier .gl-ops .gl-stat > .gl-stat-value:empty::before {
+    color: var(--gl-muted);
+    content: "\2013";
+}
+
+/* ---- Phones and tablets. Unraid's ArrayOperation.css gives these rows a layout of its own
+   below 770px (flex-basis per cell, by position), which the cards replace. */
+@media (max-width: 769px) {
+    html.glacier .gl-ops tr.gl-op > td {
+        flex: 0 0 auto;
+        flex-basis: auto;
+        max-width: 100%;
+    }
+
+    html.glacier .gl-ops tr.gl-op > td.gl-op-actions {
+        width: 100% !important;
+        max-width: none;
+    }
+
+    html.glacier .gl-ops tr.gl-op-array {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    html.glacier .gl-ops tr.gl-op-array > td:is(.gl-op-head, .gl-op-desc, .gl-op-actions) {
+        flex: 0 0 auto;
+    }
+
+    html.glacier .gl-ops tr.gl-op-array > td.gl-op-pill {
+        align-self: flex-start;
+    }
+
+    html.glacier .gl-ops table.gl-op-fields td:first-child {
+        width: auto !important;
+    }
+}
+
+@media (max-width: 549px) {
+    html.glacier .gl-ops {
+        gap: 1.2rem;
+    }
+
+    html.glacier .gl-ops tr.gl-op {
+        flex-basis: 100%;
+        padding: 1.6rem;
+    }
+
+    html.glacier .gl-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}

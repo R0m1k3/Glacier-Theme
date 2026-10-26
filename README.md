@@ -54,6 +54,32 @@ Dans **Settings → User Utilities → Glacier Theme** :
 - **Dialogues, menus, infobulles, avis et pied de page** : harmonisés, avec l'état de l'array en pastille dans le pied de page.
 - **Téléphone** : le menu défile horizontalement, les actions passent à la ligne et l'en-tête se simplifie.
 
+## Améliorations des pages
+
+Plusieurs améliorations sont adaptées d'[Aurora Theme](https://github.com/Tunefish92/Aurora-Theme) (licence MIT, voir [NOTICE.md](NOTICE.md)) et traduites en français :
+
+- **Toutes les pages** : un titre avec une ligne de description en haut de chaque onglet.
+- **Tableau de bord** :
+  - un bandeau de chiffres clés (CPU, mémoire, array) ;
+  - les cœurs du processeur en tuiles ;
+  - les graphiques et anneaux aux couleurs du thème ;
+  - les ventilateurs et l'utilisation des VMs en cartes ;
+  - un badge de mise à jour sur l'icône des conteneurs ;
+  - un clic sur un conteneur ouvre une fenêtre avec toutes ses actions.
+- **Réglages et Outils** : une recherche (touche `/`) et des favoris avec une étoile, enregistrés dans `/boot/config/plugins/Glacier-Theme/favourites.json`.
+- **Utilisateurs** : des cartes avec initiales, rôle et recherche.
+- **Principal** : les opérations de l'array en cartes, avec la progression du contrôle de parité.
+- **Docker** :
+  - un récapitulatif, des filtres et une recherche ;
+  - Basique/Avancée en bouton segmenté ;
+  - une vue compacte (WebUI, CPU, mémoire, actions), en cartes sur téléphone ;
+  - la vérification des ports dans l'éditeur de conteneur.
+- **Groupes d'applications** :
+  - des sections nommées et repliables pour les conteneurs et les VMs, sur leurs onglets et sur le tableau de bord ;
+  - démarrage et arrêt d'un groupe entier.
+
+  Ils sont enregistrés dans `docker-groups.json` et `vm-groups.json`. Déplacer des éléments (cadenas d'Unraid déverrouillé) enregistre aussi l'ordre de démarrage d'Unraid. Si le plugin FolderView est installé, les groupes et le réordonnancement sont désactivés.
+
 ## En cas de problème
 
 - Ajoutez `?glacier=off` à n'importe quelle adresse (par exemple `/Dashboard?glacier=off`) pour couper le thème dans ce navigateur. `?glacier=on` le remet.

@@ -1,0 +1,84 @@
+page: VMs
+active: VMs
+---
+<!-- VMs tab as Unraid 7.3.4 builds it: VMMachines.page (tabbed, table head, buttons) and the
+     rows of include/VMMachines.php (VM row + hidden detail row, addVMContext(...) and
+     addVMSnapContext(...) in the real argument order). -->
+<style>
+/* dynamix.vm.manager/sheets/VMMachines.css (7.3.4, the parts the list uses) */
+th.th1{width:25%}th.th2{width:15%}th.th3{width:80px}
+table.domdisk thead tr th:nth-child(1){width:56%!important}table.domdisk thead tr th:nth-child(n+2){width:8%!important}
+table.domdisk thead tr th:nth-child(1){padding-left:72px}table.domdisk tbody tr td:nth-child(1){padding-left:72px}
+table.domdisk tbody tr:nth-child(even){background-color:transparent!important}
+table tbody td{line-height:normal}i.mover{margin-right:8px;display:none}i.fa-dot-circle-o{padding-left:12px}
+#resetsort{margin-left:12px;display:inline-block;width:32px}span.vmgraphics{font-size:1.1rem;text-align:left}
+</style>
+<script>
+window.glacierFolderView = false;
+window.glacierDecimalMark = '.';
+window.glacierGroups = {"docker":[],"vm":[]};
+window.csrf_token = 'mock-token';
+window.mockCalls = [];
+['ajaxVMDispatch', 'addVMContext', 'addVMSnapContext', 'selectsnapshot', 'loadlist'].forEach(function (name) {
+  window[name] = function () { window.mockCalls.push([name].concat([].slice.call(arguments))); };
+});
+// vmmanager.js toggle_id(): shows or hides a VM's detail row (slideDownRows / slideUpRows).
+window.toggle_id = function (id) {
+  var row = document.getElementById(id);
+  row.style.display = row.style.display === 'none' ? '' : 'none';
+  return false;
+};
+// VMMachines.page LockButton(): the lockbutton cookie and the movers.
+window.LockButton = function () {
+  var on = !/(?:^|;\s*)lockbutton=/.test(document.cookie);
+  document.cookie = on ? 'lockbutton=lockbutton; path=/' : 'lockbutton=; path=/; max-age=0';
+  document.querySelectorAll('i.mover').forEach(function (i) { i.style.display = on ? 'inline' : 'none'; });
+};
+</script>
+<div id="displaybox">
+<nav class="tabs" role="tablist" aria-label="Page Tabs">
+  <div class="tabs-container">
+    <button role="tab" id="tab1" aria-selected="true" tabindex="0"><i class="fa fa-columns"></i>Machines virtuelles</button>
+    <button role="tab" id="tab2" aria-selected="false" tabindex="-1"><i class="fa fa-clipboard"></i>Ajouter une VM</button>
+  </div>
+</nav>
+<section id="tab1-panel" role="tabpanel" class="tab-content content" style="display:block">
+<div class="TableContainer">
+    <table id="kvm_table" class="tablesorter four shift">
+        <thead>
+            <tr>
+                <th class="th1"><a id="resetsort" class="nohand" onclick="resetSorting()" title="Reset sorting"><i class="fa fa-th-list"></i></a>Nom</th>
+                <th class="th2">Description</th>
+                <th>CPUs</th>
+                <th>Mémoire</th>
+                <th>vDisques / vCDs</th>
+                <th>Graphiques</th>
+                <th>Adresse IP</th>
+                <th class="th3">Démarrage auto</th>
+            </tr>
+        </thead>
+        <tbody id="kvm_list" class="js-fill-available-height"><tr><td colspan='8'></td></tr></tbody>
+    </table>
+</div>
+<div class="js-actions">
+  <input type="button" onclick="addVM()" id="btnAddVM" value="Ajouter une VM">
+  <input type="button" onclick="startAll()" value="Tout démarrer">
+  <input type="button" onclick="stopAll()" value="Tout arrêter">
+</div>
+</section>
+</div>
+<template id="mock-rows">
+<tr parent-id='0' class='sortable'><td class='vm-name' style='width:220px;padding:8px'><i class='fa fa-arrows-v mover orange-text'></i><span class='outer'><span id='vm-6f1d2c3b-4a5e-6f70-8192-a3b4c5d6e7f8' onclick="addVMContext('Windows 11','6f1d2c3b-4a5e-6f70-8192-a3b4c5d6e7f8','Windows 11','running','/plugins/dynamix.vm.manager/vnc.html?v=1&resize=scale&autoconnect=true&host=tower&port=&path=/wsproxy/5700/','VNC','libvirt/qemu/Windows 11.log','QEMU','web;no','', '', )" class='hand'><img src='data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2048%2048%27%3E%3Crect%20width%3D%2748%27%20height%3D%2748%27%20rx%3D%2710%27%20fill%3D%27%230078d4%27%2F%3E%3Ctext%20x%3D%2724%27%20y%3D%2732%27%20font-family%3D%27Arial%27%20font-size%3D%2722%27%20font-weight%3D%27700%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EW%3C%2Ftext%3E%3C%2Fsvg%3E' class='img'></span><span class='inner'><a href='#' onclick='return toggle_id("name-0")' title='click for more VM info'>Windows 11</a><br><i class='fa fa-play started green-text'></i><span class='state'>démarré </span></span></span></td><td>Bureau gaming</td><td><a class='vcpu-6f1d2c3b-4a5e-6f70-8192-a3b4c5d6e7f8' style='cursor:pointer'>8</a></td><td>16 GiB</td><td title=''><span class='state' >2&nbsp;&nbsp;&nbsp;&nbsp;1 / 2<a class='hand' title='Sélectionner une image ISO' href='#' onclick='return false'><i class='fa fa-dot-circle-o'></i></a><br>(Snapshots: 1)</span></td><td><span class='vmgraphics'>VNC:auto</td><td><span class='vmgraphics'>192.168.1.40/24</td><td><input class='autostart' type='checkbox' name='auto_Windows 11' title="Activer le démarrage auto de la VM" uuid='6f1d2c3b-4a5e-6f70-8192-a3b4c5d6e7f8' checked style='display: none;'><div class='switch-button-background checked' style='width: 25px; height: 11px;'><div class='switch-button-button' style='width: 12px; height: 11px; left: 13px;'></div></div><span class='switch-button-label off' style='display: none;'>Éteint</span><span class='switch-button-label on' style=''>Allumé</span><div style='clear: left;'></div></td></tr><tr child-id='0' id='name-0' style='display:none'><td colspan='8' style='margin:0;padding:0'><table class='tablesorter domdisk'><thead class='child'><tr><th><i class='fa fa-hdd-o'></i> <b>Disques/Volume</b></th><th>Série</b></th><th>Bus</th><th>Capacité</th><th>Allocation</th><th>Boot Order</th</tr></thead><tbody class='child'><tr><td>/mnt/user/domains/Windows 11/vdisk1.img</td><td>vdisk1</td><td>VirtIO</td><td>120G</td><td>48G</td><td>1</td></tr></tbody><thead class='child'><tr><th><i class='fa fa-sitemap'></i> <b>Interfaces</b></th><th></th><th></th><th>Type</th><th>Adresse IP</th><th>Préfixe</th></tr></thead><tbody class='child'><tr><td>vnet0 (52:54:00:aa:bb:cc)</td><td></td><td></td><td>ipv4</td><td>192.168.1.40</td><td>24</td></tr></tbody><thead class='child' child-id='0'><tr><th><i class='fa fa-clone'></i> <b>Snapshots</b></th><th></th><th>Date/Heure</th><th>Type (méthode)</th><th>Parent</th><th>Mémoire</th></tr></thead><tbody class='child'child-id='0'><tr><td><span id='vmsnap-6f1d2c3b-4a5e-6f70-8192-a3b4c5d6e7f8' onclick="addVMSnapContext('Windows 11','6f1d2c3b-4a5e-6f70-8192-a3b4c5d6e7f8','Windows 11','running','S20261020','QEMU')" class='hand'>&nbsp;&nbsp;&nbsp;&nbsp;|__&nbsp;&nbsp;<i class='fa fa-clone'></i></span>&nbsp;S20261020</td><td>Avant mise à jour</td><td><span class='inner' style='font-size:1.1rem;'>2026-10-20<br>21:04:11</span></td><td>Shutoff (QEMU)</td><td>None</td><td>No</td></tr></tbody></table>
+<tr parent-id='1' class='sortable'><td class='vm-name' style='width:220px;padding:8px'><i class='fa fa-arrows-v mover orange-text'></i><span class='outer'><span id='vm-7a2e3d4c-5b6f-7081-92a3-b4c5d6e7f809' onclick="addVMContext('Ubuntu Server','7a2e3d4c-5b6f-7081-92a3-b4c5d6e7f809','Ubuntu','shutoff','','VNC','libvirt/qemu/Ubuntu Server.log','ZFS','web;no','', '', )" class='hand'><img src='data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2048%2048%27%3E%3Crect%20width%3D%2748%27%20height%3D%2748%27%20rx%3D%2710%27%20fill%3D%27%23e95420%27%2F%3E%3Ctext%20x%3D%2724%27%20y%3D%2732%27%20font-family%3D%27Arial%27%20font-size%3D%2722%27%20font-weight%3D%27700%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EU%3C%2Ftext%3E%3C%2Fsvg%3E' class='img'></span><span class='inner'><a href='#' onclick='return toggle_id("name-1")' title='click for more VM info'>Ubuntu Server</a><br><i class='fa fa-square stopped red-text'></i><span class='state'>arrêté </span></span></span></td><td></td><td><a class='vcpu-7a2e3d4c-5b6f-7081-92a3-b4c5d6e7f809' style='cursor:pointer'>4</a></td><td>8 GiB</td><td title=''><span class='state' >1&nbsp;&nbsp;&nbsp;&nbsp;0 / 2<a class='hand' title='Sélectionner une image ISO' href='#' onclick='return false'><i class='fa fa-dot-circle-o'></i></a><br>(Snapshots: Aucun)</span></td><td><span class='vmgraphics'>VNC:auto</td><td><span class='vmgraphics'>Requires guest running</td><td><input class='autostart' type='checkbox' name='auto_Ubuntu Server' title="Activer le démarrage auto de la VM" uuid='7a2e3d4c-5b6f-7081-92a3-b4c5d6e7f809' style='display: none;'><div class='switch-button-background' style='width: 25px; height: 11px;'><div class='switch-button-button' style='width: 12px; height: 11px; left: -1px;'></div></div><span class='switch-button-label off' style=''>Éteint</span><span class='switch-button-label on' style='display: none;'>Allumé</span><div style='clear: left;'></div></td></tr><tr child-id='1' id='name-1' style='display:none'><td colspan='8' style='margin:0;padding:0'><table class='tablesorter domdisk'><thead class='child'><tr><th><i class='fa fa-hdd-o'></i> <b>Disques/Volume</b></th><th>Série</b></th><th>Bus</th><th>Capacité</th><th>Allocation</th><th>Boot Order</th</tr></thead><tbody class='child'><tr><td>/mnt/user/domains/Ubuntu Server/vdisk1.img</td><td>vdisk1</td><td>VirtIO</td><td>120G</td><td>48G</td><td>1</td></tr></tbody><thead class='child'><tr><th><i class='fa fa-sitemap'></i> <b>Interfaces</b></th><th></th><th></th><th>Type</th><th>Adresse IP</th><th>Préfixe</th></tr></thead><tbody class='child'><tr><td>Invité arrêté</td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+<tr parent-id='2' class='sortable'><td class='vm-name' style='width:220px;padding:8px'><i class='fa fa-arrows-v mover orange-text'></i><span class='outer'><span id='vm-8b3f4e5d-6c70-8192-a3b4-c5d6e7f8091a' onclick="addVMContext('Home Assistant OS','8b3f4e5d-6c70-8192-a3b4-c5d6e7f8091a','Linux','paused','/plugins/dynamix.vm.manager/vnc.html?v=1&resize=scale&autoconnect=true&host=tower&port=&path=/wsproxy/5701/','VNC','','QEMU','web;no','', '', )" class='hand'><img src='data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2048%2048%27%3E%3Crect%20width%3D%2748%27%20height%3D%2748%27%20rx%3D%2710%27%20fill%3D%27%2318bcf2%27%2F%3E%3Ctext%20x%3D%2724%27%20y%3D%2732%27%20font-family%3D%27Arial%27%20font-size%3D%2722%27%20font-weight%3D%27700%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EH%3C%2Ftext%3E%3C%2Fsvg%3E' class='img'></span><span class='inner'><a href='#' onclick='return toggle_id("name-2")' title='click for more VM info'>Home Assistant OS</a><br><i class='fa fa-pause paused orange-text'></i><span class='state'>en pause </span></span></span></td><td>Domotique</td><td><a class='vcpu-8b3f4e5d-6c70-8192-a3b4-c5d6e7f8091a' style='cursor:pointer'>2</a></td><td>4 GiB</td><td title=''><span class='state' >1&nbsp;&nbsp;&nbsp;&nbsp;0 / 2<a class='hand' title='Sélectionner une image ISO' href='#' onclick='return false'><i class='fa fa-dot-circle-o'></i></a><br>(Snapshots: Aucun)</span></td><td><span class='vmgraphics'>VNC:auto</td><td><span class='vmgraphics'>192.168.1.41/24</td><td><input class='autostart' type='checkbox' name='auto_Home Assistant OS' title="Activer le démarrage auto de la VM" uuid='8b3f4e5d-6c70-8192-a3b4-c5d6e7f8091a' checked style='display: none;'><div class='switch-button-background checked' style='width: 25px; height: 11px;'><div class='switch-button-button' style='width: 12px; height: 11px; left: 13px;'></div></div><span class='switch-button-label off' style='display: none;'>Éteint</span><span class='switch-button-label on' style=''>Allumé</span><div style='clear: left;'></div></td></tr><tr child-id='2' id='name-2' style='display:none'><td colspan='8' style='margin:0;padding:0'><table class='tablesorter domdisk'><thead class='child'><tr><th><i class='fa fa-hdd-o'></i> <b>Disques/Volume</b></th><th>Série</b></th><th>Bus</th><th>Capacité</th><th>Allocation</th><th>Boot Order</th</tr></thead><tbody class='child'><tr><td>/mnt/user/domains/Home Assistant OS/vdisk1.img</td><td>vdisk1</td><td>VirtIO</td><td>120G</td><td>48G</td><td>1</td></tr></tbody><thead class='child'><tr><th><i class='fa fa-sitemap'></i> <b>Interfaces</b></th><th></th><th></th><th>Type</th><th>Adresse IP</th><th>Préfixe</th></tr></thead><tbody class='child'><tr><td>Invité arrêté</td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+<tr parent-id='3' class='sortable'><td class='vm-name' style='width:220px;padding:8px'><i class='fa fa-arrows-v mover orange-text'></i><span class='outer'><span id='vm-9c405f6e-7d81-92a3-b4c5-d6e7f8091a2b' onclick="addVMContext('pfSense','9c405f6e-7d81-92a3-b4c5-d6e7f8091a2b','FreeBSD','shutoff','','VNC','','QEMU','web;no','', '', 1)" class='hand'><img src='data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2048%2048%27%3E%3Crect%20width%3D%2748%27%20height%3D%2748%27%20rx%3D%2710%27%20fill%3D%27%23212121%27%2F%3E%3Ctext%20x%3D%2724%27%20y%3D%2732%27%20font-family%3D%27Arial%27%20font-size%3D%2722%27%20font-weight%3D%27700%27%20fill%3D%27white%27%20text-anchor%3D%27middle%27%3EF%3C%2Ftext%3E%3C%2Fsvg%3E' class='img'></span><span class='inner'><a href='#' onclick='return toggle_id("name-3")' title='click for more VM info'>pfSense</a><i class="fa fa-warning fa-fw orange-text" title="PCI modifié
+Démarrage désactivé"></i><br><i class='fa fa-square stopped red-text'></i><span class='state'>arrêté </span></span></span></td><td>Routeur de test</td><td><a class='vcpu-9c405f6e-7d81-92a3-b4c5-d6e7f8091a2b' style='cursor:pointer'>2</a></td><td>2 GiB</td><td title=''><span class='state' >1&nbsp;&nbsp;&nbsp;&nbsp;0 / 2<a class='hand' title='Sélectionner une image ISO' href='#' onclick='return false'><i class='fa fa-dot-circle-o'></i></a><br>(Snapshots: Aucun)</span></td><td><span class='vmgraphics'>VNC:auto</td><td><span class='vmgraphics'>Requires guest running</td><td><input class='autostart' type='checkbox' name='auto_pfSense' title="Activer le démarrage auto de la VM" uuid='9c405f6e-7d81-92a3-b4c5-d6e7f8091a2b' style='display: none;'><div class='switch-button-background' style='width: 25px; height: 11px;'><div class='switch-button-button' style='width: 12px; height: 11px; left: -1px;'></div></div><span class='switch-button-label off' style=''>Éteint</span><span class='switch-button-label on' style='display: none;'>Allumé</span><div style='clear: left;'></div></td></tr><tr child-id='3' id='name-3' style='display:none'><td colspan='8' style='margin:0;padding:0'><table class='tablesorter domdisk'><thead class='child'><tr><th><i class='fa fa-hdd-o'></i> <b>Disques/Volume</b></th><th>Série</b></th><th>Bus</th><th>Capacité</th><th>Allocation</th><th>Boot Order</th</tr></thead><tbody class='child'><tr><td>/mnt/user/domains/pfSense/vdisk1.img</td><td>vdisk1</td><td>VirtIO</td><td>120G</td><td>48G</td><td>1</td></tr></tbody><thead class='child'><tr><th><i class='fa fa-sitemap'></i> <b>Interfaces</b></th><th></th><th></th><th>Type</th><th>Adresse IP</th><th>Préfixe</th></tr></thead><tbody class='child'><tr><td>Invité arrêté</td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+</template>
+<script>
+  window.mockReload = function () { document.getElementById('kvm_list').innerHTML = document.getElementById('mock-rows').innerHTML; };
+  setTimeout(function () {
+    window.mockReload();
+    // Unraid remembers open details (vmshow cookie); the first VM's are open here.
+    document.getElementById('name-0').style.display = '';
+  }, 200);
+</script>

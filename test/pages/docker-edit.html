@@ -1,0 +1,229 @@
+page: UpdateContainer
+active: Docker
+---
+<!-- Docker > Edit container (CreateDocker.php, 7.3.4): the form part with the network, the
+     config rows (Port / Path) and the docker allocations list, here shown opened. -->
+<style>
+/* dynamix.docker.manager/sheets/CreateDocker.css (7.3.4, the parts this form uses) */
+.noshow,.advanced{display:none}.required:after{content:" *";color:var(--red-800)}
+span.boxed{display:inline-flex;flex-direction:column;gap:.5rem;max-width:100ch}
+#dockerAllocations dt{display:none}#dockerAllocations dl{padding:0}
+@media (min-width:769px){#dockerAllocations dt{display:block}}
+.docker-allocation-row{display:grid;grid-template-columns:minmax(0,230px) minmax(0,120px) minmax(0,160px) 1fr;gap:.25rem}
+</style>
+<script>
+window.csrf_token = 'mock-token';
+var Allocations = [{"Name":"plex","Port":"<span>host</span><span>192.168.1.16</span><span>1900, 32400, 32469</span>"},{"Name":"immich","Port":"<span>bridge</span><span>192.168.1.16</span><span>8080</span>"},{"Name":"jellyfin-with-a-really-long-container-name","Port":"<span>bridge</span><span>192.168.1.16</span><span>8096, 8920</span>"},{"Name":"nextcloud","Port":"<span>proxynet</span><span>192.168.1.16</span><span>444</span>"},{"Name":"minecraft","Port":"<span>bridge</span><span>192.168.1.16</span><span>25565, 25575, 25500, 25501, 25502, 25503, 25504, 25505</span>"},{"Name":"adguard","Port":"<span>br0</span><span>192.168.1.53</span><span>53, 80, 443, 3000</span>"},{"Name":"podcastic-redis","Port":"<span>podcastic_net</span><span>0.0.0.0</span><span>???</span>"}];
+var drivers = {};
+drivers['bridge']='bridge';
+drivers['host']='host';
+drivers['none']='null';
+drivers['br0']='macvlan';
+drivers['proxynet']='bridge';
+drivers['podcastic_net']='bridge';
+// Unraid's handlers the form calls, stubbed.
+function showSubnet() {}
+function toggleReadmore() {}
+function toggleAllocations() {}
+function editConfigPopup() {}
+function removeConfig() {}
+</script>
+<div id="displaybox">
+<div class="content">
+<div class="title"><span class="left"><i class="fa fa-cubes title"></i>Modifier le conteneur</span><span class="right inline-flex flex-row items-center gap-1"></span></div>
+<form markdown="1" method="POST" autocomplete="off" onsubmit="return false">
+<dl><dt>Nom:</dt><dd><input type="text" name="contName" pattern="[a-zA-Z0-9][a-zA-Z0-9_.\-]+" required value="jellyfin-with-a-really-long-container-name"></dd></dl>
+<dl><dt>Dépôt:</dt><dd><input type="text" name="contRepository" value="jellyfin/jellyfin"></dd></dl>
+<dl><dt>Type de réseau:</dt><dd><select name="contNetwork" onchange="showSubnet(this.value)">
+  <option value="bridge" selected>Bridge</option>
+  <option value="host">Host</option>
+  <option value="container">Container</option>
+  <option value="none">None</option>
+  <option value="br0">Custom : br0</option>
+  <option value="proxynet">Custom : proxynet</option>
+</select></dd></dl>
+<div id="configLocation">
+<div id='ConfigNum1' class='config_always'' >
+<input type="hidden" name="confName[]" value="WebUI">
+<input type="hidden" name="confTarget[]" value="8096">
+<input type="hidden" name="confDefault[]" value="8096">
+<input type="hidden" name="confMode[]" value="tcp">
+<input type="hidden" name="confDescription[]" value="Interface web">
+<input type="hidden" name="confType[]" value="Port">
+<input type="hidden" name="confDisplay[]" value="always">
+<input type="hidden" name="confRequired[]" value="true">
+<input type="hidden" name="confMask[]" value="false">
+<dl>
+<dt><span class="required"><i class="fa fa-fw fa-minus-square-o"></i>&nbsp;&nbsp;WebUI:</span></dt>
+<dd><span class="flex flex-col gap-4">
+    <span class="flex flex-row flex-wrap items-center gap-4 buttons-no-margin">
+      <input type="text" class="setting_input numbersOnly" name="confValue[]" default="8096" value="8096" autocomplete="off" spellcheck="false" required>
+      <button type='button' onclick='editConfigPopup(1,false)'>Modifier</button><button type='button' onclick='removeConfig(1)'>Supprimer</button>
+    </span>
+    <span class="boxed">
+      <span class='orange-text'>Container Port: 8096</span>
+      <span class="orange-text">Interface web</span>
+    </span>
+  </span></dd>
+</dl>
+</div>
+<div id='ConfigNum2' class='config_always'' >
+<input type="hidden" name="confName[]" value="HTTPS">
+<input type="hidden" name="confTarget[]" value="8920">
+<input type="hidden" name="confDefault[]" value="32400">
+<input type="hidden" name="confMode[]" value="tcp">
+<input type="hidden" name="confDescription[]" value="Port HTTPS (déjà pris par plex)">
+<input type="hidden" name="confType[]" value="Port">
+<input type="hidden" name="confDisplay[]" value="always">
+<input type="hidden" name="confRequired[]" value="false">
+<input type="hidden" name="confMask[]" value="false">
+<dl>
+<dt><span class=""><i class="fa fa-fw fa-minus-square-o"></i>&nbsp;&nbsp;HTTPS:</span></dt>
+<dd><span class="flex flex-col gap-4">
+    <span class="flex flex-row flex-wrap items-center gap-4 buttons-no-margin">
+      <input type="text" class="setting_input numbersOnly" name="confValue[]" default="32400" value="32400" autocomplete="off" spellcheck="false" >
+      <button type='button' onclick='editConfigPopup(2,false)'>Modifier</button><button type='button' onclick='removeConfig(2)'>Supprimer</button>
+    </span>
+    <span class="boxed">
+      <span class='orange-text'>Container Port: 8920</span>
+      <span class="orange-text">Port HTTPS (déjà pris par plex)</span>
+    </span>
+  </span></dd>
+</dl>
+</div>
+<div id='ConfigNum3' class='config_always'' >
+<input type="hidden" name="confName[]" value="Découverte">
+<input type="hidden" name="confTarget[]" value="7359">
+<input type="hidden" name="confDefault[]" value="7359">
+<input type="hidden" name="confMode[]" value="udp">
+<input type="hidden" name="confDescription[]" value="">
+<input type="hidden" name="confType[]" value="Port">
+<input type="hidden" name="confDisplay[]" value="always">
+<input type="hidden" name="confRequired[]" value="false">
+<input type="hidden" name="confMask[]" value="false">
+<dl>
+<dt><span class=""><i class="fa fa-fw fa-minus-square-o"></i>&nbsp;&nbsp;Découverte:</span></dt>
+<dd><span class="flex flex-col gap-4">
+    <span class="flex flex-row flex-wrap items-center gap-4 buttons-no-margin">
+      <input type="text" class="setting_input numbersOnly" name="confValue[]" default="7359" value="7359" autocomplete="off" spellcheck="false" >
+      <button type='button' onclick='editConfigPopup(3,false)'>Modifier</button><button type='button' onclick='removeConfig(3)'>Supprimer</button>
+    </span>
+    <span class="boxed">
+      <span class='orange-text'>Container Port: 7359</span>
+      <span class="orange-text"></span>
+    </span>
+  </span></dd>
+</dl>
+</div>
+<div id='ConfigNum4' class='config_always'' >
+<input type="hidden" name="confName[]" value="DLNA">
+<input type="hidden" name="confTarget[]" value="1900">
+<input type="hidden" name="confDefault[]" value="445">
+<input type="hidden" name="confMode[]" value="tcp">
+<input type="hidden" name="confDescription[]" value="Pris par smbd sur le serveur">
+<input type="hidden" name="confType[]" value="Port">
+<input type="hidden" name="confDisplay[]" value="always">
+<input type="hidden" name="confRequired[]" value="false">
+<input type="hidden" name="confMask[]" value="false">
+<dl>
+<dt><span class=""><i class="fa fa-fw fa-minus-square-o"></i>&nbsp;&nbsp;DLNA:</span></dt>
+<dd><span class="flex flex-col gap-4">
+    <span class="flex flex-row flex-wrap items-center gap-4 buttons-no-margin">
+      <input type="text" class="setting_input numbersOnly" name="confValue[]" default="445" value="445" autocomplete="off" spellcheck="false" >
+      <button type='button' onclick='editConfigPopup(4,false)'>Modifier</button><button type='button' onclick='removeConfig(4)'>Supprimer</button>
+    </span>
+    <span class="boxed">
+      <span class='orange-text'>Container Port: 1900</span>
+      <span class="orange-text">Pris par smbd sur le serveur</span>
+    </span>
+  </span></dd>
+</dl>
+</div>
+<div id='ConfigNum5' class='config_always'' >
+<input type="hidden" name="confName[]" value="Plage">
+<input type="hidden" name="confTarget[]" value="9000-9010">
+<input type="hidden" name="confDefault[]" value="9000-90a">
+<input type="hidden" name="confMode[]" value="tcp">
+<input type="hidden" name="confDescription[]" value="">
+<input type="hidden" name="confType[]" value="Port">
+<input type="hidden" name="confDisplay[]" value="always">
+<input type="hidden" name="confRequired[]" value="false">
+<input type="hidden" name="confMask[]" value="false">
+<dl>
+<dt><span class=""><i class="fa fa-fw fa-minus-square-o"></i>&nbsp;&nbsp;Plage:</span></dt>
+<dd><span class="flex flex-col gap-4">
+    <span class="flex flex-row flex-wrap items-center gap-4 buttons-no-margin">
+      <input type="text" class="setting_input numbersOnly" name="confValue[]" default="9000-90a" value="9000-90a" autocomplete="off" spellcheck="false" >
+      <button type='button' onclick='editConfigPopup(5,false)'>Modifier</button><button type='button' onclick='removeConfig(5)'>Supprimer</button>
+    </span>
+    <span class="boxed">
+      <span class='orange-text'>Container Port: 9000-9010</span>
+      <span class="orange-text"></span>
+    </span>
+  </span></dd>
+</dl>
+</div>
+<div id='ConfigNum6' class='config_always'' >
+<input type="hidden" name="confName[]" value="Config">
+<input type="hidden" name="confTarget[]" value="/config">
+<input type="hidden" name="confDefault[]" value="/mnt/user/appdata/jellyfin">
+<input type="hidden" name="confMode[]" value="rw">
+<input type="hidden" name="confDescription[]" value="">
+<input type="hidden" name="confType[]" value="Path">
+<input type="hidden" name="confDisplay[]" value="always">
+<input type="hidden" name="confRequired[]" value="false">
+<input type="hidden" name="confMask[]" value="false">
+<dl>
+<dt><span class=""><i class="fa fa-fw fa-folder-o"></i>&nbsp;&nbsp;Config:</span></dt>
+<dd><span class="flex flex-col gap-4">
+    <span class="flex flex-row flex-wrap items-center gap-4 buttons-no-margin">
+      <input type="text" class="setting_input" name="confValue[]" default="/mnt/user/appdata/jellyfin" value="/mnt/user/appdata/jellyfin" autocomplete="off" spellcheck="false" >
+      <button type='button' onclick='editConfigPopup(6,false)'>Modifier</button><button type='button' onclick='removeConfig(6)'>Supprimer</button>
+    </span>
+    <span class="boxed">
+      <span class='orange-text'>Container Path: /config</span>
+      <span class="orange-text"></span>
+    </span>
+  </span></dd>
+</dl>
+</div>
+</div>
+<dl><dt>&nbsp;</dt><dd><span id="readmore_toggle" class="readmore_collapsed"><a onclick="toggleReadmore()" style="cursor:pointer"><i class="fa fa-fw fa-chevron-down"></i> Afficher plus de réglages ...</a></span><div id="configLocationAdvanced" style="display:none"></div></dd></dl>
+<dl><dt>&nbsp;</dt><dd><span id="allocations_toggle" class="readmore_expanded">
+    <a onclick="toggleAllocations()" style="cursor:pointer">
+      <i class="fa fa-fw fa-chevron-up"></i> Masquer les allocations Docker ...</a>
+  </span>
+  <div id="dockerAllocations" style="display:block"><dl>
+<dt><span class="docker-allocation-dt">&nbsp;</span></dt>
+<dd><span class="docker-allocation-row"><span>plex</span><span>host</span><span>192.168.1.16</span><span>1900, 32400, 32469</span></span></dd>
+</dl>
+<dl>
+<dt><span class="docker-allocation-dt">&nbsp;</span></dt>
+<dd><span class="docker-allocation-row"><span>immich</span><span>bridge</span><span>192.168.1.16</span><span>8080</span></span></dd>
+</dl>
+<dl>
+<dt><span class="docker-allocation-dt">&nbsp;</span></dt>
+<dd><span class="docker-allocation-row"><span>jellyfin-with-a-really-long-container-name</span><span>bridge</span><span>192.168.1.16</span><span>8096, 8920</span></span></dd>
+</dl>
+<dl>
+<dt><span class="docker-allocation-dt">&nbsp;</span></dt>
+<dd><span class="docker-allocation-row"><span>nextcloud</span><span>proxynet</span><span>192.168.1.16</span><span>444</span></span></dd>
+</dl>
+<dl>
+<dt><span class="docker-allocation-dt">&nbsp;</span></dt>
+<dd><span class="docker-allocation-row"><span>minecraft</span><span>bridge</span><span>192.168.1.16</span><span>25565, 25575, 25500, 25501, 25502, 25503, 25504, 25505</span></span></dd>
+</dl>
+<dl>
+<dt><span class="docker-allocation-dt">&nbsp;</span></dt>
+<dd><span class="docker-allocation-row"><span>adguard</span><span>br0</span><span>192.168.1.53</span><span>53, 80, 443, 3000</span></span></dd>
+</dl>
+<dl>
+<dt><span class="docker-allocation-dt">&nbsp;</span></dt>
+<dd><span class="docker-allocation-row"><span>podcastic-redis</span><span>podcastic_net</span><span>0.0.0.0</span><span>???</span></span></dd>
+</dl></div></dd></dl>
+<dl><dt>&nbsp;</dt><dd><a href="javascript:void(0)"><i class="fa fa-fw fa-plus"></i> Ajouter un autre chemin, port, variable, label ou périphérique</a></dd></dl>
+<dl><dt>&nbsp;</dt><dd><input type="submit" value="Appliquer"><input type="button" value="Terminé"></dd></dl>
+</form>
+<div id="dialogAddConfig" style="display:none"></div>
+</div>
+</div>

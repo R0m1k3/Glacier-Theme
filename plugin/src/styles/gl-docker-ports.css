@@ -1,0 +1,251 @@
+/*
+ * Glacier Theme: Docker container editor, port check and allocations view
+ * (scripts/gl-docker-ports.js).
+ *
+ * Ported from Aurora Theme (https://github.com/Tunefish92/Aurora-Theme),
+ * Copyright (c) 2026 Chris (Tunefish), MIT License; see NOTICE.md.
+ */
+
+/* ---- Port check: a tick or cross inside the right edge of the field, the reason under it */
+html.glacier .gl-port-field {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+}
+
+html.glacier .gl-port-field > input {
+    padding-right: 4rem !important;
+}
+
+html.glacier .gl-port-mark {
+    position: absolute;
+    right: 1rem;
+    display: grid;
+    place-items: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    font: normal 1.15rem/1 FontAwesome;
+    opacity: 0;
+    transform: scale(0.6);
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.25s var(--gl-ease), background-color 0.2s, color 0.2s;
+}
+
+html.glacier :is(.gl-port-ok, .gl-port-bad) > .gl-port-mark {
+    opacity: 1;
+    transform: scale(1);
+}
+
+html.glacier .gl-port-ok > .gl-port-mark {
+    color: var(--gl-success-text);
+    background: var(--gl-success-bg);
+}
+
+html.glacier .gl-port-ok > .gl-port-mark::before {
+    content: "\f00c";
+}
+
+html.glacier .gl-port-bad > .gl-port-mark {
+    color: var(--gl-danger-text);
+    background: var(--gl-danger-bg);
+}
+
+html.glacier .gl-port-bad > .gl-port-mark::before {
+    content: "\f00d";
+}
+
+html.glacier .gl-port-ok > input {
+    border-color: color-mix(in srgb, var(--gl-success) 60%, var(--gl-input)) !important;
+}
+
+html.glacier .gl-port-bad > input {
+    border-color: var(--gl-danger) !important;
+    box-shadow: 0 0 0 3px var(--gl-danger-bg) !important;
+}
+
+html.glacier .gl-port-message {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--gl-danger-text);
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+html.glacier .gl-port-message::before {
+    font: normal 1.2rem/1 FontAwesome;
+    content: "\f071";
+}
+
+html.glacier .gl-port-message[hidden] {
+    display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.glacier .gl-port-mark {
+        transition: none;
+    }
+}
+
+/* ---- "Show docker allocations" view */
+html.glacier #dockerAllocations > dl[hidden] {
+    display: none !important;
+}
+
+html.glacier .gl-alloc {
+    margin: 1.2rem 0 2rem;
+    overflow: hidden;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-lg);
+    background: var(--gl-surface);
+}
+
+html.glacier .gl-alloc-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    padding: 1.2rem 1.6rem;
+    border-bottom: 1px solid var(--gl-border);
+    background: var(--gl-subtle);
+}
+
+html.glacier .gl-alloc-head input.gl-alloc-search {
+    flex: 1 1 26rem;
+    width: auto;
+    max-width: 40rem;
+    margin: 0;
+    border-radius: var(--gl-r-full);
+}
+
+html.glacier .gl-alloc-count {
+    color: var(--gl-muted);
+    font-size: 1.2rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+html.glacier .gl-alloc-row {
+    display: grid;
+    grid-template-columns: minmax(14rem, 1.3fr) minmax(9rem, 0.7fr) minmax(11rem, 0.8fr) minmax(0, 2fr);
+    align-items: center;
+    gap: 0.6rem 1.6rem;
+    padding: 0.9rem 1.6rem;
+    border-top: 1px solid var(--gl-border);
+}
+
+html.glacier .gl-alloc-list > .gl-alloc-row:first-child,
+html.glacier .gl-alloc-columns {
+    border-top: 0;
+}
+
+html.glacier .gl-alloc-columns {
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--gl-border);
+    color: var(--gl-muted);
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+html.glacier .gl-alloc-list {
+    max-height: 42rem;
+    overflow-y: auto;
+}
+
+html.glacier .gl-alloc-self {
+    background: var(--gl-accent-soft);
+}
+
+html.glacier .gl-alloc-name {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    color: var(--gl-text);
+    font-weight: 600;
+}
+
+html.glacier .gl-alloc-name-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+html.glacier .gl-alloc-net .gl-pill {
+    max-width: 100%;
+    overflow: hidden;
+    font-family: var(--gl-mono);
+    font-size: 1.1rem;
+    text-overflow: ellipsis;
+}
+
+html.glacier .gl-alloc-net .gl-alloc-bridge { color: var(--gl-info-text); background: var(--gl-info-bg); }
+html.glacier .gl-alloc-net .gl-alloc-host { color: var(--gl-warn-text); background: var(--gl-warn-bg); }
+html.glacier .gl-alloc-net .gl-alloc-own { color: var(--gl-accent); background: var(--gl-accent-soft); }
+
+html.glacier .gl-alloc-ip {
+    color: var(--gl-text-2);
+    font-family: var(--gl-mono);
+    font-size: 1.2rem;
+}
+
+html.glacier .gl-alloc-ports {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    min-width: 0;
+}
+
+html.glacier .gl-alloc-port {
+    padding: 0.1rem 0.8rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-full);
+    color: var(--gl-text-2);
+    font-family: var(--gl-mono);
+    font-size: 1.15rem;
+    font-variant-numeric: tabular-nums;
+    background: var(--gl-subtle);
+}
+
+html.glacier .gl-alloc-port.gl-alloc-clash {
+    border-color: var(--gl-danger);
+    color: var(--gl-danger-text);
+    font-weight: 700;
+    background: var(--gl-danger-bg);
+}
+
+html.glacier .gl-alloc-none,
+html.glacier .gl-alloc-empty {
+    color: var(--gl-muted);
+    font-size: 1.2rem;
+}
+
+html.glacier .gl-alloc-empty {
+    margin: 0;
+    padding: 2rem 1.6rem;
+    text-align: center;
+}
+
+@media (max-width: 767px) {
+    html.glacier .gl-alloc-columns {
+        display: none;
+    }
+
+    html.glacier .gl-alloc-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    html.glacier .gl-alloc-ip {
+        grid-column: 1;
+    }
+
+    html.glacier .gl-alloc-ports {
+        grid-column: 1 / -1;
+    }
+}

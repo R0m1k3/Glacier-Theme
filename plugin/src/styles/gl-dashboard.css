@@ -1,0 +1,481 @@
+/*
+ * Glacier Theme: Dashboard enhancements (scripts/gl-dashboard.js).
+ * Adapted from Aurora Theme (https://github.com/Tunefish92/Aurora-Theme),
+ * Copyright (c) 2026 Chris (Tunefish), MIT License; see NOTICE.md.
+ */
+
+html.glacier .gl-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* ---- Key figures under the greeting card */
+html.glacier #gl-dashboard-summary {
+    margin: 0 0 1.6rem;
+}
+
+/* ---- Containers with an update ready: a badge on the icon's top left (the name follows on
+   the right). The arrow after the
+   name (glacier.css) is left out in this tile, so the update shows once. */
+html.glacier #docker_view span.outer.apps:is(.gl-update, :has(> .inner > span.blue-text)) > span.hand {
+    position: relative;
+}
+
+html.glacier #docker_view span.outer.apps:is(.gl-update, :has(> .inner > span.blue-text)) > span.hand::after {
+    position: absolute;
+    z-index: 1;
+    top: -0.5rem;
+    left: -0.5rem;
+    display: grid;
+    place-items: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    box-sizing: border-box;
+    border: 2px solid var(--gl-surface);
+    border-radius: 50%;
+    color: var(--gl-surface);
+    font: normal 0.9rem/1 FontAwesome;
+    background: var(--gl-warn);
+    content: "\f062";
+}
+
+html.glacier #docker_view .inner > span.blue-text::after {
+    content: none;
+}
+
+/* ---- Processor tile: chips for power and temperature, the cores as a grid of small tiles */
+html.glacier .gl-cpu-tile .gl-cpu-source {
+    display: none !important;
+}
+
+html.glacier .gl-cpu-stats {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+html.glacier .gl-cpu-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.2rem 1.1rem 0.2rem 0.9rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-full);
+    color: var(--gl-text);
+    font-size: 1.2rem;
+    line-height: 1.8;
+    white-space: nowrap;
+    background: var(--gl-subtle);
+}
+
+html.glacier .gl-cpu-chip[hidden] {
+    display: none;
+}
+
+html.glacier .gl-cpu-chip > i {
+    color: var(--gl-accent);
+    font-size: 1.15rem;
+}
+
+html.glacier .gl-cpu-chip > i.fa-thermometer-half {
+    color: var(--gl-warn);
+}
+
+html.glacier .gl-cpu-chip-value {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+html.glacier .gl-cpu-tile tr.gl-cpu-gap,
+html.glacier .gl-cpu-tile tr.gl-cpu-pkg.gl-cpu-pkg-empty {
+    display: none !important;
+}
+
+html.glacier .gl-cpu-tile tr.gl-cpu-pkg span.cpu_open {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    margin-top: 0.4rem;
+}
+
+html.glacier .gl-cpu-pkg-name {
+    color: var(--gl-muted);
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+/* The core rows flow into a grid; the tile's other rows span it, as wide as before. */
+html.glacier table.dashboard > tbody.gl-cpu-tile {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    column-gap: 0.6rem;
+    box-sizing: border-box;
+    padding-right: 2rem;
+    padding-left: 2rem;
+}
+
+html.glacier tbody.gl-cpu-tile > tr {
+    display: block;
+    grid-column: 1 / -1;
+    width: auto;
+    margin: 0 -2rem;
+}
+
+html.glacier tbody.gl-cpu-tile > tr > td {
+    display: block;
+}
+
+html.glacier tbody.gl-cpu-tile > tr.gl-core {
+    grid-column: auto;
+    margin: 0;
+    padding: 0.3rem 0;
+}
+
+html.glacier tbody.gl-cpu-tile > tr.gl-core > td {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "label value" "bar bar";
+    align-items: center;
+    gap: 0.5rem 0.6rem;
+    box-sizing: border-box;
+    height: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-sm);
+    line-height: 1.2;
+    background: var(--gl-subtle);
+}
+
+html.glacier tbody.gl-cpu-tile > tr.gl-core span.w26 {
+    grid-area: label;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+    float: none;
+    overflow: hidden;
+    color: var(--gl-muted);
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+html.glacier .gl-core-type {
+    flex: none;
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.4rem;
+    color: var(--gl-accent);
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.2;
+    background: var(--gl-accent-soft);
+}
+
+html.glacier tbody.gl-cpu-tile > tr.gl-core :is(span.w72, span.w36) {
+    display: contents;
+}
+
+html.glacier tbody.gl-cpu-tile > tr.gl-core .load {
+    grid-area: value;
+    width: auto;
+    margin: 0;
+    color: var(--gl-text);
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+html.glacier tbody.gl-cpu-tile > tr.gl-core .usage-disk {
+    grid-area: bar;
+    width: 100%;
+    height: 0.5rem;
+    margin: 0;
+}
+
+/* A core with hyper-threading: one tile, both loads on top, two thin bars below. */
+html.glacier tbody.gl-cpu-tile > tr.gl-core-pair > td {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: "label v1 v2" "b1 b1 b1" "b2 b2 b2";
+    row-gap: 0.4rem;
+}
+
+html.glacier tbody.gl-cpu-tile > tr.gl-core-pair span.w36:nth-of-type(2) .load { grid-area: v1; }
+html.glacier tbody.gl-cpu-tile > tr.gl-core-pair span.w36:nth-of-type(2) .usage-disk { grid-area: b1; }
+html.glacier tbody.gl-cpu-tile > tr.gl-core-pair span.w36:nth-of-type(3) .load { grid-area: v2; }
+html.glacier tbody.gl-cpu-tile > tr.gl-core-pair span.w36:nth-of-type(3) .usage-disk { grid-area: b2; }
+
+html.glacier tbody.gl-cpu-tile > tr.gl-core-pair .load {
+    font-size: 1.15rem;
+}
+
+html.glacier tbody.gl-cpu-tile > tr.gl-core-pair .usage-disk {
+    height: 0.35rem;
+}
+
+/* ---- Airflow tile: one row of small fan cards, wrapping only when needed */
+html.glacier .gl-fans {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+    gap: 0.8rem;
+    padding: 0.2rem 0 0.4rem;
+}
+
+html.glacier .gl-fan {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: "icon name" "speed speed";
+    align-items: center;
+    gap: 0.4rem 0.6rem;
+    min-width: 0;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-md);
+    line-height: 1.2;
+    background: var(--gl-subtle);
+}
+
+html.glacier .gl-fan-icon {
+    grid-area: icon;
+    color: var(--gl-accent);
+    font-size: 1.2rem;
+    animation: gl-fan-spin 2.4s linear infinite;
+}
+
+html.glacier .gl-fan-name {
+    grid-area: name;
+    overflow: hidden;
+    color: var(--gl-muted);
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+html.glacier table.dashboard span.gl-fan-speed {
+    grid-area: speed;
+    width: auto;
+    color: var(--gl-text);
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+html.glacier .gl-fan.is-idle .gl-fan-icon {
+    color: var(--gl-muted);
+    animation: none;
+}
+
+html.glacier .gl-fan.is-idle .gl-fan-speed {
+    color: var(--gl-muted);
+}
+
+@keyframes gl-fan-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ---- Virtual Machines Usage tile: one card per running VM */
+html.glacier table.dashboard #vm_view_usage > tr:not(:first-child) > td {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 30rem), 1fr));
+    gap: 1rem;
+}
+
+html.glacier table.dashboard #vm_view_usage span.outer.gl-vmuse {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 1rem;
+    float: none;
+    min-width: 0;
+    margin: 0;
+    padding: 1.2rem 1.4rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-md);
+    background: var(--gl-subtle);
+}
+
+html.glacier table.dashboard #vm_view_usage span.outer.gl-vmuse > span.inner {
+    width: auto;
+    min-width: 0;
+    line-height: 1.6;
+}
+
+html.glacier .gl-vmuse-readings {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 0.8rem 1.6rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gl-border);
+}
+
+html.glacier .gl-vmuse-readings > span {
+    display: block;
+    min-width: 0;
+    color: var(--gl-text-2);
+    font-size: 1.2rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+/* "Guest CPU: 3.1%" with its bar under it. */
+html.glacier .gl-vmuse-readings > span > span {
+    display: block;
+}
+
+html.glacier .gl-vmuse-readings .usage-disk.mm {
+    position: relative;
+    width: 100%;
+    height: 0.5rem;
+    margin-top: 0.4rem;
+    overflow: hidden;
+    border-radius: var(--gl-r-full);
+    background: var(--gl-border);
+}
+
+html.glacier .gl-vmuse-readings .usage-disk.mm > span:first-child {
+    position: absolute;
+    inset: 0 auto 0 0;
+    max-width: 100%;
+    font-size: 0;
+    border-radius: var(--gl-r-full);
+    background: var(--gl-accent);
+}
+
+/* ---- System tile: the four usage rings as small panels, all the same height */
+html.glacier .tile-system-memory-charts.gl-rings {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.4rem), 1fr));
+    align-items: stretch;
+    gap: 1rem;
+}
+
+html.glacier .tile-system-memory-charts.gl-rings > span {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    min-width: 0;
+    padding: 1.2rem 0.6rem 1.4rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-md);
+    background: var(--gl-subtle);
+}
+
+html.glacier .tile-system-memory-charts.gl-rings > span > a.info {
+    color: var(--gl-muted);
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 1.3;
+    text-transform: uppercase;
+    text-wrap: balance;
+}
+
+html.glacier .tile-system-memory-charts.gl-rings div.pie {
+    --gl-ring: var(--gl-accent);
+    position: relative;
+    flex: none;
+    width: min(9.6rem, 100%);
+    height: auto;
+    aspect-ratio: 1;
+    margin: auto 0 0;
+}
+
+/* Boot device, log and Docker vdisk: one value each, drawn here in the level's colour. */
+html.glacier .tile-system-memory-charts.gl-rings div.pie:not(#sys0) {
+    background: conic-gradient(var(--gl-ring) calc(var(--gl-p, 0) * 1%), var(--gl-border) 0) !important;
+}
+
+html.glacier .tile-system-memory-charts.gl-rings div.pie[data-level="warning"] {
+    --gl-ring: var(--gl-warn);
+}
+
+html.glacier .tile-system-memory-charts.gl-rings div.pie[data-level="critical"] {
+    --gl-ring: var(--gl-danger);
+}
+
+html.glacier .tile-system-memory-charts.gl-rings div.pie::after {
+    inset: 1.1rem;
+    width: auto;
+    height: auto;
+    background-color: var(--gl-subtle);
+}
+
+html.glacier .tile-system-memory-charts.gl-rings div.pie > span[class^="sys"] {
+    color: var(--gl-text) !important;
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+html.glacier .tile-system-memory-charts.gl-rings div.pie[data-level="warning"] > span[class^="sys"] {
+    color: var(--gl-warn-text) !important;
+}
+
+html.glacier .tile-system-memory-charts.gl-rings div.pie[data-level="critical"] > span[class^="sys"] {
+    color: var(--gl-danger-text) !important;
+}
+
+/* Labels and legend next to the rings. The tile's row is a table that would grow with its
+   content past a phone's width (and be cut off); it keeps the card's width instead. */
+html.glacier table.dashboard tbody > tr:has(.gl-rings) {
+    table-layout: fixed;
+}
+
+html.glacier table.dashboard .tile-system-memory-body:has(> .gl-rings) {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+}
+
+html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) > div {
+    padding: 1.2rem 1.4rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-md);
+    line-height: 1.9;
+}
+
+html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) legend {
+    margin-bottom: 0.2rem;
+    color: var(--gl-muted);
+    font-size: 1.05rem;
+    font-weight: 700;
+    font-variant: normal;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) #dynamic i.fa-circle {
+    font-size: 1rem;
+    vertical-align: 0.1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.glacier .gl-fan-icon {
+        animation: none;
+    }
+}

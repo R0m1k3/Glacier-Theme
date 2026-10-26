@@ -1,0 +1,22 @@
+page: Identification
+active: Settings
+---
+<script>
+  // A sub-page: /Settings/Identification, with the title GlacierTheme.page hands over.
+  history.replaceState(null, '', '/Settings/Identification');
+  document.title = 'Tower/Identification';
+  window.glacierPageTitle = 'Identification';
+</script>
+<div id="displaybox">
+<div class="content">
+<div class="title">
+<span class='left inline-flex flex-row items-center gap-1'><i class='fa fa-home title'></i>Identification</span>                    <span class="right inline-flex flex-row items-center gap-1"></span>
+</div>
+<form markdown="1" name="NameSettings" method="POST" action="/update.htm" target="progressFrame">
+<dl><dt>Nom du serveur:</dt><dd><input type="text" name="NAME" maxlength="15" value="Tower"></dd></dl>
+<dl><dt>Description:</dt><dd><input type="text" name="COMMENT" value="Media &amp; backups"></dd></dl>
+<dl><dt>Modèle:</dt><dd><input type="text" name="SYS_MODEL" value="Custom"></dd></dl>
+<dl><dt>&nbsp;</dt><dd><input type="submit" name="changeNames" value="Appliquer" disabled><input type="button" value="Terminé" onclick="done()"></dd></dl>
+</form>
+</div>
+</div>

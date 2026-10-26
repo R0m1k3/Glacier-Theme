@@ -1,0 +1,161 @@
+/*
+ * Glacier Theme: the VMs tab (scripts/gl-vm.js): actions column, details chevron and snapshot
+ * tools. Section headers are in gl-groups.css.
+ *
+ * Ported from Aurora Theme (https://github.com/Tunefish92/Aurora-Theme),
+ * Copyright (c) 2026 Chris (Tunefish), MIT License; see NOTICE.md.
+ */
+html.glacier #kvm_table th.gl-vm-actions {
+    width: 1%;
+}
+
+html.glacier #kvm_table td.gl-vm-actions {
+    width: 1%;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+html.glacier #kvm_table td.vm-name {
+    white-space: nowrap;
+}
+
+html.glacier #kvm_table td.vm-name > span.outer {
+    white-space: normal;
+}
+
+/* ---- Details chevron in front of the VM's icon */
+html.glacier button.gl-vm-expand {
+    display: inline-grid;
+    place-items: center;
+    width: 2.8rem;
+    min-width: 0;
+    height: 2.8rem;
+    min-height: 0;
+    margin: 0 0.6rem 0 0;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: var(--gl-muted);
+    font-size: 1.1rem;
+    background: transparent;
+    vertical-align: middle;
+}
+
+html.glacier button.gl-vm-expand:hover:not(:disabled) {
+    border: 0;
+    color: var(--gl-accent);
+    background: var(--gl-accent-soft);
+}
+
+html.glacier button.gl-vm-expand:focus-visible {
+    outline: 2px solid var(--gl-accent);
+    outline-offset: 2px;
+}
+
+html.glacier button.gl-vm-expand > i {
+    transition: transform 0.2s var(--gl-ease);
+}
+
+html.glacier button.gl-vm-expand.gl-open {
+    color: var(--gl-accent);
+}
+
+html.glacier button.gl-vm-expand.gl-open > i {
+    transform: rotate(90deg);
+}
+
+/* An open VM and its details read as one block. */
+html.glacier #kvm_list > tr.gl-vm-open > td {
+    background: var(--gl-subtle);
+}
+
+html.glacier #kvm_list > tr.gl-vm-details > td {
+    background: var(--gl-subtle);
+}
+
+html.glacier #kvm_list > tr.gl-vm-details table.domdisk {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+/* ---- Snapshots */
+html.glacier button.gl-snap-create {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    min-height: 2.6rem;
+    margin: 0 0 0 1.2rem;
+    padding: 0 1rem;
+    border: 1px solid var(--gl-input);
+    border-radius: var(--gl-r-full);
+    color: var(--gl-text-2);
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    background: var(--gl-surface);
+    vertical-align: middle;
+}
+
+html.glacier button.gl-snap-create:hover:not(:disabled) {
+    border-color: var(--gl-accent);
+    color: var(--gl-accent);
+    background: var(--gl-surface);
+}
+
+html.glacier .gl-snap-actions {
+    display: inline-flex;
+    gap: 0.2rem;
+    margin-left: 1rem;
+    vertical-align: middle;
+}
+
+html.glacier button.gl-snap-button {
+    display: inline-grid;
+    place-items: center;
+    width: 2.6rem;
+    min-width: 0;
+    height: 2.6rem;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: var(--gl-muted);
+    font-size: 1.1rem;
+    background: transparent;
+}
+
+html.glacier button.gl-snap-button:hover:not(:disabled) {
+    border: 0;
+    color: var(--gl-accent);
+    background: var(--gl-surface);
+}
+
+html.glacier button.gl-snap-button.gl-snap-danger:hover:not(:disabled) {
+    color: var(--gl-danger-text);
+    background: var(--gl-danger-bg);
+}
+
+html.glacier :is(button.gl-snap-button, button.gl-snap-create):focus-visible {
+    outline: 2px solid var(--gl-accent);
+    outline-offset: 2px;
+}
+
+html.glacier td.gl-snap-empty {
+    color: var(--gl-muted);
+    font-style: italic;
+}
+
+/* The VM table scrolls sideways on small screens; a section header stays in view with it. */
+@media (max-width: 767px) {
+    html.glacier #kvm_list > tr.gl-group .gl-group-head {
+        position: sticky;
+        left: 1.6rem;
+        box-sizing: border-box;
+        max-width: calc(100vw - 6.4rem);
+    }
+}

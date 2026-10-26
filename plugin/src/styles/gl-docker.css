@@ -1,0 +1,720 @@
+/*
+ * Glacier Theme: the Docker tab (scripts/gl-docker.js), and the toolbar pieces the VMs tab
+ * shares with it.
+ *
+ * Ported from Aurora Theme (https://github.com/Tunefish92/Aurora-Theme),
+ * Copyright (c) 2026 Chris (Tunefish), MIT License; see NOTICE.md.
+ */
+
+/* ==========================================================================
+   Toolbar: filters, search and view switches as pill groups
+   ========================================================================== */
+html.glacier .gl-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 1.2rem;
+    margin: 0 0 1.6rem;
+}
+
+html.glacier .gl-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.8rem;
+    min-width: 0;
+}
+
+html.glacier .gl-segment {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+    padding: 0.3rem;
+    border-radius: var(--gl-r-full);
+    background: var(--gl-subtle-2);
+}
+
+html.glacier .gl-segment[hidden],
+html.glacier input.gl-search[hidden] {
+    display: none;
+}
+
+html.glacier button.gl-seg {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-width: 0;
+    min-height: 3rem;
+    margin: 0;
+    padding: 0 1.3rem;
+    border: 0;
+    border-radius: var(--gl-r-full);
+    color: var(--gl-text-2);
+    font-size: 1.25rem;
+    font-weight: 500;
+    white-space: nowrap;
+    background: transparent;
+    box-shadow: none;
+}
+
+html.glacier button.gl-seg:hover:not(:disabled) {
+    border: 0;
+    color: var(--gl-text);
+    background: var(--gl-surface);
+}
+
+html.glacier button.gl-seg[aria-pressed="true"],
+html.glacier button.gl-seg[aria-pressed="true"]:hover {
+    color: var(--gl-ink-text);
+    font-weight: 600;
+    background: var(--gl-ink);
+}
+
+html.glacier button.gl-seg:focus-visible,
+html.glacier .gl-row-actions .gl-icon-button:focus-visible,
+html.glacier a.gl-webui:focus-visible {
+    outline: 2px solid var(--gl-accent);
+    outline-offset: 2px;
+}
+
+html.glacier .gl-seg-count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 2rem;
+    height: 1.9rem;
+    padding: 0 0.6rem;
+    border-radius: var(--gl-r-full);
+    color: var(--gl-muted);
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    background: var(--gl-surface);
+    box-sizing: border-box;
+}
+
+html.glacier button.gl-seg[aria-pressed="true"] .gl-seg-count {
+    color: inherit;
+    background: color-mix(in srgb, var(--gl-ink-text) 18%, transparent);
+}
+
+html.glacier .gl-toolbar input.gl-search {
+    width: 24rem;
+    max-width: 100%;
+    min-height: 3.6rem;
+    margin: 0;
+    border-radius: var(--gl-r-full);
+}
+
+html.glacier .gl-native-hidden {
+    display: none !important;
+}
+
+html.glacier .gl-filtered-out {
+    display: none !important;
+}
+
+html.glacier .gl-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+html.glacier .gl-docker-empty {
+    margin: 0;
+    padding: 3.2rem 2rem;
+    color: var(--gl-muted);
+    text-align: center;
+}
+
+html.glacier .gl-docker-empty[hidden] {
+    display: none;
+}
+
+/* ==========================================================================
+   Loading line under the table header until Unraid has the list. The empty placeholder row is
+   hidden meanwhile; it shows by itself after two seconds if the script never gets to it.
+   ========================================================================== */
+html.glacier #docker_list.gl-pending {
+    visibility: hidden;
+    animation: gl-docker-reveal 0s linear 2s forwards;
+}
+
+@keyframes gl-docker-reveal {
+    to { visibility: visible; }
+}
+
+html.glacier .gl-docker-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2rem;
+    padding: 4rem 2rem;
+    color: var(--gl-muted);
+    font-size: 1.3rem;
+    text-align: center;
+}
+
+html.glacier .gl-loader {
+    flex: none;
+    width: 1.8rem;
+    height: 1.8rem;
+    border: 2px solid var(--gl-border);
+    border-top-color: var(--gl-accent);
+    border-radius: 50%;
+    animation: gl-loader-spin 0.8s linear infinite;
+}
+
+@keyframes gl-loader-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.glacier .gl-loader {
+        animation-duration: 2.4s;
+    }
+}
+
+html.glacier body.gl-docker-loading-on div.spinner.fixed {
+    display: none !important;
+}
+
+/* ==========================================================================
+   Row actions and web UI button (Docker and VMs lists)
+   ========================================================================== */
+html.glacier .gl-row-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.2rem;
+}
+
+/* Unraid gives every button a min-width of 86px (default-base.css); gl-core.css does not reset it. */
+html.glacier .gl-icon-button {
+    min-width: 0;
+}
+
+html.glacier .gl-row-actions .gl-icon-button {
+    width: 3.2rem;
+    height: 3.2rem;
+    border-color: transparent;
+    color: var(--gl-muted);
+    font-size: 1.35rem;
+    background: transparent;
+}
+
+html.glacier .gl-row-actions .gl-icon-button:hover:not(:disabled) {
+    border-color: var(--gl-border);
+    color: var(--gl-accent);
+    background: var(--gl-surface);
+}
+
+html.glacier .gl-row-actions .gl-icon-button.gl-primary {
+    color: var(--gl-accent);
+}
+
+html.glacier .gl-row-actions .gl-icon-button.gl-danger:hover:not(:disabled) {
+    border-color: transparent;
+    color: var(--gl-danger-text);
+    background: var(--gl-danger-bg);
+}
+
+html.glacier a.gl-webui {
+    display: inline-grid;
+    place-items: center;
+    width: 3.4rem;
+    height: 3.4rem;
+    border-radius: 50%;
+    color: var(--gl-accent-text);
+    font-size: 1.45rem;
+    text-decoration: none;
+    background: var(--gl-accent);
+    box-shadow: 0 6px 14px -8px var(--gl-accent);
+    cursor: pointer;
+    transition: transform 0.2s var(--gl-ease), box-shadow 0.2s;
+}
+
+html.glacier a.gl-webui:hover {
+    color: var(--gl-accent-text);
+    box-shadow: 0 0 0 4px var(--gl-accent-soft), 0 8px 18px -8px var(--gl-accent);
+    transform: translateY(-1px);
+}
+
+html.glacier .gl-webui-none {
+    display: inline-grid;
+    place-items: center;
+    width: 3.4rem;
+    color: var(--gl-muted);
+    opacity: 0.5;
+}
+
+/* ==========================================================================
+   Compact container list. Unraid's table and rows stay in place; each row becomes a grid, so
+   columns can be hidden and reordered without rebuilding anything. Cells added by the script
+   carry .gl-extra and are hidden in the full table.
+   ========================================================================== */
+html.glacier #docker_containers .gl-extra {
+    display: none;
+}
+
+/* Long names end in "…" (the whole name is the tooltip), in both views. */
+html.glacier #docker_list td.ct-name .appname {
+    display: inline-block;
+    max-width: 26rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+
+/* The list fits its columns to the width it has (a container query: the page may have the
+   menu card beside it or not). */
+html.glacier .TableContainer.gl-compact-wrap {
+    container: gl-ct / inline-size;
+}
+
+html.glacier #docker_containers.gl-compact {
+    --gl-ct-columns:
+        minmax(18rem, 2.4fr) 4.2rem 9.6rem minmax(11rem, 1fr) 6.6rem minmax(11rem, 1fr)
+        minmax(11rem, 1fr) var(--gl-ct-auto, 10rem) var(--gl-ct-actions, 13.6rem);
+    display: block;
+    width: 100%;
+    min-width: 0 !important;
+    overflow: hidden;
+}
+
+/* The group button makes one more action. */
+html.glacier #docker_containers.gl-compact.gl-with-groups {
+    --gl-ct-actions: 17rem;
+}
+
+/* The advanced view adds the start delay next to the autostart switch. */
+html.glacier #docker_containers.gl-compact.gl-advanced {
+    --gl-ct-auto: 17rem;
+}
+
+html.glacier #docker_containers.gl-compact > :is(thead, tbody) {
+    display: block;
+}
+
+html.glacier #docker_containers.gl-compact > thead > tr,
+html.glacier #docker_containers.gl-compact > tbody > tr.gl-ct {
+    display: grid;
+    grid-template-columns: var(--gl-ct-columns);
+    align-items: center;
+    column-gap: 1.2rem;
+    padding: 0 1.6rem;
+}
+
+html.glacier #docker_containers.gl-compact > thead > tr {
+    min-height: 4rem;
+    background: var(--gl-subtle);
+}
+
+html.glacier #docker_containers.gl-compact > tbody > tr.gl-ct {
+    min-height: 6.4rem;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+    border-top: 1px solid var(--gl-border);
+    box-shadow: inset 3px 0 0 transparent;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+html.glacier #docker_containers.gl-compact > tbody > tr.gl-ct:first-child {
+    border-top: 0;
+}
+
+html.glacier #docker_containers.gl-compact > tbody > tr.gl-ct:hover {
+    background: var(--gl-subtle);
+    box-shadow: inset 3px 0 0 var(--gl-accent);
+}
+
+html.glacier #docker_containers.gl-compact > tbody > tr.gl-ct:hover > td {
+    background: transparent;
+}
+
+/* Rows that are not containers (orphan images, "no containers") keep a simple layout. */
+html.glacier #docker_containers.gl-compact > tbody > tr:not(.gl-ct, .advanced, .gl-filtered-out),
+html.glacier #docker_containers.gl-compact > tbody > tr.advanced:not(.gl-ct, .gl-filtered-out)[style*="table-row"] {
+    display: block !important;
+    padding: 0.6rem 1.6rem;
+    border-top: 1px solid var(--gl-border);
+}
+
+html.glacier #docker_containers.gl-compact > tbody > tr:not(.gl-ct) > td {
+    display: inline-block;
+    padding: 0.4rem 1.2rem 0.4rem 0 !important;
+    border: 0;
+    vertical-align: middle;
+}
+
+html.glacier #docker_containers.gl-compact > tbody > tr:not(.gl-ct) > td[colspan="10"] {
+    display: block;
+}
+
+html.glacier #docker_containers.gl-compact th,
+html.glacier #docker_containers.gl-compact tr.gl-ct > td {
+    display: block;
+    width: auto !important;
+    min-width: 0;
+    height: auto;
+    padding: 0 !important;
+    border: 0;
+    line-height: 1.4;
+    text-align: left;
+    background: transparent;
+    border-radius: 0 !important;
+}
+
+html.glacier #docker_containers.gl-compact th {
+    color: var(--gl-muted);
+    font-size: 1.15rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Column order: container, web UI, state, version, CPU, memory, ports, autostart, actions */
+html.glacier #docker_containers.gl-compact .gl-c-name { order: 1; }
+html.glacier #docker_containers.gl-compact .gl-c-webui { order: 2; }
+html.glacier #docker_containers.gl-compact .gl-c-status { order: 3; }
+html.glacier #docker_containers.gl-compact .gl-c-version { order: 4; }
+html.glacier #docker_containers.gl-compact .gl-c-cpu { order: 5; }
+html.glacier #docker_containers.gl-compact .gl-c-mem { order: 6; }
+html.glacier #docker_containers.gl-compact .gl-c-ports { order: 7; }
+html.glacier #docker_containers.gl-compact .gl-c-auto { order: 8; }
+html.glacier #docker_containers.gl-compact .gl-c-actions { order: 9; }
+
+html.glacier #docker_containers.gl-compact :is(.gl-c-network, .gl-c-ip, .gl-c-cport, .gl-c-volumes, .gl-c-uptime, th.gl-c-load) {
+    display: none !important;
+}
+
+html.glacier #docker_containers.gl-compact :is(th.gl-c-webui, th.gl-c-status, th.gl-c-cpu, th.gl-c-mem, th.gl-c-actions) {
+    display: block;
+}
+
+html.glacier #docker_containers.gl-compact tr.gl-ct > td.gl-extra {
+    display: block;
+}
+
+/* Unraid keeps CPU and memory in one cell and updates them live. Dissolving the cell lets the
+   two values sit in their own columns while Unraid goes on updating the same elements. */
+html.glacier #docker_containers.gl-compact tr.gl-ct > td.gl-c-load {
+    display: contents !important;
+}
+
+html.glacier #docker_containers.gl-compact td.gl-c-load > [class^="cpu-"] { order: 5; }
+html.glacier #docker_containers.gl-compact td.gl-c-load > [class^="mem-"] { order: 6; }
+
+html.glacier #docker_containers.gl-compact td.gl-c-load > :is([class^="cpu-"], [class^="mem-"]) {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--gl-text-2);
+    font-size: 1.25rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+html.glacier #docker_containers.gl-compact td.gl-c-load > :is(.usage-disk, br) {
+    display: none;
+}
+
+/* A stopped container has no load. */
+html.glacier #docker_containers.gl-compact tr.gl-ct:has(td.ct-name .inner > i.stopped) td.gl-c-load > :is([class^="cpu-"], [class^="mem-"]) {
+    color: var(--gl-muted);
+    opacity: 0.6;
+}
+
+/* Container cell: icon in a squircle, name, image */
+html.glacier #docker_containers.gl-compact tr.gl-ct > td.ct-name {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+html.glacier #docker_containers.gl-compact td.ct-name > span.outer {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    min-width: 0;
+    margin: 0;
+}
+
+html.glacier #docker_containers.gl-compact td.ct-name span.hand {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 4.2rem;
+    height: 4.2rem;
+    border-radius: 1.3rem;
+    background: var(--gl-subtle-2);
+    box-shadow: inset 0 0 0 1px var(--gl-border);
+}
+
+html.glacier #docker_containers.gl-compact td.ct-name :is(img.img, i.img) {
+    width: 3.4rem;
+    height: 3.4rem;
+    margin: 0;
+    border-radius: 1rem;
+    font-size: 2.4rem;
+    line-height: 3.4rem;
+    text-align: center;
+}
+
+html.glacier #docker_containers.gl-compact td.ct-name .inner {
+    display: block;
+    min-width: 0;
+    line-height: 1.35;
+}
+
+html.glacier #docker_containers.gl-compact td.ct-name .appname {
+    display: block;
+    max-width: 100%;
+    color: var(--gl-text);
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+html.glacier #docker_containers.gl-compact tr.gl-ct:hover td.ct-name .appname a {
+    color: var(--gl-accent);
+}
+
+html.glacier .gl-ct-image {
+    display: none;
+}
+
+html.glacier #docker_containers.gl-compact .gl-ct-image {
+    display: block;
+    margin-top: 0.2rem;
+    overflow: hidden;
+    color: var(--gl-muted);
+    font-family: var(--gl-mono);
+    font-size: 1.1rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* The state has its own column, and the image line replaces the "Container ID / By" block. */
+html.glacier #docker_containers.gl-compact td.ct-name .inner > :is(br, i, .state),
+html.glacier #docker_containers.gl-compact td.ct-name > div.advanced {
+    display: none !important;
+}
+
+/* …but the spinner Unraid shows while a container starts or stops stays visible. */
+html.glacier #docker_containers.gl-compact td.ct-name .inner > i.fa-spin {
+    display: inline-block !important;
+    margin-top: 0.3rem;
+    color: var(--gl-accent);
+}
+
+html.glacier #docker_containers.gl-compact td.gl-c-version {
+    font-size: 1.2rem;
+}
+
+html.glacier #docker_containers.gl-compact td.gl-c-version :is(span, a) {
+    max-width: 100%;
+}
+
+/* Unraid's update links and status words as pills that end in "…" when the column is short. */
+html.glacier #docker_containers.gl-compact td.gl-c-version a.exec > span,
+html.glacier #docker_containers.gl-compact td.gl-c-version > span,
+html.glacier #docker_containers.gl-compact td.gl-c-version > div:not(.advanced) > span {
+    display: inline-block;
+    overflow: hidden;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+html.glacier #docker_containers.gl-compact td.gl-c-version div.advanced {
+    overflow: hidden;
+    color: var(--gl-muted);
+    text-overflow: ellipsis;
+}
+
+html.glacier #docker_containers.gl-compact td.gl-c-ports {
+    color: var(--gl-muted);
+    font-size: 1.15rem;
+    font-variant-numeric: tabular-nums;
+}
+
+html.glacier #docker_containers.gl-compact td.gl-c-ports .docker_readmore {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+html.glacier #docker_containers.gl-compact tr.gl-ct > td.gl-c-auto {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.8rem;
+    white-space: nowrap;
+}
+
+html.glacier #docker_containers.gl-compact td.gl-c-auto .switch-button-background {
+    flex: none;
+    margin: 0;
+}
+
+html.glacier #docker_containers.gl-compact td.gl-c-auto .switch-button-label {
+    min-width: 2.6rem;
+    margin: 0;
+}
+
+html.glacier #docker_containers.gl-compact td.gl-c-auto > div[style*="clear"] {
+    display: none;
+}
+
+/* Start delay ("wait"), shown by Unraid in the advanced view for containers that autostart */
+html.glacier #docker_containers.gl-compact td.gl-c-auto span[id$="-wait"] {
+    float: none !important;
+    margin-left: 1rem;
+    color: var(--gl-muted);
+    font-size: 1.1rem;
+    white-space: nowrap;
+}
+
+html.glacier #docker_containers.gl-compact td.gl-c-auto input.wait {
+    width: 4.6rem;
+    min-height: 2.6rem;
+    margin: 0 0 0 0.6rem;
+    padding: 0 0.6rem;
+    border: 1px solid var(--gl-input);
+    text-align: center;
+}
+
+html.glacier #docker_containers.gl-compact tr.gl-ct.gl-has-update td.ct-name span.hand {
+    box-shadow: inset 0 0 0 1px var(--gl-border), 0 0 0 2px var(--gl-warn-bg);
+}
+
+/* Narrower lists: the ports, then the version give way; Unraid's full table still has them. */
+@container gl-ct (max-width: 1079px) {
+    html.glacier #docker_containers.gl-compact {
+        --gl-ct-columns:
+            minmax(18rem, 2.4fr) 4.2rem 9.6rem minmax(11rem, 1fr) 6.6rem minmax(11rem, 1fr)
+            var(--gl-ct-auto, 10rem) var(--gl-ct-actions, 13.6rem);
+    }
+
+    html.glacier #docker_containers.gl-compact .gl-c-ports {
+        display: none !important;
+    }
+}
+
+@container gl-ct (max-width: 879px) {
+    html.glacier #docker_containers.gl-compact {
+        --gl-ct-columns:
+            minmax(16rem, 2fr) 4.2rem 9.6rem 6.6rem minmax(10rem, 1fr)
+            var(--gl-ct-auto, 10rem) var(--gl-ct-actions, 13.6rem);
+    }
+
+    html.glacier #docker_containers.gl-compact .gl-c-version {
+        display: none !important;
+    }
+}
+
+/* ==========================================================================
+   Phones (or any list narrower than 640px): each container is a card.
+     row 1: icon, name and image; row 2: state, CPU, memory, web UI; row 3: autostart, actions.
+   ========================================================================== */
+@media (max-width: 767px) {
+    html.glacier .TableContainer.gl-compact-wrap {
+        overflow-x: visible;
+    }
+
+    html.glacier .gl-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    html.glacier .gl-toolbar > .gl-segment {
+        align-self: flex-start;
+    }
+
+    html.glacier .gl-toolbar input.gl-search {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+
+    html.glacier .gl-seg-label {
+        display: none;
+    }
+
+    /* Key figures two by two instead of one per row */
+    html.glacier #gl-docker-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+    }
+
+    html.glacier #gl-docker-summary .gl-summary-item {
+        padding: 1.2rem 1.4rem;
+    }
+}
+
+@container gl-ct (max-width: 639px) {
+    html.glacier #docker_containers.gl-compact {
+        border: 0;
+        background: transparent;
+        overflow: visible;
+    }
+
+    html.glacier #docker_containers.gl-compact > thead {
+        display: none;
+    }
+
+    html.glacier #docker_containers.gl-compact > tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    html.glacier #docker_containers.gl-compact > tbody > tr.gl-ct {
+        grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto;
+        row-gap: 1.2rem;
+        column-gap: 1rem;
+        padding: 1.4rem;
+        border: 1px solid var(--gl-border);
+        border-radius: var(--gl-r-lg);
+        background: var(--gl-surface);
+    }
+
+    html.glacier #docker_containers.gl-compact > tbody > tr.gl-ct:first-child {
+        border-top: 1px solid var(--gl-border);
+    }
+
+    html.glacier #docker_containers.gl-compact > tbody > tr.gl-ct:hover {
+        box-shadow: none;
+    }
+
+    html.glacier #docker_containers.gl-compact > tbody > tr:not(.gl-ct) {
+        border: 1px solid var(--gl-border);
+        border-radius: var(--gl-r-lg);
+    }
+
+    html.glacier #docker_containers.gl-compact tr.gl-ct > .gl-c-name { grid-row: 1; grid-column: 1 / -1; }
+    html.glacier #docker_containers.gl-compact tr.gl-ct > .gl-c-status { grid-row: 2; grid-column: 1; }
+    html.glacier #docker_containers.gl-compact td.gl-c-load > [class^="cpu-"] { grid-row: 2; grid-column: 2; }
+    html.glacier #docker_containers.gl-compact td.gl-c-load > [class^="mem-"] { grid-row: 2; grid-column: 3; }
+    html.glacier #docker_containers.gl-compact tr.gl-ct > .gl-c-webui { grid-row: 2; grid-column: 4; justify-self: end; }
+    html.glacier #docker_containers.gl-compact tr.gl-ct > .gl-c-auto { grid-row: 3; grid-column: 1 / 3; }
+    html.glacier #docker_containers.gl-compact tr.gl-ct > .gl-c-actions { grid-row: 3; grid-column: 3 / -1; }
+
+    html.glacier #docker_containers.gl-compact td.gl-c-load > :is([class^="cpu-"], [class^="mem-"])::before {
+        display: block;
+        color: var(--gl-muted);
+        font-size: 1.05rem;
+        font-weight: 600;
+        content: attr(data-gl-label);
+    }
+
+    html.glacier #docker_containers.gl-compact td.ct-name .appname {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+}
