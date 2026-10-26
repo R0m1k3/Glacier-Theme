@@ -79,6 +79,9 @@ plg = f"""<?xml version='1.0' standalone='yes'?>
 
 <CHANGES>
 ###{version}
+- The header is a dark card across the page: logo and version on the left, date and time in the middle, licence, server, notifications and menu on the right.
+
+###2026.10.26.1923
 - More room inside the Unraid card, above the logo and under the version.
 
 ###2026.10.26.1913

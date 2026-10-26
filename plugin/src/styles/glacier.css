@@ -529,8 +529,6 @@ html.glacier #UserProfile > div:last-of-type > span[role="button"] svg[data-slot
 
 /* "Show banner" in Display Settings: the banner becomes a rounded band with light text. */
 html.glacier #header.image {
-    margin: 1.2rem 2.8rem 0;
-    width: auto;
     border-radius: var(--gl-r-xl);
     background: linear-gradient(90deg, rgba(15, 23, 42, 0.72), rgba(15, 23, 42, 0.2) 45%, rgba(15, 23, 42, 0.72)),
         var(--customer-header-background-image) center / cover no-repeat var(--gl-ink);
@@ -1832,14 +1830,31 @@ html.glacier .gl-hero-facts dd.is-warn {
 }
 
 /* ==========================================================================
-   Logo and version in a dark card (on wide screens exactly above the menu card)
+   Header as a dark card across the page: logo and version on the left, date and time in
+   the middle (scripts/glacier.js), Unraid's profile (licence, server, notifications, menu)
+   on the right, restyled for the dark surface.
    ========================================================================== */
-html.glacier #header unraid-header-os-version > div {
+html.glacier #header {
     box-sizing: border-box;
-    padding: 1rem 1.2rem 1rem 1.6rem;
-    border-radius: var(--gl-r-lg);
+    width: auto;
+    min-height: 0;
+    margin: 2rem 2.8rem 2.4rem;
+    padding: 1.6rem 2.4rem;
+    border-radius: var(--gl-r-xl);
+    color: #ffffff;
     background: var(--gl-hero-bg);
     box-shadow: var(--gl-shadow-md), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+html.glacier #header unraid-header-os-version > div {
+    flex-direction: row;
+    align-items: center;
+    gap: 1.4rem;
+}
+
+html.glacier #header unraid-header-os-version > div > a :is(svg, img) {
+    width: auto;
+    height: 2.6rem;
 }
 
 /* The theme-coloured logo option (Display Settings) draws in currentColor: white on the card. */
@@ -1858,29 +1873,106 @@ html.glacier #header unraid-header-os-version span[role="button"][aria-haspopup]
     background: rgba(255, 255, 255, 0.18);
 }
 
-/* Wide screens: as wide as the sidebar, the logo large and the version under it. */
-@media (min-width: 1024px) {
+/* Date and time */
+html.glacier #header .gl-clock {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    min-width: 0;
+    padding: 0 1.6rem;
+    text-align: center;
+    pointer-events: none;
+}
+
+html.glacier #header .gl-clock-time {
+    color: #ffffff;
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+html.glacier #header .gl-clock-date {
+    color: #cbd5e1;
+    font-size: 1.25rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Profile on the dark card */
+html.glacier #header #UserProfile > div:first-of-type {
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+}
+
+html.glacier #header #UserProfile > div:first-of-type em {
+    color: #042f2e;
+    background: var(--gl-accent-bright);
+}
+
+html.glacier #header #UserProfile > div:last-of-type > div:first-child::before {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+html.glacier #header #UserProfile > div:last-of-type > div:first-child > span:last-child {
+    color: #ffffff;
+}
+
+html.glacier #header #UserProfile > div:last-of-type > div:first-child > span:first-child:not(:last-child) {
+    color: #cbd5e1;
+}
+
+html.glacier #header #UserProfile > div:last-of-type > span[role="button"] {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+}
+
+html.glacier #header #UserProfile > div:last-of-type > span[role="button"]:hover,
+html.glacier #header #UserProfile > div:last-of-type > span[role="button"][data-state="open"] {
+    color: var(--gl-accent-bright);
+    background: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+}
+
+/* An avatar picture keeps its own colours. */
+html.glacier #header #UserProfile > div:last-of-type > span[role="button"]:has(img) {
+    background: transparent;
+}
+
+@media (max-width: 1023px) {
     html.glacier #header {
-        min-height: 0;
-        padding-top: 2rem;
-        padding-bottom: 2.4rem;
+        margin: 1.2rem 1.6rem 1.6rem;
+        padding: 1.2rem 1.6rem;
+        border-radius: var(--gl-r-lg);
+    }
+}
+
+/* The clock sits exactly in the middle of the card; narrower windows have no room for it
+   between the logo and the profile. */
+@media (min-width: 1280px) {
+    html.glacier #header {
+        position: relative;
     }
 
-    html.glacier #header unraid-header-os-version > div {
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
-        gap: 1.2rem;
-        width: 21.2rem;
-        min-height: 10.4rem;
-        padding: 2.6rem 2rem 2rem;
-        border-radius: var(--gl-r-xl);
+    html.glacier #header .gl-clock {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        padding: 0;
+        transform: translate(-50%, -50%);
     }
+}
 
-    html.glacier #header unraid-header-os-version > div > a :is(svg, img) {
-        width: 100%;
-        max-width: 17rem;
-        height: auto;
+@media (max-width: 1279px) {
+    html.glacier #header .gl-clock {
+        display: none;
     }
 }
 
@@ -2367,7 +2459,7 @@ html.glacier .clipboard-tooltip {
    ========================================================================== */
 @media (max-width: 767px) {
     html.glacier #header {
-        padding: 0 1.6rem;
+        padding: 1.2rem 1.6rem;
     }
 
     html.glacier #menu {

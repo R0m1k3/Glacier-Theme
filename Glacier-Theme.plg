@@ -3,7 +3,7 @@
 
 <PLUGIN name="Glacier-Theme"
         author="R0m1k3"
-        version="2026.10.26.1923"
+        version="2026.10.26.1928"
         launch="Settings/GlacierThemeSettings"
         pluginURL="https://raw.githubusercontent.com/R0m1k3/Glacier-Theme/main/Glacier-Theme.plg"
         support="https://github.com/R0m1k3/Glacier-Theme/issues"
@@ -11,6 +11,9 @@
         min="7.2.0">
 
 <CHANGES>
+###2026.10.26.1928
+- The header is a dark card across the page: logo and version on the left, date and time in the middle, licence, server, notifications and menu on the right.
+
 ###2026.10.26.1923
 - More room inside the Unraid card, above the logo and under the version.
 
@@ -63,7 +66,7 @@ Title="Glacier Theme"
 // so this is where the theme attaches its files. Link="nav-user" keeps it from adding a button.
 $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierCustomDir = '/boot/config/plugins/Glacier-Theme';
-$glacierVersion = '2026.10.26.1923';
+$glacierVersion = '2026.10.26.1928';
 
 // Emergency switch: any page opened with ?glacier=off stops the theme in this browser
 // (remembered in a cookie) until a page is opened with ?glacier=on.
@@ -196,7 +199,7 @@ $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierAccent = preg_match('/^#[0-9a-fA-F]{6}$/', $glacier['accent'] ?? '') ? $glacier['accent'] : '#0f766e';
 $glacierOnTopTheme = in_array($display['theme'] ?? '', ['white', 'black'], true);
 ?>
-<p class="gl-version">_(Version)_ <strong>2026.10.26.1923</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
+<p class="gl-version">_(Version)_ <strong>2026.10.26.1928</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
 <?php if (!$glacierOnTopTheme): ?>
 <p class="notice">_(Glacier is drawn over the Dynamix White and Black themes. Choose one of them in Settings > Display Settings to see it.)_</p>
 <?php endif; ?>
@@ -6407,7 +6410,36 @@ cat > /usr/local/emhttp/plugins/Glacier-Theme/scripts/glacier.js <<'GLACIER_THEM
     footer.append(link);
   }
 
+  // ---- Date and time in the middle of the header card -----------------------------------
+  // The browser's clock, in the webGUI's language; refreshed when the minute changes.
+  function addClock() {
+    var header = document.getElementById('header');
+    if (!header || header.querySelector('.gl-clock')) return;
+    var locale = root.getAttribute('lang') || undefined;
+    var clock = el('div', 'gl-clock');
+    clock.setAttribute('aria-hidden', 'true');
+    var time = el('span', 'gl-clock-time');
+    var date = el('span', 'gl-clock-date');
+    clock.append(time, date);
+    var logo = header.querySelector('unraid-header-os-version');
+    if (logo) logo.after(clock); else header.prepend(clock);
+    function tick() {
+      var now = new Date();
+      try {
+        time.textContent = now.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+        var text = now.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        date.textContent = text.charAt(0).toUpperCase() + text.slice(1);
+      } catch (error) {
+        time.textContent = now.toTimeString().slice(0, 5);
+        date.textContent = now.toDateString();
+      }
+      setTimeout(tick, 60000 - (now.getSeconds() * 1000 + now.getMilliseconds()) + 50);
+    }
+    tick();
+  }
+
   markMenuCounts();
+  addClock();
   addCredit();
   buildHero();
   watchBadges();
@@ -10663,8 +10695,6 @@ html.glacier #UserProfile > div:last-of-type > span[role="button"] svg[data-slot
 
 /* "Show banner" in Display Settings: the banner becomes a rounded band with light text. */
 html.glacier #header.image {
-    margin: 1.2rem 2.8rem 0;
-    width: auto;
     border-radius: var(--gl-r-xl);
     background: linear-gradient(90deg, rgba(15, 23, 42, 0.72), rgba(15, 23, 42, 0.2) 45%, rgba(15, 23, 42, 0.72)),
         var(--customer-header-background-image) center / cover no-repeat var(--gl-ink);
@@ -11966,14 +11996,31 @@ html.glacier .gl-hero-facts dd.is-warn {
 }
 
 /* ==========================================================================
-   Logo and version in a dark card (on wide screens exactly above the menu card)
+   Header as a dark card across the page: logo and version on the left, date and time in
+   the middle (scripts/glacier.js), Unraid's profile (licence, server, notifications, menu)
+   on the right, restyled for the dark surface.
    ========================================================================== */
-html.glacier #header unraid-header-os-version > div {
+html.glacier #header {
     box-sizing: border-box;
-    padding: 1rem 1.2rem 1rem 1.6rem;
-    border-radius: var(--gl-r-lg);
+    width: auto;
+    min-height: 0;
+    margin: 2rem 2.8rem 2.4rem;
+    padding: 1.6rem 2.4rem;
+    border-radius: var(--gl-r-xl);
+    color: #ffffff;
     background: var(--gl-hero-bg);
     box-shadow: var(--gl-shadow-md), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+html.glacier #header unraid-header-os-version > div {
+    flex-direction: row;
+    align-items: center;
+    gap: 1.4rem;
+}
+
+html.glacier #header unraid-header-os-version > div > a :is(svg, img) {
+    width: auto;
+    height: 2.6rem;
 }
 
 /* The theme-coloured logo option (Display Settings) draws in currentColor: white on the card. */
@@ -11992,29 +12039,106 @@ html.glacier #header unraid-header-os-version span[role="button"][aria-haspopup]
     background: rgba(255, 255, 255, 0.18);
 }
 
-/* Wide screens: as wide as the sidebar, the logo large and the version under it. */
-@media (min-width: 1024px) {
+/* Date and time */
+html.glacier #header .gl-clock {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    min-width: 0;
+    padding: 0 1.6rem;
+    text-align: center;
+    pointer-events: none;
+}
+
+html.glacier #header .gl-clock-time {
+    color: #ffffff;
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+html.glacier #header .gl-clock-date {
+    color: #cbd5e1;
+    font-size: 1.25rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Profile on the dark card */
+html.glacier #header #UserProfile > div:first-of-type {
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+}
+
+html.glacier #header #UserProfile > div:first-of-type em {
+    color: #042f2e;
+    background: var(--gl-accent-bright);
+}
+
+html.glacier #header #UserProfile > div:last-of-type > div:first-child::before {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+html.glacier #header #UserProfile > div:last-of-type > div:first-child > span:last-child {
+    color: #ffffff;
+}
+
+html.glacier #header #UserProfile > div:last-of-type > div:first-child > span:first-child:not(:last-child) {
+    color: #cbd5e1;
+}
+
+html.glacier #header #UserProfile > div:last-of-type > span[role="button"] {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+}
+
+html.glacier #header #UserProfile > div:last-of-type > span[role="button"]:hover,
+html.glacier #header #UserProfile > div:last-of-type > span[role="button"][data-state="open"] {
+    color: var(--gl-accent-bright);
+    background: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+}
+
+/* An avatar picture keeps its own colours. */
+html.glacier #header #UserProfile > div:last-of-type > span[role="button"]:has(img) {
+    background: transparent;
+}
+
+@media (max-width: 1023px) {
     html.glacier #header {
-        min-height: 0;
-        padding-top: 2rem;
-        padding-bottom: 2.4rem;
+        margin: 1.2rem 1.6rem 1.6rem;
+        padding: 1.2rem 1.6rem;
+        border-radius: var(--gl-r-lg);
+    }
+}
+
+/* The clock sits exactly in the middle of the card; narrower windows have no room for it
+   between the logo and the profile. */
+@media (min-width: 1280px) {
+    html.glacier #header {
+        position: relative;
     }
 
-    html.glacier #header unraid-header-os-version > div {
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
-        gap: 1.2rem;
-        width: 21.2rem;
-        min-height: 10.4rem;
-        padding: 2.6rem 2rem 2rem;
-        border-radius: var(--gl-r-xl);
+    html.glacier #header .gl-clock {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        padding: 0;
+        transform: translate(-50%, -50%);
     }
+}
 
-    html.glacier #header unraid-header-os-version > div > a :is(svg, img) {
-        width: 100%;
-        max-width: 17rem;
-        height: auto;
+@media (max-width: 1279px) {
+    html.glacier #header .gl-clock {
+        display: none;
     }
 }
 
@@ -12501,7 +12625,7 @@ html.glacier .clipboard-tooltip {
    ========================================================================== */
 @media (max-width: 767px) {
     html.glacier #header {
-        padding: 0 1.6rem;
+        padding: 1.2rem 1.6rem;
     }
 
     html.glacier #menu {
@@ -12568,7 +12692,7 @@ GLACIER_THEME_EOF
 find /usr/local/emhttp/plugins/Glacier-Theme -type d -exec chmod 755 {} +
 find /usr/local/emhttp/plugins/Glacier-Theme -type f -exec chmod 644 {} +
 echo ""
-echo "Glacier-Theme 2026.10.26.1923 is installed."
+echo "Glacier-Theme 2026.10.26.1928 is installed."
 echo "Settings: Settings > User Utilities > Glacier Theme"
 echo "The theme shows while Settings > Display Settings > Dynamix color theme is White."
 echo ""

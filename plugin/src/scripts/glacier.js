@@ -213,7 +213,36 @@
     footer.append(link);
   }
 
+  // ---- Date and time in the middle of the header card -----------------------------------
+  // The browser's clock, in the webGUI's language; refreshed when the minute changes.
+  function addClock() {
+    var header = document.getElementById('header');
+    if (!header || header.querySelector('.gl-clock')) return;
+    var locale = root.getAttribute('lang') || undefined;
+    var clock = el('div', 'gl-clock');
+    clock.setAttribute('aria-hidden', 'true');
+    var time = el('span', 'gl-clock-time');
+    var date = el('span', 'gl-clock-date');
+    clock.append(time, date);
+    var logo = header.querySelector('unraid-header-os-version');
+    if (logo) logo.after(clock); else header.prepend(clock);
+    function tick() {
+      var now = new Date();
+      try {
+        time.textContent = now.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+        var text = now.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        date.textContent = text.charAt(0).toUpperCase() + text.slice(1);
+      } catch (error) {
+        time.textContent = now.toTimeString().slice(0, 5);
+        date.textContent = now.toDateString();
+      }
+      setTimeout(tick, 60000 - (now.getSeconds() * 1000 + now.getMilliseconds()) + 50);
+    }
+    tick();
+  }
+
   markMenuCounts();
+  addClock();
   addCredit();
   buildHero();
   watchBadges();
