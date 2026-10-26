@@ -79,6 +79,9 @@ plg = f"""<?xml version='1.0' standalone='yes'?>
 
 <CHANGES>
 ###{version}
+- More room inside the Unraid card, above the logo and under the version.
+
+###2026.10.26.1913
 - Wide screens: the quick actions move into a card in the sidebar, under the menu card, as small round buttons five to a row with the array usage bar above them.
 - Larger Unraid card (logo and version) aligned with the sidebar; page headings on a card; 24px between cards and deeper drop shadows, in light and dark.
 - The server name, notifications and menu at the top right now end at the right edge of the page content and centre on the logo card.

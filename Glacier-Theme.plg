@@ -3,7 +3,7 @@
 
 <PLUGIN name="Glacier-Theme"
         author="R0m1k3"
-        version="2026.10.26.1913"
+        version="2026.10.26.1923"
         launch="Settings/GlacierThemeSettings"
         pluginURL="https://raw.githubusercontent.com/R0m1k3/Glacier-Theme/main/Glacier-Theme.plg"
         support="https://github.com/R0m1k3/Glacier-Theme/issues"
@@ -11,6 +11,9 @@
         min="7.2.0">
 
 <CHANGES>
+###2026.10.26.1923
+- More room inside the Unraid card, above the logo and under the version.
+
 ###2026.10.26.1913
 - Wide screens: the quick actions move into a card in the sidebar, under the menu card, as small round buttons five to a row with the array usage bar above them.
 - Larger Unraid card (logo and version) aligned with the sidebar; page headings on a card; 24px between cards and deeper drop shadows, in light and dark.
@@ -60,7 +63,7 @@ Title="Glacier Theme"
 // so this is where the theme attaches its files. Link="nav-user" keeps it from adding a button.
 $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierCustomDir = '/boot/config/plugins/Glacier-Theme';
-$glacierVersion = '2026.10.26.1913';
+$glacierVersion = '2026.10.26.1923';
 
 // Emergency switch: any page opened with ?glacier=off stops the theme in this browser
 // (remembered in a cookie) until a page is opened with ?glacier=on.
@@ -193,7 +196,7 @@ $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierAccent = preg_match('/^#[0-9a-fA-F]{6}$/', $glacier['accent'] ?? '') ? $glacier['accent'] : '#0f766e';
 $glacierOnTopTheme = in_array($display['theme'] ?? '', ['white', 'black'], true);
 ?>
-<p class="gl-version">_(Version)_ <strong>2026.10.26.1913</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
+<p class="gl-version">_(Version)_ <strong>2026.10.26.1923</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
 <?php if (!$glacierOnTopTheme): ?>
 <p class="notice">_(Glacier is drawn over the Dynamix White and Black themes. Choose one of them in Settings > Display Settings to see it.)_</p>
 <?php endif; ?>
@@ -12001,10 +12004,10 @@ html.glacier #header unraid-header-os-version span[role="button"][aria-haspopup]
         flex-direction: column;
         align-items: flex-start;
         justify-content: center;
-        gap: 1rem;
+        gap: 1.2rem;
         width: 21.2rem;
-        min-height: 9.2rem;
-        padding: 1.6rem 2rem;
+        min-height: 10.4rem;
+        padding: 2.6rem 2rem 2rem;
         border-radius: var(--gl-r-xl);
     }
 
@@ -12565,7 +12568,7 @@ GLACIER_THEME_EOF
 find /usr/local/emhttp/plugins/Glacier-Theme -type d -exec chmod 755 {} +
 find /usr/local/emhttp/plugins/Glacier-Theme -type f -exec chmod 644 {} +
 echo ""
-echo "Glacier-Theme 2026.10.26.1913 is installed."
+echo "Glacier-Theme 2026.10.26.1923 is installed."
 echo "Settings: Settings > User Utilities > Glacier Theme"
 echo "The theme shows while Settings > Display Settings > Dynamix color theme is White."
 echo ""
