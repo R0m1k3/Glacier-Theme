@@ -88,7 +88,7 @@
         var value = number(percent[1]);
         items.push({
           label: t('Array', 'Array'),
-          value: (value === null ? percent[1] : Math.round(value * 10) / 10) + '%',
+          value: (value === null ? percent[1] : value.toLocaleString(G.lang, { maximumFractionDigits: 1 })) + '%',
           detail: sizes.length >= 2 ? sizes[0] + ' ' + t('of', 'sur') + ' ' + sizes[1] : t('used', 'utilisé'),
           tone: tone(value) === 'accent' ? 'success' : tone(value)
         });

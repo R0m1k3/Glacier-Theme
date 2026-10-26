@@ -192,6 +192,11 @@ html.glacier .gl-row-actions {
     gap: 0.2rem;
 }
 
+/* Unraid gives every button a min-width of 86px (default-base.css); gl-core.css does not reset it. */
+html.glacier .gl-icon-button {
+    min-width: 0;
+}
+
 html.glacier .gl-row-actions .gl-icon-button {
     width: 3.2rem;
     height: 3.2rem;
@@ -548,12 +553,18 @@ html.glacier #docker_containers.gl-compact tr.gl-ct > td.gl-c-auto {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.4rem 0.6rem;
+    gap: 0.4rem 0.8rem;
     white-space: nowrap;
+}
+
+html.glacier #docker_containers.gl-compact td.gl-c-auto .switch-button-background {
+    flex: none;
+    margin: 0;
 }
 
 html.glacier #docker_containers.gl-compact td.gl-c-auto .switch-button-label {
     min-width: 2.6rem;
+    margin: 0;
 }
 
 html.glacier #docker_containers.gl-compact td.gl-c-auto > div[style*="clear"] {
@@ -632,6 +643,16 @@ html.glacier #docker_containers.gl-compact tr.gl-ct.gl-has-update td.ct-name spa
 
     html.glacier .gl-seg-label {
         display: none;
+    }
+
+    /* Key figures two by two instead of one per row */
+    html.glacier :is(#gl-docker-summary, #gl-vm-summary) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+    }
+
+    html.glacier :is(#gl-docker-summary, #gl-vm-summary) .gl-summary-item {
+        padding: 1.2rem 1.4rem;
     }
 }
 

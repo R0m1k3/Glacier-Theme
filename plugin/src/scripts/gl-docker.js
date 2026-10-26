@@ -160,6 +160,10 @@
         line.title = image;
         inner.append(line);
       }
+      // Update links and words in the version column may end in "…"; the whole text is the tooltip.
+      row.querySelectorAll('td.updatecolumn a.exec > span, td.updatecolumn > span, td.updatecolumn > div:not(.advanced) > span').forEach(function (node) {
+        if (!node.title) node.title = node.textContent.trim();
+      });
       var cpu = row.querySelector('[class^="cpu-"]');
       var mem = row.querySelector('[class^="mem-"]');
       if (cpu) cpu.setAttribute('data-gl-label', 'CPU');

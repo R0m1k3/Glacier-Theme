@@ -1,0 +1,266 @@
+/*
+ * Glacier Theme: Dashboard container dialog (scripts/gl-dashboard-dialog.js), built on the
+ * shared dialog (.gl-modal in gl-core.css).
+ *
+ * Ported from Aurora Theme (https://github.com/Tunefish92/Aurora-Theme),
+ * Copyright (c) 2026 Tunefish, MIT License; see NOTICE.md.
+ */
+html.glacier #docker_view span.outer.apps > span.hand[data-gl-dialog="1"],
+html.glacier #docker_view span.outer.apps:has(> span.hand[data-gl-dialog="1"]) {
+    cursor: pointer;
+}
+
+html.glacier #docker_view span.hand[data-gl-dialog="1"]:focus-visible {
+    border-radius: 1.2rem;
+    outline: 2px solid var(--gl-accent);
+    outline-offset: 2px;
+}
+
+html.glacier .gl-modal.gl-ct-modal {
+    width: min(54rem, 100%);
+}
+
+/* ---- Head: icon with a state dot, name, tags, close */
+html.glacier .gl-ct-head {
+    display: flex;
+    align-items: center;
+    gap: 1.6rem;
+    margin-bottom: 2rem;
+}
+
+html.glacier .gl-ct-icon {
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 6.4rem;
+    height: 6.4rem;
+    border-radius: 1.8rem;
+    background: var(--gl-subtle-2);
+    box-shadow: inset 0 0 0 1px var(--gl-border);
+}
+
+html.glacier .gl-ct-icon :is(img, img.img) {
+    width: 4.4rem;
+    height: 4.4rem;
+    margin: 0;
+    border-radius: 1.1rem;
+    object-fit: contain;
+}
+
+html.glacier .gl-ct-icon i {
+    margin: 0;
+    color: var(--gl-text-2);
+    font-size: 3.4rem;
+}
+
+html.glacier .gl-ct-icon::after {
+    position: absolute;
+    right: -0.3rem;
+    bottom: -0.3rem;
+    width: 1.4rem;
+    height: 1.4rem;
+    border: 3px solid var(--gl-surface);
+    border-radius: 50%;
+    background: var(--gl-input);
+    content: "";
+}
+
+html.glacier .gl-ct-running .gl-ct-icon::after { background: var(--gl-success); }
+html.glacier .gl-ct-paused .gl-ct-icon::after { background: var(--gl-warn); }
+
+html.glacier .gl-ct-text {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+html.glacier .gl-ct-text .gl-modal-title {
+    margin: 0 0 0.6rem;
+    overflow: hidden;
+    font-size: 2rem;
+    letter-spacing: -0.01em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+html.glacier .gl-ct-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+html.glacier .gl-ct-state::before {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: currentColor;
+    content: "";
+}
+
+html.glacier .gl-ct-head .gl-ct-close {
+    flex: none;
+    align-self: flex-start;
+    min-width: 0;
+}
+
+/* ---- Buttons */
+html.glacier .gl-ct-primary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+html.glacier .gl-ct-primary > .gl-ct-action {
+    flex: 1 1 0;
+    justify-content: center;
+    min-width: 11rem;
+    min-height: 4.4rem;
+    white-space: nowrap;
+}
+
+/* With four actions (a running container with a web UI), the web UI takes the first row. */
+html.glacier .gl-ct-primary:has(> :nth-child(4)) > .gl-ct-main {
+    flex-basis: 100%;
+}
+
+html.glacier :is(button, a).gl-ct-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    min-width: 0;
+    min-height: 4.4rem;
+    margin: 0;
+    padding: 0 1.4rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-md);
+    color: var(--gl-text);
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-align: left;
+    text-decoration: none;
+    background: var(--gl-subtle);
+    box-shadow: none;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+}
+
+html.glacier :is(button, a).gl-ct-action:hover {
+    border-color: var(--gl-accent);
+    color: var(--gl-accent);
+    background: var(--gl-surface);
+    text-decoration: none;
+}
+
+html.glacier :is(button, a).gl-ct-action:focus-visible {
+    outline: 2px solid var(--gl-accent);
+    outline-offset: 2px;
+}
+
+html.glacier :is(button, a).gl-ct-action > i {
+    width: 1.6rem;
+    color: var(--gl-muted);
+    font-size: 1.4rem;
+    text-align: center;
+}
+
+html.glacier :is(button, a).gl-ct-action:hover > i {
+    color: inherit;
+}
+
+html.glacier :is(button, a).gl-ct-action.gl-ct-main,
+html.glacier :is(button, a).gl-ct-action.gl-ct-main:hover {
+    border-color: var(--gl-accent);
+    color: var(--gl-accent-text);
+    background: var(--gl-accent);
+}
+
+html.glacier :is(button, a).gl-ct-action.gl-ct-main:hover {
+    background: color-mix(in oklab, var(--gl-accent), black 14%);
+}
+
+html.glacier :is(button, a).gl-ct-action.gl-ct-main > i {
+    color: inherit;
+}
+
+html.glacier button.gl-ct-action.gl-ct-danger-soft:hover,
+html.glacier button.gl-ct-action.gl-ct-danger:hover {
+    border-color: var(--gl-danger);
+    color: var(--gl-danger-text);
+    background: var(--gl-danger-bg);
+}
+
+html.glacier button.gl-ct-action.gl-ct-danger > i {
+    color: var(--gl-danger-text);
+}
+
+html.glacier button.gl-ct-action.gl-ct-warn {
+    border-color: var(--gl-warn);
+    color: var(--gl-warn-text);
+    background: var(--gl-warn-bg);
+}
+
+html.glacier button.gl-ct-action.gl-ct-warn > i {
+    color: inherit;
+}
+
+html.glacier button.gl-ct-action.gl-ct-warn:hover {
+    border-color: var(--gl-warn);
+    color: var(--gl-warn-text);
+    background: color-mix(in srgb, var(--gl-warn) 24%, transparent);
+}
+
+html.glacier .gl-ct-section {
+    margin: 2rem 0 0.8rem;
+    color: var(--gl-muted);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+html.glacier .gl-ct-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.8rem;
+}
+
+html.glacier .gl-ct-grid > .gl-ct-action > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---- Phones: a sheet from the bottom edge */
+@media (max-width: 767px) {
+    html.glacier .gl-modal-backdrop:has(> .gl-ct-modal) {
+        place-items: end center;
+        padding: 0;
+    }
+
+    html.glacier .gl-modal.gl-ct-modal {
+        width: 100%;
+        max-height: 88vh;
+        padding: 2rem 1.6rem calc(2rem + env(safe-area-inset-bottom, 0px));
+        border-radius: var(--gl-r-xl) var(--gl-r-xl) 0 0;
+    }
+
+    html.glacier .gl-ct-primary > .gl-ct-action {
+        min-width: calc(50% - 0.4rem);
+    }
+
+    html.glacier .gl-ct-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    html.glacier .gl-ct-icon {
+        width: 5.2rem;
+        height: 5.2rem;
+        border-radius: 1.5rem;
+    }
+
+    html.glacier .gl-ct-icon :is(img, img.img) {
+        width: 3.6rem;
+        height: 3.6rem;
+    }
+}
