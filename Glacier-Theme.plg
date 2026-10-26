@@ -3,7 +3,7 @@
 
 <PLUGIN name="Glacier-Theme"
         author="R0m1k3"
-        version="2026.10.26.2003"
+        version="2026.10.26.2015"
         launch="Settings/GlacierThemeSettings"
         pluginURL="https://raw.githubusercontent.com/R0m1k3/Glacier-Theme/main/Glacier-Theme.plg"
         support="https://github.com/R0m1k3/Glacier-Theme/issues"
@@ -11,6 +11,10 @@
         min="7.2.0">
 
 <CHANGES>
+###2026.10.26.2015
+- Docker advanced view: orphan images, the CPU and memory column and "/ MAC" laid out in the table again (rows and cells Unraid shows with jQuery came back as blocks because of the page grid). Fixes the same for other tables using show/hide.
+- Unraid's page loader (orange animated logo, full screen during some actions and in loading tables) replaced by the accent-coloured comet on a light veil.
+
 ###2026.10.26.2003
 - Notifications panel in Glacier's style, light and dark: a floating rounded card, Unread/Archived as a segmented control, filter pills in the accent tint, each notification on its own soft card, accent buttons and links instead of Unraid's orange. Confirm dialogs, menus and toasts of Unraid's Vue components take the theme colours too.
 
@@ -75,7 +79,7 @@ Title="Glacier Theme"
 // so this is where the theme attaches its files. Link="nav-user" keeps it from adding a button.
 $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierCustomDir = '/boot/config/plugins/Glacier-Theme';
-$glacierVersion = '2026.10.26.2003';
+$glacierVersion = '2026.10.26.2015';
 
 // Emergency switch: any page opened with ?glacier=off stops the theme in this browser
 // (remembered in a cookie) until a page is opened with ?glacier=on.
@@ -208,7 +212,7 @@ $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierAccent = preg_match('/^#[0-9a-fA-F]{6}$/', $glacier['accent'] ?? '') ? $glacier['accent'] : '#0f766e';
 $glacierOnTopTheme = in_array($display['theme'] ?? '', ['white', 'black'], true);
 ?>
-<p class="gl-version">_(Version)_ <strong>2026.10.26.2003</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
+<p class="gl-version">_(Version)_ <strong>2026.10.26.2015</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
 <?php if (!$glacierOnTopTheme): ?>
 <p class="notice">_(Glacier is drawn over the Dynamix White and Black themes. Choose one of them in Settings > Display Settings to see it.)_</p>
 <?php endif; ?>
@@ -8650,7 +8654,7 @@ html.glacier #docker_containers.gl-compact > tbody > tr.gl-ct:hover > td {
 
 /* Rows that are not containers (orphan images, "no containers") keep a simple layout. */
 html.glacier #docker_containers.gl-compact > tbody > tr:not(.gl-ct, .advanced, .gl-filtered-out),
-html.glacier #docker_containers.gl-compact > tbody > tr.advanced:not(.gl-ct, .gl-filtered-out)[style*="table-row"] {
+html.glacier #docker_containers.gl-compact > tbody > tr.advanced:not(.gl-ct, .gl-filtered-out):is([style*="table-row"], [style*="display: block"]) {
     display: block !important;
     padding: 0.6rem 1.6rem;
     border-top: 1px solid var(--gl-border);
@@ -12651,6 +12655,23 @@ html.glacier #statusbar > span.green:first-child { color: var(--gl-success-text)
 html.glacier #statusbar > span.orange:first-child { color: var(--gl-warn-text); background: var(--gl-warn-bg); }
 html.glacier #statusbar > span.red:first-child { color: var(--gl-danger-text); background: var(--gl-danger-bg); }
 
+/* jQuery's show() and toggle() give an element the display of a fresh element of its tag
+   appended to <body>. Glacier's <body> is a grid, which turns every child into a block, so rows,
+   cells and spans Unraid shows that way (the Docker advanced view: orphan images, the CPU column,
+   "/ MAC") come back as display: block. Put the table parts back. Docker's compact list lays its
+   rows out itself (gl-docker.css). */
+html.glacier table:not(.gl-compact) > :is(thead, tbody, tfoot) > tr[style*="display: block"] {
+    display: table-row !important;
+}
+
+html.glacier table:not(.gl-compact) > :is(thead, tbody, tfoot) > tr > :is(td, th)[style*="display: block"] {
+    display: table-cell !important;
+}
+
+html.glacier :is(td, th) span:is(.advanced, .basic)[style*="display: block"] {
+    display: inline !important;
+}
+
 /* ==========================================================================
    Dialogs, menus, tooltips
    ========================================================================== */
@@ -12757,6 +12778,52 @@ html.glacier .la-ball-fall > div:nth-child(3) {
     margin: -0.25rem 0 0 -0.25rem;
     opacity: 0.25;
     animation-delay: 0s;
+}
+
+/* Unraid's page loader (div.spinner: the orange animated logo, full screen while an action runs
+   and inside tables while they load) becomes the same comet, on a light veil over the page. The
+   logo is fixed at the centre of the screen even in table spinners; it is hidden everywhere. The
+   comet is one rotating square painted with three dots: a head and a fading tail. */
+html.glacier div.spinner .unraid_mark {
+    display: none !important;
+}
+
+html.glacier div.spinner.fixed {
+    background: color-mix(in srgb, var(--gl-bg) 55%, transparent);
+    backdrop-filter: blur(2px);
+}
+
+html.glacier div.spinner:has(.unraid_mark)::before {
+    --gl-comet-size: 3.6rem;
+    content: "";
+    display: block;
+    width: var(--gl-comet-size);
+    height: var(--gl-comet-size);
+    margin: 1.6rem auto;
+    background:
+        radial-gradient(circle at 50% 14.3%, var(--gl-accent) 12.5%, transparent 13.5%),
+        radial-gradient(circle at 30% 20.4%, color-mix(in srgb, var(--gl-accent) 55%, transparent) 9.5%, transparent 10.5%),
+        radial-gradient(circle at 17.9% 34.3%, color-mix(in srgb, var(--gl-accent) 25%, transparent) 7.5%, transparent 8.5%);
+    animation: gl-spin 0.9s linear infinite;
+}
+
+html.glacier div.spinner.fixed:has(.unraid_mark)::before {
+    --gl-comet-size: 5.6rem;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin: calc(var(--gl-comet-size) / -2) 0 0 calc(var(--gl-comet-size) / -2);
+    filter: drop-shadow(0 4px 12px color-mix(in srgb, var(--gl-accent) 35%, transparent));
+}
+
+@keyframes gl-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.glacier div.spinner::before {
+        animation-duration: 2.4s;
+    }
 }
 
 @keyframes gl-comet {
@@ -13313,7 +13380,7 @@ done
 find /usr/local/emhttp/plugins/Glacier-Theme -type d -exec chmod 755 {} +
 find /usr/local/emhttp/plugins/Glacier-Theme -type f -exec chmod 644 {} +
 echo ""
-echo "Glacier-Theme 2026.10.26.2003 is installed."
+echo "Glacier-Theme 2026.10.26.2015 is installed."
 echo "Settings: Settings > User Utilities > Glacier Theme"
 echo "The theme shows while Settings > Display Settings > Dynamix color theme is White."
 echo ""

@@ -95,6 +95,10 @@ plg = f"""<?xml version='1.0' standalone='yes'?>
 
 <CHANGES>
 ###{version}
+- Docker advanced view: orphan images, the CPU and memory column and "/ MAC" laid out in the table again (rows and cells Unraid shows with jQuery came back as blocks because of the page grid). Fixes the same for other tables using show/hide.
+- Unraid's page loader (orange animated logo, full screen during some actions and in loading tables) replaced by the accent-coloured comet on a light veil.
+
+###2026.10.26.2003
 - Notifications panel in Glacier's style, light and dark: a floating rounded card, Unread/Archived as a segmented control, filter pills in the accent tint, each notification on its own soft card, accent buttons and links instead of Unraid's orange. Confirm dialogs, menus and toasts of Unraid's Vue components take the theme colours too.
 
 ###2026.10.26.1947

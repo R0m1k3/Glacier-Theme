@@ -2399,6 +2399,23 @@ html.glacier #statusbar > span.green:first-child { color: var(--gl-success-text)
 html.glacier #statusbar > span.orange:first-child { color: var(--gl-warn-text); background: var(--gl-warn-bg); }
 html.glacier #statusbar > span.red:first-child { color: var(--gl-danger-text); background: var(--gl-danger-bg); }
 
+/* jQuery's show() and toggle() give an element the display of a fresh element of its tag
+   appended to <body>. Glacier's <body> is a grid, which turns every child into a block, so rows,
+   cells and spans Unraid shows that way (the Docker advanced view: orphan images, the CPU column,
+   "/ MAC") come back as display: block. Put the table parts back. Docker's compact list lays its
+   rows out itself (gl-docker.css). */
+html.glacier table:not(.gl-compact) > :is(thead, tbody, tfoot) > tr[style*="display: block"] {
+    display: table-row !important;
+}
+
+html.glacier table:not(.gl-compact) > :is(thead, tbody, tfoot) > tr > :is(td, th)[style*="display: block"] {
+    display: table-cell !important;
+}
+
+html.glacier :is(td, th) span:is(.advanced, .basic)[style*="display: block"] {
+    display: inline !important;
+}
+
 /* ==========================================================================
    Dialogs, menus, tooltips
    ========================================================================== */
@@ -2505,6 +2522,52 @@ html.glacier .la-ball-fall > div:nth-child(3) {
     margin: -0.25rem 0 0 -0.25rem;
     opacity: 0.25;
     animation-delay: 0s;
+}
+
+/* Unraid's page loader (div.spinner: the orange animated logo, full screen while an action runs
+   and inside tables while they load) becomes the same comet, on a light veil over the page. The
+   logo is fixed at the centre of the screen even in table spinners; it is hidden everywhere. The
+   comet is one rotating square painted with three dots: a head and a fading tail. */
+html.glacier div.spinner .unraid_mark {
+    display: none !important;
+}
+
+html.glacier div.spinner.fixed {
+    background: color-mix(in srgb, var(--gl-bg) 55%, transparent);
+    backdrop-filter: blur(2px);
+}
+
+html.glacier div.spinner:has(.unraid_mark)::before {
+    --gl-comet-size: 3.6rem;
+    content: "";
+    display: block;
+    width: var(--gl-comet-size);
+    height: var(--gl-comet-size);
+    margin: 1.6rem auto;
+    background:
+        radial-gradient(circle at 50% 14.3%, var(--gl-accent) 12.5%, transparent 13.5%),
+        radial-gradient(circle at 30% 20.4%, color-mix(in srgb, var(--gl-accent) 55%, transparent) 9.5%, transparent 10.5%),
+        radial-gradient(circle at 17.9% 34.3%, color-mix(in srgb, var(--gl-accent) 25%, transparent) 7.5%, transparent 8.5%);
+    animation: gl-spin 0.9s linear infinite;
+}
+
+html.glacier div.spinner.fixed:has(.unraid_mark)::before {
+    --gl-comet-size: 5.6rem;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin: calc(var(--gl-comet-size) / -2) 0 0 calc(var(--gl-comet-size) / -2);
+    filter: drop-shadow(0 4px 12px color-mix(in srgb, var(--gl-accent) 35%, transparent));
+}
+
+@keyframes gl-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.glacier div.spinner::before {
+        animation-duration: 2.4s;
+    }
 }
 
 @keyframes gl-comet {

@@ -338,7 +338,7 @@ html.glacier #docker_containers.gl-compact > tbody > tr.gl-ct:hover > td {
 
 /* Rows that are not containers (orphan images, "no containers") keep a simple layout. */
 html.glacier #docker_containers.gl-compact > tbody > tr:not(.gl-ct, .advanced, .gl-filtered-out),
-html.glacier #docker_containers.gl-compact > tbody > tr.advanced:not(.gl-ct, .gl-filtered-out)[style*="table-row"] {
+html.glacier #docker_containers.gl-compact > tbody > tr.advanced:not(.gl-ct, .gl-filtered-out):is([style*="table-row"], [style*="display: block"]) {
     display: block !important;
     padding: 0.6rem 1.6rem;
     border-top: 1px solid var(--gl-border);

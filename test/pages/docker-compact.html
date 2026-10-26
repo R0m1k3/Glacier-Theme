@@ -71,9 +71,17 @@ window.mockCalls = [];
   var labels = advanced.parentElement.querySelectorAll('.switch-button-label');
   // Unraid's Basic / Advanced switch: jquery.switchbutton.js toggles the box, the page shows
   // or hides every .advanced element.
+  // jQuery's show() and toggle() take the display of a fresh element of the same tag appended
+  // to <body> (getDefaultDisplay); with a grid <body> that is "block" even for rows and cells.
+  function defaultDisplay(tag) {
+    var temp = document.body.appendChild(document.createElement(tag));
+    var display = getComputedStyle(temp).display;
+    temp.remove();
+    return display === 'none' ? 'block' : display;
+  }
   function applyView() {
     document.querySelectorAll('#docker_containers .advanced').forEach(function (node) {
-      node.style.display = advanced.checked ? (node.tagName === 'TD' || node.tagName === 'TH' ? 'table-cell' : node.tagName === 'TR' ? 'table-row' : node.tagName === 'SPAN' ? 'inline' : 'block') : 'none';
+      node.style.display = advanced.checked ? defaultDisplay(node.tagName) : 'none';
     });
     labels[0].style.display = advanced.checked ? 'none' : '';
     labels[1].style.display = advanced.checked ? '' : 'none';
