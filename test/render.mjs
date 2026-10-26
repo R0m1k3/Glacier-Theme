@@ -37,7 +37,7 @@ function page(name, glacier) {
   return template
     .replaceAll('{{CLASSES}}', glacier ? `glacier gl-hero-on gl-page-${opts.page}` : '')
     .replaceAll('{{GLACIER}}', glacier
-      ? '<link rel="stylesheet" href="/plugins/Glacier-Theme/styles/glacier.css"><script defer src="/plugins/Glacier-Theme/scripts/glacier.js"></script>'
+      ? '<script>window.glacierTemp = {"hot":45,"max":55}; window.glacierUpdates = {"docker":1,"plugins":2};</script><link rel="stylesheet" href="/plugins/Glacier-Theme/styles/glacier.css"><script defer src="/plugins/Glacier-Theme/scripts/glacier.js"></script>'
       : '')
     .replaceAll('{{SHEET}}', opts.sheet ? `<link rel="stylesheet" href="/webGui/sheets/${opts.sheet}">` : '')
     .replace(`<div class="nav-item"><a href="/${opts.active}">`, `<div class="nav-item active"><a href="/${opts.active}">`)
@@ -64,11 +64,11 @@ await new Promise((r) => server.listen(0, '127.0.0.1', r));
 const base = `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch();
 const names = process.env.PAGES ? process.env.PAGES.split(',') : fs.readdirSync(pagesDir).filter((f) => f.endsWith('.html')).map((f) => f.slice(0, -5));
-const widths = { desktop: 1440, phone: 390 };
+const widths = { wide: 1920, desktop: 1440, tablet: 900, phone: 390 };
 for (const name of names) {
   for (const mode of ['glacier', 'stock']) {
     for (const [label, width] of Object.entries(widths)) {
-      if (mode === 'stock' && label === 'phone') continue;
+      if (mode === 'stock' && label !== 'desktop') continue;
       const ctx = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 1 });
       const tab = await ctx.newPage();
       const errors = [];

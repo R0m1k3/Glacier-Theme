@@ -4,6 +4,8 @@
  *
  * - Dashboard: a greeting card above the tiles with the server name, the array status
  *   (read from the footer) and the uptime (read from the server tile, kept in step).
+ * - Badges for disk temperatures and file systems in tables. Unraid rewrites those tables
+ *   every few seconds, so new rows are marked as they arrive.
  */
 (function () {
   'use strict';
@@ -16,12 +18,14 @@
     fr: {
       morning: 'Bonjour', afternoon: 'Bon après-midi', evening: 'Bonsoir',
       healthy: 'est en ligne.', attention: 'demande votre attention.', stopped: "a l'array arrêté.",
-      array: 'Array', uptime: 'En ligne depuis', version: 'Version', apps: 'Installer une app', docker: 'Conteneurs'
+      array: 'Array', uptime: 'En ligne depuis', version: 'Version', apps: 'Installer une app', docker: 'Conteneurs',
+      updates: 'Mises à jour', upToDate: 'Tout est à jour', container: ['conteneur', 'conteneurs'], plugin: ['plugin', 'plugins']
     },
     en: {
       morning: 'Good morning', afternoon: 'Good afternoon', evening: 'Good evening',
       healthy: 'is online.', attention: 'needs your attention.', stopped: 'has its array stopped.',
-      array: 'Array', uptime: 'Up for', version: 'Version', apps: 'Install an app', docker: 'Containers'
+      array: 'Array', uptime: 'Up for', version: 'Version', apps: 'Install an app', docker: 'Containers',
+      updates: 'Updates', upToDate: 'All up to date', container: ['container', 'containers'], plugin: ['plugin', 'plugins']
     }
   };
   var t = TEXT[lang] || TEXT.en;
@@ -102,6 +106,14 @@
     }
     fact(t.array, state.label);
     var uptime = fact(t.uptime, text('#tile1 .uptime'));
+    var updates = window.glacierUpdates;
+    if (updates) {
+      var parts = [];
+      if (updates.docker) parts.push(updates.docker + ' ' + t.container[updates.docker > 1 ? 1 : 0]);
+      if (updates.plugins) parts.push(updates.plugins + ' ' + t.plugin[updates.plugins > 1 ? 1 : 0]);
+      var pending = fact(t.updates, parts.length ? parts.join(' · ') : t.upToDate);
+      if (parts.length) pending.className = 'is-warn';
+    }
     if (version) fact(t.version, version);
 
     hero.append(top, facts);
@@ -116,5 +128,82 @@
     }
   }
 
+  // ---- Badges -------------------------------------------------------------------------
+  // "34 °C", or "4.20 W / 34 °C" when power is shown; Unraid puts a thin space before the degree.
+  var TEMP = /^\s*(?:[\d.,]+\s*W\s*\/\s*)?(-?\d+(?:[.,]\d+)?)\s*°\s*([CF])\s*$/;
+  var FS = /^\s*(?:luks:)?(?:xfs|btrfs|zfs|reiserfs|vfat|exfat|ntfs|ext[234]|f2fs)\s*$/i;
+  // Warning and critical disk temperatures from Disk Settings (°C), handed over by GlacierTheme.page.
+  var limits = window.glacierTemp || { hot: 45, max: 55 };
+
+  function celsius(value, unit) {
+    var n = parseFloat(value.replace(',', '.'));
+    return unit === 'F' ? (n - 32) * 5 / 9 : n;
+  }
+
+  function mark(node) {
+    if (node.childElementCount || node.classList.contains('gl-badge')) return;
+    var raw = node.textContent;
+    if (!raw || raw.length > 40) return;
+    var kind = null;
+    var temp = raw.match(TEMP);
+    if (temp) kind = 'gl-temp';
+    else if (FS.test(raw)) kind = 'gl-fs';
+    if (!kind) return;
+    // The cell (or a fixed-width span in a Dashboard tile) keeps its layout; its text goes into
+    // a badge inside it.
+    var target = el('span', 'gl-badge ' + kind, raw.trim());
+    node.textContent = '';
+    node.append(target);
+    if (temp) {
+      var c = celsius(temp[1], temp[2]);
+      if (limits.max > 0 && c >= limits.max) target.classList.add('is-max');
+      else if (limits.hot > 0 && c >= limits.hot) target.classList.add('is-hot');
+    }
+  }
+
+  function markWithin(scope) {
+    if (scope.nodeType !== 1) return;
+    if (scope.matches('#displaybox table td, #displaybox table td span')) mark(scope);
+    scope.querySelectorAll('#displaybox table td, #displaybox table td span').forEach(mark);
+  }
+
+  var pending = new Set();
+  var scheduled = false;
+  function flush() {
+    scheduled = false;
+    pending.forEach(markWithin);
+    pending.clear();
+  }
+
+  function watchBadges() {
+    var box = document.getElementById('displaybox');
+    if (!box) return;
+    markWithin(box);
+    if (!('MutationObserver' in window)) return;
+    new MutationObserver(function (records) {
+      records.forEach(function (record) {
+        pending.add(record.target);
+        record.addedNodes.forEach(function (node) { if (node.nodeType === 1) pending.add(node); });
+      });
+      if (!scheduled) {
+        scheduled = true;
+        requestAnimationFrame(flush);
+      }
+    }).observe(box, { childList: true, subtree: true });
+  }
+
+  // ---- Update counters on the Docker and Plugins menu entries ---------------------------
+  function markMenuCounts() {
+    var updates = window.glacierUpdates;
+    if (!updates) return;
+    [['/Docker', updates.docker], ['/Plugins', updates.plugins]].forEach(function (entry) {
+      if (!entry[1]) return;
+      var link = document.querySelector('#menu .nav-item a[href="' + entry[0] + '"]');
+      if (link) link.setAttribute('data-gl-count', String(entry[1]));
+    });
+  }
+
+  markMenuCounts();
   buildHero();
+  watchBadges();
 })();

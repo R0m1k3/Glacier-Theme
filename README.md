@@ -37,7 +37,9 @@ Dans **Settings → User Utilities → Glacier Theme** :
 
 - **Couleurs et police** : palette Glacier sur toutes les variables du thème White d'Unraid, et Plus Jakarta Sans embarquée (aucune requête externe).
 - **En-tête** : sur le fond de page plutôt qu'en bandeau noir. Le nom du serveur s'affiche derrière une pastille sombre, et les boutons sont ronds et blancs. Une bannière éventuelle devient un bandeau arrondi.
-- **Menu** : barre blanche en pilule, onglet actif en foncé, actions rapides en boutons ronds, collé en haut au défilement.
+- **Menu** : sur grand écran, une carte à gauche du contenu, avec une icône par entrée et l'entrée active en foncé. Les actions rapides (cadenas, recherche, terminal…) sont en boutons ronds, centrés sous l'en-tête. Sur tablette et téléphone, le menu redevient une barre en pilule.
+- **Badges** : états des conteneurs et VMs (démarré, en pause, arrêté), statut des mises à jour et vérifications (Docker, Plugins), températures des disques (orange ou rouge au-delà des seuils de Disk Settings), systèmes de fichiers et type de licence.
+- **Mises à jour** : un compteur sur les entrées Docker et Plugins du menu et dans la carte d'accueil, le bouton Update des plugins et le lien « apply update » de Docker en orange. Les chiffres viennent des vérifications faites par Unraid (Check for updates, vérification planifiée), sans appel en ligne.
 - **Pages** : contenu sur une carte blanche, onglets en contrôle segmenté, titres de section avec l'icône dans un carré teinté, pages Réglages et Outils en tuiles.
 - **Tableau de bord** : chaque tuile devient une carte, avec son icône dans un carré teinté et des boutons ronds. La carte d'accueil reprend le nom du serveur, l'état de l'array et l'uptime, mis à jour en direct.
 - **Formulaires** : champs et listes arrondis avec un anneau de focus, interrupteurs en pilule, boutons en pilule (validation dans la couleur d'accent), rangées de boutons sur une ligne.
@@ -67,7 +69,8 @@ Les sources sont dans `plugin/src/` :
 | `GlacierTheme.page` | Injecté dans le `<head>` de chaque page ; charge le thème si le thème Dynamix est White |
 | `GlacierThemeSettings.page` | Page de réglages |
 | `styles/glacier.css` | Le thème |
-| `scripts/glacier.js` | Carte d'accueil du tableau de bord |
+| `scripts/glacier.js` | Carte d'accueil, badges de température et de système de fichiers, compteurs de mises à jour |
+| `include/updates.php` | Compte les mises à jour Docker et plugins en attente (cache de 10 minutes) |
 | `fonts/` | Plus Jakarta Sans (SIL OFL 1.1) |
 
 Générer le plugin :

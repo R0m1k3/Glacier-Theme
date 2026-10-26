@@ -401,22 +401,28 @@ html.glacier #UserProfile > div:last-of-type > div:first-child::before {
     content: "\f233";
 }
 
-html.glacier #UserProfile > div:last-of-type > div:first-child > span:nth-child(1) {
+/* The spans are "description", "•", "name"; without a description only the name is there,
+   so they are picked by position from the end. */
+html.glacier #UserProfile > div:last-of-type > div:first-child > span:first-child:not(:last-child) {
     grid-row: 2;
     grid-column: 2;
     color: var(--gl-muted);
     font-size: 1.2rem;
 }
 
-html.glacier #UserProfile > div:last-of-type > div:first-child > span:nth-child(2) {
+html.glacier #UserProfile > div:last-of-type > div:first-child > span:not(:first-child):not(:last-child) {
     display: none !important;
 }
 
-html.glacier #UserProfile > div:last-of-type > div:first-child > span:nth-child(3) {
+html.glacier #UserProfile > div:last-of-type > div:first-child > span:last-child {
     grid-row: 1;
     grid-column: 2;
     color: var(--gl-text);
     font: 700 1.5rem/1.3 var(--gl-font);
+}
+
+html.glacier #UserProfile > div:last-of-type > div:first-child > span:only-child {
+    grid-row: 1 / span 2;
 }
 
 html.glacier #UserProfile > div:last-of-type > span[role="button"] {
@@ -591,6 +597,136 @@ html.glacier #menu .usage-bar > span {
     font-size: 1.2rem;
     font-weight: 700;
     background: var(--gl-accent-light);
+}
+
+/* ==========================================================================
+   Wide screens: the main menu in a card on the left of the page, the quick actions centred
+   on a row under the header. The page body becomes a grid and #menu steps aside
+   (display: contents), so its two halves take their own places in it: no script, no flash.
+   Everything else Unraid puts in <body> (fixed footer, spinner, scroll buttons, dialogs)
+   spans the full width below.
+   ========================================================================== */
+@media (min-width: 1024px) {
+    html.glacier body {
+        display: grid;
+        grid-template-columns: 24rem minmax(0, 1fr);
+        grid-template-areas:
+            "head head"
+            "acts acts"
+            "nav  main";
+        align-items: start;
+    }
+
+    html.glacier body > * {
+        grid-column: 1 / -1;
+    }
+
+    html.glacier #header {
+        grid-area: head;
+    }
+
+    html.glacier #menu {
+        display: contents;
+    }
+
+    html.glacier body > #displaybox {
+        grid-area: main;
+        max-width: none;
+        margin: 0;
+        padding: 0 2.8rem 8rem 1.6rem;
+    }
+
+    /* Quick actions, centred */
+    html.glacier .nav-tile.right {
+        grid-area: acts;
+        justify-content: center;
+        margin: 0;
+        padding: 0.4rem 2.8rem 2rem;
+    }
+
+    /* The menu card */
+    html.glacier .nav-tile:not(.right) {
+        grid-area: nav;
+        position: sticky;
+        top: 1.6rem;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.2rem;
+        height: auto;
+        max-height: calc(100vh - 8rem);
+        margin-left: 2.8rem;
+        padding: 1rem;
+        border-radius: var(--gl-r-xl);
+        overflow-x: hidden;
+        overflow-y: auto;
+        white-space: normal;
+        box-shadow: var(--gl-shadow-md);
+    }
+
+    html.glacier .nav-tile:not(.right) .nav-item {
+        display: block;
+        text-align: left;
+    }
+
+    html.glacier .nav-tile:not(.right) .nav-item a {
+        display: flex;
+        gap: 1.2rem;
+        width: 100%;
+        min-height: 4.4rem;
+        padding: 0 1.4rem;
+        border-radius: var(--gl-r-md);
+        box-sizing: border-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* An icon in front of each entry, by its address (Font Awesome 4, shipped with Unraid). */
+    html.glacier .nav-tile:not(.right) .nav-item a::before {
+        flex: 0 0 2rem;
+        color: var(--gl-muted);
+        font: normal 1.6rem/1 FontAwesome;
+        text-align: center;
+        content: "\f1db";
+    }
+
+    html.glacier .nav-tile:not(.right) .nav-item.active a::before {
+        color: var(--gl-accent-bright);
+    }
+
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Dashboard"]::before { content: "\f0e4"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Main"]::before { content: "\f0a0"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Shares"]::before { content: "\f114"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Users"]::before { content: "\f0c0"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Settings"]::before { content: "\f013"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Plugins"]::before { content: "\f12e"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Docker"]::before { content: "\f1b2"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/VMs"]::before { content: "\f108"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Apps"]::before { content: "\f290"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Stats"]::before { content: "\f080"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Tools"]::before { content: "\f0ad"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Favorites"]::before { content: "\f005"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/About"]::before { content: "\f05a"; }
+
+    html.glacier #menu .nav-tile:not(.right) .nav-item a[data-gl-count]::after {
+        margin-left: auto;
+    }
+}
+
+/* Tablets: the menu bar takes its own row, the quick actions centre under it. */
+@media (min-width: 768px) and (max-width: 1023px) {
+    html.glacier #menu {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    html.glacier .nav-tile:not(.right) {
+        flex: 1 1 100%;
+        overflow-x: auto;
+    }
+
+    html.glacier .nav-tile.right {
+        margin: 0;
+    }
 }
 
 /* ==========================================================================
@@ -1351,6 +1487,189 @@ html.glacier .gl-hero-facts dd {
     text-align: left;
     color: #ffffff;
     font-weight: 700;
+}
+
+/* ==========================================================================
+   Badges: short words the webGUI repeats everywhere, as small pills.
+   ========================================================================== */
+html.glacier .gl-badge,
+html.glacier .inner > i.fa + span.state:not(:has(br)),
+html.glacier table:not(.dashboard) td :is(span.green-text, span.orange-text, span.red-text, span.warning):has(> i.fa:first-child),
+html.glacier td.updatecolumn > div:not(.advanced) > span,
+html.glacier #tile1 .leftside b > em {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.2rem 0;
+    padding: 0.1rem 0.9rem;
+    border-radius: var(--gl-r-full);
+    color: var(--gl-text-2);
+    font-size: 1.15rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.7;
+    white-space: nowrap;
+    background: var(--gl-subtle-2);
+    vertical-align: middle;
+}
+
+/* Container and VM states (Dashboard tiles, Docker and VMs pages). The coloured play / square /
+   pause icon in front gives way to a dot in the badge; while Unraid swaps it for a spinner
+   during an action, the spinner shows as before. */
+html.glacier .inner > i.fa:is(.fa-play, .fa-square, .fa-pause):is(.started, .stopped, .paused):has(+ span.state) {
+    display: none;
+}
+
+html.glacier .inner > i.fa + span.state:not(:has(br))::before {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: currentColor;
+    content: "";
+}
+
+html.glacier .inner > i.started + span.state:not(:has(br)) { color: var(--gl-success-text); background: var(--gl-success-bg); }
+html.glacier .inner > i.paused + span.state:not(:has(br)) { color: var(--gl-warn-text); background: var(--gl-warn-bg); }
+html.glacier .inner > i.stopped + span.state:not(:has(br)) { color: var(--gl-muted); background: var(--gl-subtle-2); }
+
+/* Update and check status (Docker "Version" column, Plugins page) */
+html.glacier table:not(.dashboard) td span.green-text:has(> i.fa:first-child) { color: var(--gl-success-text); background: var(--gl-success-bg); }
+html.glacier table:not(.dashboard) td :is(span.orange-text, span.warning):has(> i.fa:first-child) { color: var(--gl-warn-text); background: var(--gl-warn-bg); }
+html.glacier table:not(.dashboard) td span.red-text:has(> i.fa:first-child) { color: var(--gl-danger-text); background: var(--gl-danger-bg); }
+
+html.glacier table:not(.dashboard) td :is(span.green-text, span.orange-text, span.red-text, span.warning):has(> i.fa:first-child) > i.fa {
+    width: auto;
+    font-size: 1.1rem;
+}
+
+/* Licence type on the server tile ("Unraid OS Pro") */
+html.glacier #tile1 .leftside b > em {
+    color: var(--gl-accent);
+    background: var(--gl-accent-soft);
+}
+
+/* Temperatures and file systems, marked by scripts/glacier.js */
+html.glacier .gl-badge.gl-temp { font-variant-numeric: tabular-nums; }
+html.glacier .gl-badge.gl-temp.is-hot { color: var(--gl-warn-text); background: var(--gl-warn-bg); }
+html.glacier .gl-badge.gl-temp.is-max { color: var(--gl-danger-text); background: var(--gl-danger-bg); }
+html.glacier .gl-badge.gl-fs {
+    color: var(--gl-accent);
+    font-family: var(--gl-mono);
+    font-size: 1.1rem;
+    text-transform: lowercase;
+    background: var(--gl-accent-soft);
+}
+
+/* An app with an update ready: Unraid colours its name; a small arrow badge follows it. */
+html.glacier .inner > :is(span.blue-text, .appname.blue-text)::after {
+    display: inline-grid;
+    place-items: center;
+    width: 1.8rem;
+    height: 1.8rem;
+    margin-left: 0.6rem;
+    border-radius: 50%;
+    color: var(--gl-warn-text);
+    font: normal 1rem/1 FontAwesome;
+    background: var(--gl-warn-bg);
+    vertical-align: middle;
+    content: "\f062";
+}
+
+html.glacier .inner > :is(span.blue-text, .appname.blue-text) {
+    color: var(--gl-text);
+}
+
+/* Waiting updates: a counter on the Docker and Plugins menu entries (set by scripts/glacier.js
+   from include/updates.php) */
+html.glacier #menu .nav-item a[data-gl-count]::after {
+    display: inline-grid;
+    place-items: center;
+    min-width: 2rem;
+    height: 2rem;
+    margin-left: 0.8rem;
+    padding: 0 0.6rem;
+    border-radius: var(--gl-r-full);
+    color: var(--gl-warn-text);
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1;
+    background: var(--gl-warn-bg);
+    box-sizing: border-box;
+    content: attr(data-gl-count);
+}
+
+html.glacier #menu .nav-item.active a[data-gl-count]::after {
+    color: #0f172a;
+    background: #fdba74;
+}
+
+/* Plugins page: the new version under the installed one, and the Update button */
+html.glacier table:not(.dashboard) td > br + span.red-text {
+    display: inline-flex;
+    margin-top: 0.4rem;
+    padding: 0.1rem 0.9rem;
+    border-radius: var(--gl-r-full);
+    color: var(--gl-warn-text);
+    font-size: 1.15rem;
+    font-weight: 700;
+    background: var(--gl-warn-bg);
+}
+
+html.glacier table:not(.dashboard) td > br + span.red-text::before {
+    margin-right: 0.5rem;
+    font: normal 1rem/1.6 FontAwesome;
+    content: "\f062";
+}
+
+html.glacier input[type="button"].update:where(:not(.unapi *)):not(:disabled) {
+    border-color: var(--gl-warn);
+    color: #ffffff;
+    background: var(--gl-warn);
+}
+
+html.glacier input[type="button"].update:where(:not(.unapi *)):hover:not(:disabled) {
+    border-color: color-mix(in oklab, var(--gl-warn), black 15%);
+    color: #ffffff;
+    background: color-mix(in oklab, var(--gl-warn), black 15%);
+}
+
+/* Docker page: "apply update" / "force update" links as small action pills */
+html.glacier td.updatecolumn a.exec > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+    padding: 0.1rem 0.9rem;
+    border: 1px solid var(--gl-input);
+    border-radius: var(--gl-r-full);
+    color: var(--gl-text-2);
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.7;
+    background: var(--gl-surface);
+    cursor: pointer;
+}
+
+html.glacier td.updatecolumn a.exec:hover > span {
+    border-color: var(--gl-accent);
+    color: var(--gl-accent);
+}
+
+/* "apply update" (an update is ready) sits straight in the cell; "force update" is in the
+   advanced-view block. The first one gets the warm colour. */
+html.glacier td.updatecolumn > a.exec > span {
+    border-color: var(--gl-warn);
+    color: #ffffff;
+    background: var(--gl-warn);
+}
+
+html.glacier td.updatecolumn > a.exec:hover > span {
+    color: #ffffff;
+    background: color-mix(in oklab, var(--gl-warn), black 15%);
+}
+
+html.glacier .gl-hero-facts dd.is-warn {
+    color: #fdba74;
 }
 
 /* ==========================================================================

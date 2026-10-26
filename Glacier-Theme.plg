@@ -3,7 +3,7 @@
 
 <PLUGIN name="Glacier-Theme"
         author="R0m1k3"
-        version="2026.10.26.1530"
+        version="2026.10.26.1550"
         launch="Settings/GlacierThemeSettings"
         pluginURL="https://raw.githubusercontent.com/R0m1k3/Glacier-Theme/main/Glacier-Theme.plg"
         support="https://github.com/R0m1k3/Glacier-Theme/issues"
@@ -11,6 +11,12 @@
         min="7.2.0">
 
 <CHANGES>
+###2026.10.26.1550
+- Wide screens: the main menu in a card on the left with an icon per entry, the quick actions centred under the header. Tablets: the menu bar on its own row.
+- Badges: container and VM states, update and check status (Docker, Plugins), disk temperatures (warm or red past the Disk Settings thresholds), file systems, licence type.
+- Waiting updates: counters on the Docker and Plugins menu entries and on the Dashboard card; Plugins Update button, new version and Docker "apply update" stand out.
+- Header: the server name shows properly when the server has no description.
+
 ###2026.10.26.1530
 - First release: Glacier light theme over Dynamix White. Plus Jakarta Sans, pill navigation, content cards, Dashboard tiles as cards with a greeting card, rounded tables, inputs, switches, buttons, dialogs and footer. Accent colour setting.
 </CHANGES>
@@ -20,7 +26,7 @@
 <INLINE>
 <![CDATA[
 rm -rf /usr/local/emhttp/plugins/Glacier-Theme
-mkdir -p /usr/local/emhttp/plugins/Glacier-Theme/styles /usr/local/emhttp/plugins/Glacier-Theme/scripts /usr/local/emhttp/plugins/Glacier-Theme/fonts /boot/config/plugins/Glacier-Theme
+mkdir -p /boot/config/plugins/Glacier-Theme /usr/local/emhttp/plugins/Glacier-Theme /usr/local/emhttp/plugins/Glacier-Theme/fonts /usr/local/emhttp/plugins/Glacier-Theme/include /usr/local/emhttp/plugins/Glacier-Theme/scripts /usr/local/emhttp/plugins/Glacier-Theme/styles
 cat > /usr/local/emhttp/plugins/Glacier-Theme/GlacierTheme.page <<'GLACIER_THEME_EOF'
 Menu="Buttons"
 Link="nav-user"
@@ -53,6 +59,25 @@ $glacierPage = preg_replace('/[^A-Za-z0-9_-]/', '', (string) ($myPage['name'] ??
 if ($glacierPage !== '') $glacierClasses[] = 'gl-page-' . $glacierPage;
 ?>
 <script>document.documentElement.classList.add(...<?= json_encode($glacierClasses) ?>);</script>
+<?php // Disk temperature warning and critical thresholds (°C, Disk Settings), for the temperature badges. ?>
+<script>window.glacierTemp = <?= json_encode(['hot' => (int) ($display['hot'] ?? 45), 'max' => (int) ($display['max'] ?? 55)]) ?>;</script>
+<?php
+// Waiting updates, for the counters on the Docker and Plugins menu entries and the Dashboard card.
+// A missing include would be a fatal error on every page, so it is checked first.
+$glacierUpdates = null;
+$glacierUpdatesLib = '/usr/local/emhttp/plugins/Glacier-Theme/include/updates.php';
+if (is_file($glacierUpdatesLib)) {
+    try {
+        require_once $glacierUpdatesLib;
+        $glacierUpdates = glacier_updates();
+    } catch (Throwable $glacierError) {
+        $glacierUpdates = null;
+    }
+}
+?>
+<?php if ($glacierUpdates !== null): ?>
+<script>window.glacierUpdates = <?= json_encode($glacierUpdates) ?>;</script>
+<?php endif; ?>
 <link type="text/css" rel="stylesheet" href="<?php autov('/plugins/Glacier-Theme/styles/glacier.css') ?>">
 <?php
 // Accent colour from the settings page ("#0f766e"). The lighter shades are mixed in CSS; here
@@ -1647,6 +1672,79 @@ aoSAOaOwTijzjiudjBTupVtv69zsmJQVkqjO3rO5nuzZvXVl/vsI+BuzOgT7w54ONA+uLI+N9OcB
 M3AjuaqHTQXw7SDcJSO9KO+yMe8/rHu4/d99u53X3DoyfGHoXl2rDHuIvOGu5W3SOEnox02Lif5G
 a2syXtCqgvTgktEMdHvusr6+nr2Vg4flOW19w3OUS7tB+3XGF9Kuf/gEuwsA
 GLACIER_THEME_EOF
+cat > /usr/local/emhttp/plugins/Glacier-Theme/include/updates.php <<'GLACIER_THEME_EOF'
+<?php
+// Counts the updates waiting for Docker containers and plugins, for the badges in the menu and on
+// the Dashboard card. Read from the files Unraid itself keeps, nothing is checked online:
+//   Docker:  /var/lib/docker/unraid-update-status.json, written by Docker > Check for updates and
+//            the scheduled check; an image whose "status" is "false" has a newer remote version.
+//   Plugins: /var/log/plugins/*.plg are the installed plugins; Plugins > Check for updates
+//            downloads each one's latest .plg to /tmp/plugins/. A newer version there is an update
+//            (compared as text, as Unraid does for plugins). Unraid OS itself is left out: the
+//            header already announces OS updates.
+// The result is cached for ten minutes, so pages do not read every .plg on each load.
+
+const GLACIER_UPDATES_CACHE = '/tmp/glacier-theme/updates.json';
+const GLACIER_UPDATES_TTL = 600;
+
+/** Reads a .plg's PLUGIN attribute ("version", "pluginURL"), resolving its <!ENTITY> values. */
+function glacier_plg_attribute(string $file, string $name): string
+{
+    $text = @file_get_contents($file, false, null, 0, 65536);
+    if (!is_string($text)) return '';
+    $entities = [];
+    if (preg_match_all('/<!ENTITY\s+(\w+)\s+"([^"]*)"\s*>/', $text, $found, PREG_SET_ORDER)) {
+        foreach ($found as $entity) $entities['&' . $entity[1] . ';'] = $entity[2];
+    }
+    if (!preg_match('/<PLUGIN\b[^>]*\b' . preg_quote($name, '/') . '="([^"]*)"/s', $text, $match)) return '';
+    // Entities can refer to others ("&gitURL;/&name;.plg"), so they are resolved twice.
+    return strtr(strtr($match[1], $entities), $entities);
+}
+
+function glacier_count_docker_updates(string $statusFile = '/var/lib/docker/unraid-update-status.json'): int
+{
+    $status = json_decode((string) @file_get_contents($statusFile), true);
+    if (!is_array($status)) return 0;
+    $count = 0;
+    foreach ($status as $image) {
+        if (is_array($image) && ($image['status'] ?? '') === 'false') $count++;
+    }
+    return $count;
+}
+
+function glacier_count_plugin_updates(string $installedDir = '/var/log/plugins', string $latestDir = '/tmp/plugins'): int
+{
+    $count = 0;
+    foreach (glob("$installedDir/*.plg") ?: [] as $installed) {
+        if (basename($installed) === 'unRAIDServer.plg') continue;
+        $url = glacier_plg_attribute($installed, 'pluginURL');
+        if ($url === '') continue;
+        $latest = "$latestDir/" . basename($url);
+        if (!is_file($latest)) continue;
+        $have = glacier_plg_attribute($installed, 'version');
+        $new = glacier_plg_attribute($latest, 'version');
+        if ($have !== '' && $new !== '' && strcmp($new, $have) > 0) $count++;
+    }
+    return $count;
+}
+
+/** ['docker' => n, 'plugins' => n] */
+function glacier_updates(): array
+{
+    $cached = json_decode((string) @file_get_contents(GLACIER_UPDATES_CACHE), true);
+    $fresh = is_array($cached) && time() - (int) ($cached['time'] ?? 0) < GLACIER_UPDATES_TTL;
+    // A check run since the cache was written (either file newer) makes it stale at once.
+    foreach (['/var/lib/docker/unraid-update-status.json', '/tmp/plugins'] as $source) {
+        if ($fresh && @filemtime($source) > (int) $cached['time']) $fresh = false;
+    }
+    if ($fresh) return ['docker' => (int) $cached['docker'], 'plugins' => (int) $cached['plugins']];
+
+    $updates = ['docker' => glacier_count_docker_updates(), 'plugins' => glacier_count_plugin_updates()];
+    if (!is_dir(dirname(GLACIER_UPDATES_CACHE))) @mkdir(dirname(GLACIER_UPDATES_CACHE), 0700, true);
+    @file_put_contents(GLACIER_UPDATES_CACHE, json_encode($updates + ['time' => time()]));
+    return $updates;
+}
+GLACIER_THEME_EOF
 cat > /usr/local/emhttp/plugins/Glacier-Theme/scripts/glacier.js <<'GLACIER_THEME_EOF'
 /*
  * Glacier Theme: page enhancements that CSS alone cannot do.
@@ -1654,6 +1752,8 @@ cat > /usr/local/emhttp/plugins/Glacier-Theme/scripts/glacier.js <<'GLACIER_THEM
  *
  * - Dashboard: a greeting card above the tiles with the server name, the array status
  *   (read from the footer) and the uptime (read from the server tile, kept in step).
+ * - Badges for disk temperatures and file systems in tables. Unraid rewrites those tables
+ *   every few seconds, so new rows are marked as they arrive.
  */
 (function () {
   'use strict';
@@ -1666,12 +1766,14 @@ cat > /usr/local/emhttp/plugins/Glacier-Theme/scripts/glacier.js <<'GLACIER_THEM
     fr: {
       morning: 'Bonjour', afternoon: 'Bon après-midi', evening: 'Bonsoir',
       healthy: 'est en ligne.', attention: 'demande votre attention.', stopped: "a l'array arrêté.",
-      array: 'Array', uptime: 'En ligne depuis', version: 'Version', apps: 'Installer une app', docker: 'Conteneurs'
+      array: 'Array', uptime: 'En ligne depuis', version: 'Version', apps: 'Installer une app', docker: 'Conteneurs',
+      updates: 'Mises à jour', upToDate: 'Tout est à jour', container: ['conteneur', 'conteneurs'], plugin: ['plugin', 'plugins']
     },
     en: {
       morning: 'Good morning', afternoon: 'Good afternoon', evening: 'Good evening',
       healthy: 'is online.', attention: 'needs your attention.', stopped: 'has its array stopped.',
-      array: 'Array', uptime: 'Up for', version: 'Version', apps: 'Install an app', docker: 'Containers'
+      array: 'Array', uptime: 'Up for', version: 'Version', apps: 'Install an app', docker: 'Containers',
+      updates: 'Updates', upToDate: 'All up to date', container: ['container', 'containers'], plugin: ['plugin', 'plugins']
     }
   };
   var t = TEXT[lang] || TEXT.en;
@@ -1752,6 +1854,14 @@ cat > /usr/local/emhttp/plugins/Glacier-Theme/scripts/glacier.js <<'GLACIER_THEM
     }
     fact(t.array, state.label);
     var uptime = fact(t.uptime, text('#tile1 .uptime'));
+    var updates = window.glacierUpdates;
+    if (updates) {
+      var parts = [];
+      if (updates.docker) parts.push(updates.docker + ' ' + t.container[updates.docker > 1 ? 1 : 0]);
+      if (updates.plugins) parts.push(updates.plugins + ' ' + t.plugin[updates.plugins > 1 ? 1 : 0]);
+      var pending = fact(t.updates, parts.length ? parts.join(' · ') : t.upToDate);
+      if (parts.length) pending.className = 'is-warn';
+    }
     if (version) fact(t.version, version);
 
     hero.append(top, facts);
@@ -1766,7 +1876,84 @@ cat > /usr/local/emhttp/plugins/Glacier-Theme/scripts/glacier.js <<'GLACIER_THEM
     }
   }
 
+  // ---- Badges -------------------------------------------------------------------------
+  // "34 °C", or "4.20 W / 34 °C" when power is shown; Unraid puts a thin space before the degree.
+  var TEMP = /^\s*(?:[\d.,]+\s*W\s*\/\s*)?(-?\d+(?:[.,]\d+)?)\s*°\s*([CF])\s*$/;
+  var FS = /^\s*(?:luks:)?(?:xfs|btrfs|zfs|reiserfs|vfat|exfat|ntfs|ext[234]|f2fs)\s*$/i;
+  // Warning and critical disk temperatures from Disk Settings (°C), handed over by GlacierTheme.page.
+  var limits = window.glacierTemp || { hot: 45, max: 55 };
+
+  function celsius(value, unit) {
+    var n = parseFloat(value.replace(',', '.'));
+    return unit === 'F' ? (n - 32) * 5 / 9 : n;
+  }
+
+  function mark(node) {
+    if (node.childElementCount || node.classList.contains('gl-badge')) return;
+    var raw = node.textContent;
+    if (!raw || raw.length > 40) return;
+    var kind = null;
+    var temp = raw.match(TEMP);
+    if (temp) kind = 'gl-temp';
+    else if (FS.test(raw)) kind = 'gl-fs';
+    if (!kind) return;
+    // The cell (or a fixed-width span in a Dashboard tile) keeps its layout; its text goes into
+    // a badge inside it.
+    var target = el('span', 'gl-badge ' + kind, raw.trim());
+    node.textContent = '';
+    node.append(target);
+    if (temp) {
+      var c = celsius(temp[1], temp[2]);
+      if (limits.max > 0 && c >= limits.max) target.classList.add('is-max');
+      else if (limits.hot > 0 && c >= limits.hot) target.classList.add('is-hot');
+    }
+  }
+
+  function markWithin(scope) {
+    if (scope.nodeType !== 1) return;
+    if (scope.matches('#displaybox table td, #displaybox table td span')) mark(scope);
+    scope.querySelectorAll('#displaybox table td, #displaybox table td span').forEach(mark);
+  }
+
+  var pending = new Set();
+  var scheduled = false;
+  function flush() {
+    scheduled = false;
+    pending.forEach(markWithin);
+    pending.clear();
+  }
+
+  function watchBadges() {
+    var box = document.getElementById('displaybox');
+    if (!box) return;
+    markWithin(box);
+    if (!('MutationObserver' in window)) return;
+    new MutationObserver(function (records) {
+      records.forEach(function (record) {
+        pending.add(record.target);
+        record.addedNodes.forEach(function (node) { if (node.nodeType === 1) pending.add(node); });
+      });
+      if (!scheduled) {
+        scheduled = true;
+        requestAnimationFrame(flush);
+      }
+    }).observe(box, { childList: true, subtree: true });
+  }
+
+  // ---- Update counters on the Docker and Plugins menu entries ---------------------------
+  function markMenuCounts() {
+    var updates = window.glacierUpdates;
+    if (!updates) return;
+    [['/Docker', updates.docker], ['/Plugins', updates.plugins]].forEach(function (entry) {
+      if (!entry[1]) return;
+      var link = document.querySelector('#menu .nav-item a[href="' + entry[0] + '"]');
+      if (link) link.setAttribute('data-gl-count', String(entry[1]));
+    });
+  }
+
+  markMenuCounts();
   buildHero();
+  watchBadges();
 })();
 GLACIER_THEME_EOF
 cat > /usr/local/emhttp/plugins/Glacier-Theme/styles/glacier.css <<'GLACIER_THEME_EOF'
@@ -2173,22 +2360,28 @@ html.glacier #UserProfile > div:last-of-type > div:first-child::before {
     content: "\f233";
 }
 
-html.glacier #UserProfile > div:last-of-type > div:first-child > span:nth-child(1) {
+/* The spans are "description", "•", "name"; without a description only the name is there,
+   so they are picked by position from the end. */
+html.glacier #UserProfile > div:last-of-type > div:first-child > span:first-child:not(:last-child) {
     grid-row: 2;
     grid-column: 2;
     color: var(--gl-muted);
     font-size: 1.2rem;
 }
 
-html.glacier #UserProfile > div:last-of-type > div:first-child > span:nth-child(2) {
+html.glacier #UserProfile > div:last-of-type > div:first-child > span:not(:first-child):not(:last-child) {
     display: none !important;
 }
 
-html.glacier #UserProfile > div:last-of-type > div:first-child > span:nth-child(3) {
+html.glacier #UserProfile > div:last-of-type > div:first-child > span:last-child {
     grid-row: 1;
     grid-column: 2;
     color: var(--gl-text);
     font: 700 1.5rem/1.3 var(--gl-font);
+}
+
+html.glacier #UserProfile > div:last-of-type > div:first-child > span:only-child {
+    grid-row: 1 / span 2;
 }
 
 html.glacier #UserProfile > div:last-of-type > span[role="button"] {
@@ -2363,6 +2556,136 @@ html.glacier #menu .usage-bar > span {
     font-size: 1.2rem;
     font-weight: 700;
     background: var(--gl-accent-light);
+}
+
+/* ==========================================================================
+   Wide screens: the main menu in a card on the left of the page, the quick actions centred
+   on a row under the header. The page body becomes a grid and #menu steps aside
+   (display: contents), so its two halves take their own places in it: no script, no flash.
+   Everything else Unraid puts in <body> (fixed footer, spinner, scroll buttons, dialogs)
+   spans the full width below.
+   ========================================================================== */
+@media (min-width: 1024px) {
+    html.glacier body {
+        display: grid;
+        grid-template-columns: 24rem minmax(0, 1fr);
+        grid-template-areas:
+            "head head"
+            "acts acts"
+            "nav  main";
+        align-items: start;
+    }
+
+    html.glacier body > * {
+        grid-column: 1 / -1;
+    }
+
+    html.glacier #header {
+        grid-area: head;
+    }
+
+    html.glacier #menu {
+        display: contents;
+    }
+
+    html.glacier body > #displaybox {
+        grid-area: main;
+        max-width: none;
+        margin: 0;
+        padding: 0 2.8rem 8rem 1.6rem;
+    }
+
+    /* Quick actions, centred */
+    html.glacier .nav-tile.right {
+        grid-area: acts;
+        justify-content: center;
+        margin: 0;
+        padding: 0.4rem 2.8rem 2rem;
+    }
+
+    /* The menu card */
+    html.glacier .nav-tile:not(.right) {
+        grid-area: nav;
+        position: sticky;
+        top: 1.6rem;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.2rem;
+        height: auto;
+        max-height: calc(100vh - 8rem);
+        margin-left: 2.8rem;
+        padding: 1rem;
+        border-radius: var(--gl-r-xl);
+        overflow-x: hidden;
+        overflow-y: auto;
+        white-space: normal;
+        box-shadow: var(--gl-shadow-md);
+    }
+
+    html.glacier .nav-tile:not(.right) .nav-item {
+        display: block;
+        text-align: left;
+    }
+
+    html.glacier .nav-tile:not(.right) .nav-item a {
+        display: flex;
+        gap: 1.2rem;
+        width: 100%;
+        min-height: 4.4rem;
+        padding: 0 1.4rem;
+        border-radius: var(--gl-r-md);
+        box-sizing: border-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* An icon in front of each entry, by its address (Font Awesome 4, shipped with Unraid). */
+    html.glacier .nav-tile:not(.right) .nav-item a::before {
+        flex: 0 0 2rem;
+        color: var(--gl-muted);
+        font: normal 1.6rem/1 FontAwesome;
+        text-align: center;
+        content: "\f1db";
+    }
+
+    html.glacier .nav-tile:not(.right) .nav-item.active a::before {
+        color: var(--gl-accent-bright);
+    }
+
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Dashboard"]::before { content: "\f0e4"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Main"]::before { content: "\f0a0"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Shares"]::before { content: "\f114"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Users"]::before { content: "\f0c0"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Settings"]::before { content: "\f013"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Plugins"]::before { content: "\f12e"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Docker"]::before { content: "\f1b2"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/VMs"]::before { content: "\f108"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Apps"]::before { content: "\f290"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Stats"]::before { content: "\f080"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Tools"]::before { content: "\f0ad"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/Favorites"]::before { content: "\f005"; }
+    html.glacier .nav-tile:not(.right) .nav-item a[href="/About"]::before { content: "\f05a"; }
+
+    html.glacier #menu .nav-tile:not(.right) .nav-item a[data-gl-count]::after {
+        margin-left: auto;
+    }
+}
+
+/* Tablets: the menu bar takes its own row, the quick actions centre under it. */
+@media (min-width: 768px) and (max-width: 1023px) {
+    html.glacier #menu {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    html.glacier .nav-tile:not(.right) {
+        flex: 1 1 100%;
+        overflow-x: auto;
+    }
+
+    html.glacier .nav-tile.right {
+        margin: 0;
+    }
 }
 
 /* ==========================================================================
@@ -3126,6 +3449,189 @@ html.glacier .gl-hero-facts dd {
 }
 
 /* ==========================================================================
+   Badges: short words the webGUI repeats everywhere, as small pills.
+   ========================================================================== */
+html.glacier .gl-badge,
+html.glacier .inner > i.fa + span.state:not(:has(br)),
+html.glacier table:not(.dashboard) td :is(span.green-text, span.orange-text, span.red-text, span.warning):has(> i.fa:first-child),
+html.glacier td.updatecolumn > div:not(.advanced) > span,
+html.glacier #tile1 .leftside b > em {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.2rem 0;
+    padding: 0.1rem 0.9rem;
+    border-radius: var(--gl-r-full);
+    color: var(--gl-text-2);
+    font-size: 1.15rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.7;
+    white-space: nowrap;
+    background: var(--gl-subtle-2);
+    vertical-align: middle;
+}
+
+/* Container and VM states (Dashboard tiles, Docker and VMs pages). The coloured play / square /
+   pause icon in front gives way to a dot in the badge; while Unraid swaps it for a spinner
+   during an action, the spinner shows as before. */
+html.glacier .inner > i.fa:is(.fa-play, .fa-square, .fa-pause):is(.started, .stopped, .paused):has(+ span.state) {
+    display: none;
+}
+
+html.glacier .inner > i.fa + span.state:not(:has(br))::before {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: currentColor;
+    content: "";
+}
+
+html.glacier .inner > i.started + span.state:not(:has(br)) { color: var(--gl-success-text); background: var(--gl-success-bg); }
+html.glacier .inner > i.paused + span.state:not(:has(br)) { color: var(--gl-warn-text); background: var(--gl-warn-bg); }
+html.glacier .inner > i.stopped + span.state:not(:has(br)) { color: var(--gl-muted); background: var(--gl-subtle-2); }
+
+/* Update and check status (Docker "Version" column, Plugins page) */
+html.glacier table:not(.dashboard) td span.green-text:has(> i.fa:first-child) { color: var(--gl-success-text); background: var(--gl-success-bg); }
+html.glacier table:not(.dashboard) td :is(span.orange-text, span.warning):has(> i.fa:first-child) { color: var(--gl-warn-text); background: var(--gl-warn-bg); }
+html.glacier table:not(.dashboard) td span.red-text:has(> i.fa:first-child) { color: var(--gl-danger-text); background: var(--gl-danger-bg); }
+
+html.glacier table:not(.dashboard) td :is(span.green-text, span.orange-text, span.red-text, span.warning):has(> i.fa:first-child) > i.fa {
+    width: auto;
+    font-size: 1.1rem;
+}
+
+/* Licence type on the server tile ("Unraid OS Pro") */
+html.glacier #tile1 .leftside b > em {
+    color: var(--gl-accent);
+    background: var(--gl-accent-soft);
+}
+
+/* Temperatures and file systems, marked by scripts/glacier.js */
+html.glacier .gl-badge.gl-temp { font-variant-numeric: tabular-nums; }
+html.glacier .gl-badge.gl-temp.is-hot { color: var(--gl-warn-text); background: var(--gl-warn-bg); }
+html.glacier .gl-badge.gl-temp.is-max { color: var(--gl-danger-text); background: var(--gl-danger-bg); }
+html.glacier .gl-badge.gl-fs {
+    color: var(--gl-accent);
+    font-family: var(--gl-mono);
+    font-size: 1.1rem;
+    text-transform: lowercase;
+    background: var(--gl-accent-soft);
+}
+
+/* An app with an update ready: Unraid colours its name; a small arrow badge follows it. */
+html.glacier .inner > :is(span.blue-text, .appname.blue-text)::after {
+    display: inline-grid;
+    place-items: center;
+    width: 1.8rem;
+    height: 1.8rem;
+    margin-left: 0.6rem;
+    border-radius: 50%;
+    color: var(--gl-warn-text);
+    font: normal 1rem/1 FontAwesome;
+    background: var(--gl-warn-bg);
+    vertical-align: middle;
+    content: "\f062";
+}
+
+html.glacier .inner > :is(span.blue-text, .appname.blue-text) {
+    color: var(--gl-text);
+}
+
+/* Waiting updates: a counter on the Docker and Plugins menu entries (set by scripts/glacier.js
+   from include/updates.php) */
+html.glacier #menu .nav-item a[data-gl-count]::after {
+    display: inline-grid;
+    place-items: center;
+    min-width: 2rem;
+    height: 2rem;
+    margin-left: 0.8rem;
+    padding: 0 0.6rem;
+    border-radius: var(--gl-r-full);
+    color: var(--gl-warn-text);
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1;
+    background: var(--gl-warn-bg);
+    box-sizing: border-box;
+    content: attr(data-gl-count);
+}
+
+html.glacier #menu .nav-item.active a[data-gl-count]::after {
+    color: #0f172a;
+    background: #fdba74;
+}
+
+/* Plugins page: the new version under the installed one, and the Update button */
+html.glacier table:not(.dashboard) td > br + span.red-text {
+    display: inline-flex;
+    margin-top: 0.4rem;
+    padding: 0.1rem 0.9rem;
+    border-radius: var(--gl-r-full);
+    color: var(--gl-warn-text);
+    font-size: 1.15rem;
+    font-weight: 700;
+    background: var(--gl-warn-bg);
+}
+
+html.glacier table:not(.dashboard) td > br + span.red-text::before {
+    margin-right: 0.5rem;
+    font: normal 1rem/1.6 FontAwesome;
+    content: "\f062";
+}
+
+html.glacier input[type="button"].update:where(:not(.unapi *)):not(:disabled) {
+    border-color: var(--gl-warn);
+    color: #ffffff;
+    background: var(--gl-warn);
+}
+
+html.glacier input[type="button"].update:where(:not(.unapi *)):hover:not(:disabled) {
+    border-color: color-mix(in oklab, var(--gl-warn), black 15%);
+    color: #ffffff;
+    background: color-mix(in oklab, var(--gl-warn), black 15%);
+}
+
+/* Docker page: "apply update" / "force update" links as small action pills */
+html.glacier td.updatecolumn a.exec > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+    padding: 0.1rem 0.9rem;
+    border: 1px solid var(--gl-input);
+    border-radius: var(--gl-r-full);
+    color: var(--gl-text-2);
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.7;
+    background: var(--gl-surface);
+    cursor: pointer;
+}
+
+html.glacier td.updatecolumn a.exec:hover > span {
+    border-color: var(--gl-accent);
+    color: var(--gl-accent);
+}
+
+/* "apply update" (an update is ready) sits straight in the cell; "force update" is in the
+   advanced-view block. The first one gets the warm colour. */
+html.glacier td.updatecolumn > a.exec > span {
+    border-color: var(--gl-warn);
+    color: #ffffff;
+    background: var(--gl-warn);
+}
+
+html.glacier td.updatecolumn > a.exec:hover > span {
+    color: #ffffff;
+    background: color-mix(in oklab, var(--gl-warn), black 15%);
+}
+
+html.glacier .gl-hero-facts dd.is-warn {
+    color: #fdba74;
+}
+
+/* ==========================================================================
    Help, notices and banners
    ========================================================================== */
 html.glacier blockquote:where(:not(.unapi *)) {
@@ -3375,7 +3881,7 @@ GLACIER_THEME_EOF
 find /usr/local/emhttp/plugins/Glacier-Theme -type d -exec chmod 755 {} +
 find /usr/local/emhttp/plugins/Glacier-Theme -type f -exec chmod 644 {} +
 echo ""
-echo "Glacier-Theme 2026.10.26.1530 is installed."
+echo "Glacier-Theme 2026.10.26.1550 is installed."
 echo "Settings: Settings > User Utilities > Glacier Theme"
 echo "The theme shows while Settings > Display Settings > Dynamix color theme is White."
 echo ""

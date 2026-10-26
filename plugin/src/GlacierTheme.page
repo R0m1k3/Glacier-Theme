@@ -29,6 +29,25 @@ $glacierPage = preg_replace('/[^A-Za-z0-9_-]/', '', (string) ($myPage['name'] ??
 if ($glacierPage !== '') $glacierClasses[] = 'gl-page-' . $glacierPage;
 ?>
 <script>document.documentElement.classList.add(...<?= json_encode($glacierClasses) ?>);</script>
+<?php // Disk temperature warning and critical thresholds (°C, Disk Settings), for the temperature badges. ?>
+<script>window.glacierTemp = <?= json_encode(['hot' => (int) ($display['hot'] ?? 45), 'max' => (int) ($display['max'] ?? 55)]) ?>;</script>
+<?php
+// Waiting updates, for the counters on the Docker and Plugins menu entries and the Dashboard card.
+// A missing include would be a fatal error on every page, so it is checked first.
+$glacierUpdates = null;
+$glacierUpdatesLib = '/usr/local/emhttp/plugins/Glacier-Theme/include/updates.php';
+if (is_file($glacierUpdatesLib)) {
+    try {
+        require_once $glacierUpdatesLib;
+        $glacierUpdates = glacier_updates();
+    } catch (Throwable $glacierError) {
+        $glacierUpdates = null;
+    }
+}
+?>
+<?php if ($glacierUpdates !== null): ?>
+<script>window.glacierUpdates = <?= json_encode($glacierUpdates) ?>;</script>
+<?php endif; ?>
 <link type="text/css" rel="stylesheet" href="<?php autov('/plugins/Glacier-Theme/styles/glacier.css') ?>">
 <?php
 // Accent colour from the settings page ("#0f766e"). The lighter shades are mixed in CSS; here

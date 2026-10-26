@@ -35,7 +35,7 @@ files = {str(path.relative_to(src)): path for path in sorted(src.rglob("*")) if 
 
 install = [
     f"rm -rf {EMHTTP}",
-    f"mkdir -p {EMHTTP}/styles {EMHTTP}/scripts {EMHTTP}/fonts {CONFIG}",
+    "mkdir -p " + " ".join(sorted({f"{EMHTTP}/{pathlib.PurePosixPath(t).parent}".rstrip("/.") for t in files} | {CONFIG})),
 ]
 for target, path in sorted(files.items()):
     if path.suffix in BINARY:
@@ -79,6 +79,12 @@ plg = f"""<?xml version='1.0' standalone='yes'?>
 
 <CHANGES>
 ###{version}
+- Wide screens: the main menu in a card on the left with an icon per entry, the quick actions centred under the header. Tablets: the menu bar on its own row.
+- Badges: container and VM states, update and check status (Docker, Plugins), disk temperatures (warm or red past the Disk Settings thresholds), file systems, licence type.
+- Waiting updates: counters on the Docker and Plugins menu entries and on the Dashboard card; Plugins Update button, new version and Docker "apply update" stand out.
+- Header: the server name shows properly when the server has no description.
+
+###2026.10.26.1530
 - First release: Glacier light theme over Dynamix White. Plus Jakarta Sans, pill navigation, content cards, Dashboard tiles as cards with a greeting card, rounded tables, inputs, switches, buttons, dialogs and footer. Accent colour setting.
 </CHANGES>
 
