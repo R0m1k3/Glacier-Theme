@@ -2405,6 +2405,74 @@ html.glacier .sweet-alert button.cancel {
     background: var(--gl-surface) !important;
 }
 
+/* Busy dialogs (Unraid's "la-ball-fall" loader over a disabled confirm button): three dots in
+   the accent colour circle like a comet with a fading tail. Each dot turns on its own, so the
+   loader keeps the centring transform SweetAlert gives it. */
+html.glacier .sweet-alert button.confirm[disabled] {
+    color: transparent !important;
+    background: var(--gl-accent-soft) !important;
+    opacity: 1;
+    cursor: progress;
+}
+
+html.glacier .la-ball-fall {
+    --gl-comet-radius: 1rem;
+    width: 2.8rem;
+    height: 2.8rem;
+    color: var(--gl-accent);
+}
+
+html.glacier .la-ball-fall.la-sm {
+    --gl-comet-radius: 0.65rem;
+    width: 1.8rem;
+    height: 1.8rem;
+}
+
+html.glacier .la-ball-fall > div {
+    --gl-comet-start: 0deg;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0.8rem;
+    height: 0.8rem;
+    margin: -0.4rem 0 0 -0.4rem;
+    border: 0;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 1;
+    animation: gl-comet 0.9s linear infinite;
+    animation-delay: 0s;
+}
+
+html.glacier .la-ball-fall > div:nth-child(2) {
+    --gl-comet-start: -34deg;
+    width: 0.6rem;
+    height: 0.6rem;
+    margin: -0.3rem 0 0 -0.3rem;
+    opacity: 0.55;
+    animation-delay: 0s;
+}
+
+html.glacier .la-ball-fall > div:nth-child(3) {
+    --gl-comet-start: -64deg;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin: -0.25rem 0 0 -0.25rem;
+    opacity: 0.25;
+    animation-delay: 0s;
+}
+
+@keyframes gl-comet {
+    from { transform: rotate(var(--gl-comet-start)) translateY(calc(var(--gl-comet-radius) * -1)); }
+    to { transform: rotate(calc(var(--gl-comet-start) + 360deg)) translateY(calc(var(--gl-comet-radius) * -1)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.glacier .la-ball-fall > div {
+        animation-duration: 2.4s;
+    }
+}
+
 html.glacier .ui-dialog {
     padding: 0.8rem;
     border: 0 !important;

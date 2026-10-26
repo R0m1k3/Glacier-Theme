@@ -3,7 +3,7 @@
 
 <PLUGIN name="Glacier-Theme"
         author="R0m1k3"
-        version="2026.10.26.1934"
+        version="2026.10.26.1947"
         launch="Settings/GlacierThemeSettings"
         pluginURL="https://raw.githubusercontent.com/R0m1k3/Glacier-Theme/main/Glacier-Theme.plg"
         support="https://github.com/R0m1k3/Glacier-Theme/issues"
@@ -11,6 +11,9 @@
         min="7.2.0">
 
 <CHANGES>
+###2026.10.26.1947
+- Busy dialogs: Unraid's three green falling dots become a small comet in the accent colour (light and dark), circling over the faded confirm button.
+
 ###2026.10.26.1934
 - Login and first-time password pages in Glacier's style (light or dark, accent colour): a rounded card with the Unraid wordmark on a dark header, rounded fields, a full-width login button, errors and the logged-out note as coloured boxes. The install adds one guarded include line to Unraid's two login pages; removing the plugin takes it out again. ?glacier=off works there too.
 
@@ -69,7 +72,7 @@ Title="Glacier Theme"
 // so this is where the theme attaches its files. Link="nav-user" keeps it from adding a button.
 $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierCustomDir = '/boot/config/plugins/Glacier-Theme';
-$glacierVersion = '2026.10.26.1934';
+$glacierVersion = '2026.10.26.1947';
 
 // Emergency switch: any page opened with ?glacier=off stops the theme in this browser
 // (remembered in a cookie) until a page is opened with ?glacier=on.
@@ -202,7 +205,7 @@ $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierAccent = preg_match('/^#[0-9a-fA-F]{6}$/', $glacier['accent'] ?? '') ? $glacier['accent'] : '#0f766e';
 $glacierOnTopTheme = in_array($display['theme'] ?? '', ['white', 'black'], true);
 ?>
-<p class="gl-version">_(Version)_ <strong>2026.10.26.1934</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
+<p class="gl-version">_(Version)_ <strong>2026.10.26.1947</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
 <?php if (!$glacierOnTopTheme): ?>
 <p class="notice">_(Glacier is drawn over the Dynamix White and Black themes. Choose one of them in Settings > Display Settings to see it.)_</p>
 <?php endif; ?>
@@ -12651,6 +12654,74 @@ html.glacier .sweet-alert button.cancel {
     background: var(--gl-surface) !important;
 }
 
+/* Busy dialogs (Unraid's "la-ball-fall" loader over a disabled confirm button): three dots in
+   the accent colour circle like a comet with a fading tail. Each dot turns on its own, so the
+   loader keeps the centring transform SweetAlert gives it. */
+html.glacier .sweet-alert button.confirm[disabled] {
+    color: transparent !important;
+    background: var(--gl-accent-soft) !important;
+    opacity: 1;
+    cursor: progress;
+}
+
+html.glacier .la-ball-fall {
+    --gl-comet-radius: 1rem;
+    width: 2.8rem;
+    height: 2.8rem;
+    color: var(--gl-accent);
+}
+
+html.glacier .la-ball-fall.la-sm {
+    --gl-comet-radius: 0.65rem;
+    width: 1.8rem;
+    height: 1.8rem;
+}
+
+html.glacier .la-ball-fall > div {
+    --gl-comet-start: 0deg;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0.8rem;
+    height: 0.8rem;
+    margin: -0.4rem 0 0 -0.4rem;
+    border: 0;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 1;
+    animation: gl-comet 0.9s linear infinite;
+    animation-delay: 0s;
+}
+
+html.glacier .la-ball-fall > div:nth-child(2) {
+    --gl-comet-start: -34deg;
+    width: 0.6rem;
+    height: 0.6rem;
+    margin: -0.3rem 0 0 -0.3rem;
+    opacity: 0.55;
+    animation-delay: 0s;
+}
+
+html.glacier .la-ball-fall > div:nth-child(3) {
+    --gl-comet-start: -64deg;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin: -0.25rem 0 0 -0.25rem;
+    opacity: 0.25;
+    animation-delay: 0s;
+}
+
+@keyframes gl-comet {
+    from { transform: rotate(var(--gl-comet-start)) translateY(calc(var(--gl-comet-radius) * -1)); }
+    to { transform: rotate(calc(var(--gl-comet-start) + 360deg)) translateY(calc(var(--gl-comet-radius) * -1)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.glacier .la-ball-fall > div {
+        animation-duration: 2.4s;
+    }
+}
+
 html.glacier .ui-dialog {
     padding: 0.8rem;
     border: 0 !important;
@@ -13082,7 +13153,7 @@ done
 find /usr/local/emhttp/plugins/Glacier-Theme -type d -exec chmod 755 {} +
 find /usr/local/emhttp/plugins/Glacier-Theme -type f -exec chmod 644 {} +
 echo ""
-echo "Glacier-Theme 2026.10.26.1934 is installed."
+echo "Glacier-Theme 2026.10.26.1947 is installed."
 echo "Settings: Settings > User Utilities > Glacier Theme"
 echo "The theme shows while Settings > Display Settings > Dynamix color theme is White."
 echo ""

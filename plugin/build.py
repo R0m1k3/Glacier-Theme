@@ -95,6 +95,9 @@ plg = f"""<?xml version='1.0' standalone='yes'?>
 
 <CHANGES>
 ###{version}
+- Busy dialogs: Unraid's three green falling dots become a small comet in the accent colour (light and dark), circling over the faded confirm button.
+
+###2026.10.26.1934
 - Login and first-time password pages in Glacier's style (light or dark, accent colour): a rounded card with the Unraid wordmark on a dark header, rounded fields, a full-width login button, errors and the logged-out note as coloured boxes. The install adds one guarded include line to Unraid's two login pages; removing the plugin takes it out again. ?glacier=off works there too.
 
 ###2026.10.26.1928
