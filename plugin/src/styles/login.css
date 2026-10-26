@@ -1,0 +1,302 @@
+/*
+ * Glacier Theme on Unraid's login page (.login.php) and first-time password page
+ * (.set-password.php). include/login-head.php writes this file into the page, with the font
+ * inlined (@@FONT@@), because nothing below /plugins is served before login. Scoped to
+ * html.glacier-login, which the same include sets; html.gl-dark switches to the night colours.
+ */
+@font-face {
+    font-family: "Plus Jakarta Sans";
+    font-style: normal;
+    font-weight: 200 800;
+    font-display: swap;
+    src: url("@@FONT@@") format("woff2");
+}
+
+html.glacier-login {
+    --gl-bg: #edf1f5;
+    --gl-surface: #ffffff;
+    --gl-subtle: #f8fafc;
+    --gl-border: #e2e8f0;
+    --gl-input: #cbd5e1;
+    --gl-text: #0f172a;
+    --gl-text-2: #334155;
+    --gl-muted: #475569;
+    --gl-hero-bg: #0f172a;
+    --gl-placeholder: #64748b;
+    --gl-accent: #0f766e;
+    --gl-accent-text: #ffffff;
+    --gl-accent-ring: color-mix(in srgb, var(--gl-accent) 28%, transparent);
+    --gl-success-bg: #d1fae5;
+    --gl-success-text: #047857;
+    --gl-danger-bg: #fee2e2;
+    --gl-danger-text: #b91c1c;
+    --gl-shadow: 0 1px 3px rgba(15, 23, 42, 0.07), 0 24px 56px -20px rgba(15, 23, 42, 0.32);
+    --gl-font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    /* 1rem = 10px, as in the rest of the webGUI (the login page keeps the browser's 16px). */
+    font-size: 62.5%;
+    color-scheme: light;
+}
+
+html.glacier-login.gl-dark {
+    --gl-bg: #0b1120;
+    --gl-surface: #131c2e;
+    --gl-subtle: #172133;
+    --gl-border: #243147;
+    --gl-input: #34445f;
+    --gl-text: #e6ebf2;
+    --gl-text-2: #c4cedb;
+    --gl-muted: #94a3b8;
+    --gl-hero-bg: #182540;
+    --gl-placeholder: #7b8aa1;
+    --gl-accent: #2dd4bf;
+    --gl-accent-text: #042f2e;
+    --gl-accent-ring: color-mix(in srgb, var(--gl-accent) 34%, transparent);
+    --gl-success-bg: rgba(52, 211, 153, 0.14);
+    --gl-success-text: #6ee7b7;
+    --gl-danger-bg: rgba(248, 113, 113, 0.14);
+    --gl-danger-text: #fca5a5;
+    --gl-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 28px 64px -24px rgba(0, 0, 0, 0.8);
+    color-scheme: dark;
+}
+
+html.glacier-login body {
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    min-height: 100vh;
+    margin: 0;
+    padding: 2.4rem;
+    color: var(--gl-text);
+    font-family: var(--gl-font);
+    font-size: 1.5rem;
+    line-height: 1.5;
+    background: var(--gl-bg);
+}
+
+/* The card (#login on the login page, the only section on the password page) */
+html.glacier-login :is(#login, body > section) {
+    box-sizing: border-box;
+    width: min(44rem, 100%);
+    margin: 0;
+    overflow: hidden;
+    border-radius: 2.4rem;
+    color: var(--gl-text);
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow);
+}
+
+/* Dark header with the wordmark, instead of the slanted orange band */
+html.glacier-login :is(#login, body > section) .angle::after,
+html.glacier-login :is(#login, body > section) .angle::before {
+    display: none;
+}
+
+html.glacier-login #login .logo,
+html.glacier-login :is(#login, body > section) > .angle {
+    position: relative;
+    height: auto;
+    overflow: visible;
+    padding: 3.2rem 3.2rem 2.8rem;
+    border-radius: 0;
+    background: var(--gl-hero-bg);
+}
+
+html.glacier-login #login .wordmark,
+html.glacier-login :is(#login, body > section) > .angle .logo {
+    padding: 0;
+}
+
+html.glacier-login #login .wordmark svg,
+html.glacier-login :is(#login, body > section) > .angle .logo svg {
+    display: block;
+    width: 17rem;
+    height: auto;
+}
+
+html.glacier-login :is(#login, body > section) .content {
+    padding: 2.8rem 3.2rem 3.2rem;
+}
+
+html.glacier-login :is(#login, body > section) h1 {
+    margin: 0;
+    color: var(--gl-text);
+    font-family: var(--gl-font);
+    font-size: 2.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+}
+
+html.glacier-login :is(#login, body > section) h2 {
+    margin: 0.4rem 0 0;
+    color: var(--gl-muted);
+    font-family: var(--gl-font);
+    font-size: 1.4rem;
+    font-weight: 500;
+}
+
+html.glacier-login :is(#login, body > section) h2:empty {
+    display: none;
+}
+
+html.glacier-login :is(#login, body > section) header p {
+    margin: 1rem 0 0;
+    color: var(--gl-text-2);
+    font-size: 1.35rem;
+}
+
+/* The server case picture: no room for it beside the form in the narrower card. */
+html.glacier-login #login .case {
+    display: none;
+}
+
+html.glacier-login #login .form {
+    width: auto;
+    margin-top: 2.4rem;
+}
+
+html.glacier-login :is(#login, body > section) form {
+    margin-top: 2rem;
+}
+
+html.glacier-login #login .form form {
+    margin-top: 0;
+}
+
+html.glacier-login :is(#login, body > section) form p {
+    margin: 0;
+}
+
+html.glacier-login :is(#login, body > section) label {
+    display: block;
+    margin: 1.2rem 0 0.6rem;
+    color: var(--gl-text-2);
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+html.glacier-login :is(#login, body > section) input[type="text"],
+html.glacier-login :is(#login, body > section) input[type="password"] {
+    box-sizing: border-box;
+    width: 100%;
+    height: 4.8rem;
+    margin: 0 0 1.2rem;
+    padding: 0 1.6rem;
+    border: 1px solid var(--gl-input);
+    border-radius: 1.4rem;
+    color: var(--gl-text);
+    font-family: var(--gl-font);
+    font-size: 1.5rem;
+    background: var(--gl-subtle);
+    box-shadow: none;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+}
+
+html.glacier-login :is(#login, body > section) input::placeholder {
+    color: var(--gl-placeholder);
+}
+
+html.glacier-login :is(#login, body > section) input[type="text"]:focus,
+html.glacier-login :is(#login, body > section) input[type="password"]:focus {
+    border-color: var(--gl-accent);
+    background: var(--gl-surface);
+    box-shadow: 0 0 0 3px var(--gl-accent-ring);
+}
+
+html.glacier-login :is(#login, body > section) .button,
+html.glacier-login :is(#login, body > section) button[type="submit"] {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 4.8rem;
+    margin: 0.8rem 0 0;
+    padding: 0 2rem;
+    border: 0;
+    border-radius: 999px;
+    color: var(--gl-accent-text);
+    font-family: var(--gl-font);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: none;
+    background: var(--gl-accent);
+    background-size: auto;
+    cursor: pointer;
+    transition: background-color 0.15s, transform 0.15s;
+}
+
+html.glacier-login :is(#login, body > section) .button:hover:not(:disabled),
+html.glacier-login :is(#login, body > section) button[type="submit"]:hover:not(:disabled) {
+    color: var(--gl-accent-text);
+    background: color-mix(in oklab, var(--gl-accent), black 14%);
+}
+
+html.glacier-login :is(#login, body > section) .button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* Show/hide password toggle on the password page */
+html.glacier-login :is(#login, body > section) .pass-toggle {
+    width: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0.4rem;
+    color: var(--gl-muted);
+    background: transparent;
+}
+
+html.glacier-login :is(#login, body > section) .error,
+html.glacier-login #login .error {
+    margin: 1.6rem 0 0;
+    padding: 1.2rem 1.4rem;
+    border-radius: 1.4rem;
+    color: var(--gl-danger-text);
+    font-size: 1.35rem;
+    background: var(--gl-danger-bg);
+}
+
+html.glacier-login :is(#login, body > section) .error:empty {
+    display: none;
+}
+
+html.glacier-login :is(#login, body > section) .error.gl-ok {
+    color: var(--gl-success-text);
+    background: var(--gl-success-bg);
+}
+
+html.glacier-login :is(#login, body > section) a {
+    display: inline-block;
+    margin-top: 2rem;
+    color: var(--gl-muted);
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-decoration: none;
+    text-transform: none;
+}
+
+html.glacier-login :is(#login, body > section) a:hover {
+    color: var(--gl-accent);
+}
+
+@media (max-width: 500px) {
+    html.glacier-login body {
+        padding: 1.6rem;
+        background: var(--gl-bg);
+    }
+
+    html.glacier-login :is(#login, body > section) {
+        border-radius: 2rem;
+        box-shadow: var(--gl-shadow);
+    }
+
+    html.glacier-login #login .logo,
+    html.glacier-login :is(#login, body > section) > .angle {
+        padding: 2.6rem 2.4rem 2.2rem;
+    }
+
+    html.glacier-login :is(#login, body > section) .content {
+        padding: 2.4rem;
+    }
+}

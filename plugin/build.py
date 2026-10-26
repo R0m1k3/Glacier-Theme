@@ -50,7 +50,23 @@ for target, path in sorted(files.items()):
             sys.exit(f"{path}: contains {forbidden!r}, which would break the .plg")
     install.append(f"cat > {EMHTTP}/{target} <<'{DELIMITER}'\n{text}{DELIMITER}")
 
+# Login page: Unraid's login and first-time password pages get one line, before </head>, that
+# includes include/login-head.php when it exists. Those pages live in RAM, so this runs at every
+# boot (Unraid installs plugins then); the line does nothing once the include is gone.
+LOGIN_PAGES = "/usr/local/emhttp/plugins/dynamix/include/.login.php /usr/local/emhttp/plugins/dynamix/include/.set-password.php"
+LOGIN_LINE = f'<?php if (is_file("{EMHTTP}/include/login-head.php")) @include "{EMHTTP}/include/login-head.php"; ?>'
+LOGIN_HOOK = f"""for page in {LOGIN_PAGES}; do
+  [ -f "$page" ] || continue
+  grep -q '{NAME}/include/login-head.php' "$page" && continue
+  grep -q '</head>' "$page" || continue
+  sed -i '0,/<\\/head>/s##{LOGIN_LINE}\\n</head>#' "$page"
+done"""
+LOGIN_UNHOOK = f"""for page in {LOGIN_PAGES}; do
+  [ -f "$page" ] && sed -i '\\#{NAME}/include/login-head.php#d' "$page"
+done"""
+
 install += [
+    LOGIN_HOOK,
     f"find {EMHTTP} -type d -exec chmod 755 {{}} +",
     f"find {EMHTTP} -type f -exec chmod 644 {{}} +",
     'echo ""',
@@ -79,6 +95,9 @@ plg = f"""<?xml version='1.0' standalone='yes'?>
 
 <CHANGES>
 ###{version}
+- Login and first-time password pages in Glacier's style (light or dark, accent colour): a rounded card with the Unraid wordmark on a dark header, rounded fields, a full-width login button, errors and the logged-out note as coloured boxes. The install adds one guarded include line to Unraid's two login pages; removing the plugin takes it out again. ?glacier=off works there too.
+
+###2026.10.26.1928
 - The header is a dark card across the page: logo and version on the left, date and time in the middle, licence, server, notifications and menu on the right.
 
 ###2026.10.26.1923
@@ -130,6 +149,7 @@ plg = f"""<?xml version='1.0' standalone='yes'?>
 <FILE Run="/bin/bash" Method="remove">
 <INLINE>
 <![CDATA[
+{LOGIN_UNHOOK}
 rm -rf {EMHTTP}
 rm -rf {CONFIG}
 echo ""

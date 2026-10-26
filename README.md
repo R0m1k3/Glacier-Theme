@@ -8,6 +8,10 @@ Un thème moderne, clair ou sombre, pour le webGUI d'Unraid 7.3 : fond bleu-gris
 | --- | --- |
 | ![Tableau de bord en mode sombre](docs/dashboard-dark.png) | ![Page Plugins](docs/plugins.png) |
 
+| Connexion | Connexion (sombre) |
+| --- | --- |
+| ![Page de connexion](docs/login.png) | ![Page de connexion en mode sombre](docs/login-dark.png) |
+
 | Docker | Réglages |
 | --- | --- |
 | ![Page Docker](docs/docker.png) | ![Page Réglages](docs/settings.png) |
@@ -91,7 +95,7 @@ Plusieurs améliorations sont adaptées d'[Aurora Theme](https://github.com/Tune
 - Le thème s'applique avec Dynamix White ou Black. Avec Azure ou Gray, Unraid reste tel quel. En mode forcé (toujours clair ou toujours sombre), les graphiques et panneaux d'Unraid gardent les couleurs du thème Dynamix.
 - Les couleurs personnalisées d'en-tête de Display Settings ne sont pas reprises.
 - Les composants Vue d'Unraid (en-tête, notifications) sont restylés à partir de leur structure en 7.3.x. Une future version d'Unraid pourra demander des ajustements.
-- La page de connexion n'est pas modifiée.
+- **Page de connexion** : Unraid la sert avant l'authentification, hors des pages habituelles. L'installation ajoute donc une ligne d'inclusion dans ses deux pages de connexion (`.login.php` et `.set-password.php`, en mémoire). Cette ligne n'agit que si le fichier du thème existe, et la désinstallation la retire. En cas de souci, `/login?glacier=off` rend la page d'origine.
 
 ## Développement
 
