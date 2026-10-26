@@ -443,7 +443,9 @@
     if (!fv) {
       var attach = function (api) {
         if (state.groups || !api || typeof api.dockerList !== 'function') return;
-        state.groups = api.dockerList({ table: table, list: list, toolbar: tools, render: render, decorated: function (row) { return Boolean(row.dataset.glDocker); } });
+        var adapter = api.dockerList({ table: table, list: list, toolbar: tools, render: render });
+        if (!adapter) return;
+        state.groups = adapter;
         // Rows decorated before the groups came get their group button now.
         list.querySelectorAll('tr.gl-ct .gl-row-actions').forEach(function (actions) {
           var row = actions.closest('tr');
