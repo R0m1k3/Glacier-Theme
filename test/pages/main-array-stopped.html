@@ -1,0 +1,44 @@
+page: ArrayOperation
+active: Main
+sheet: ArrayOperation.css
+---
+<!-- Unraid 7.3.4 ArrayOperation.page as rendered: array stopped, configuration valid
+     (mdState STARTED): Start, the Maintenance mode row, then only the power form. -->
+<div id="displaybox">
+<nav class="tabs" role="tablist" aria-label="Page Tabs">
+  <div class="tabs-container">
+    <button role="tab" id="tab1" aria-controls="tab1-panel" aria-selected="false" tabindex="-1"><i class="fa fa-hdd-o"></i>Périphériques de la matrice</button>
+    <button role="tab" id="tab2" aria-controls="tab2-panel" aria-selected="false" tabindex="-1"><i class="fa fa-bullseye"></i>Périphériques de pool</button>
+    <button role="tab" id="tab3" aria-controls="tab3-panel" aria-selected="false" tabindex="-1"><i class="fa fa-usb"></i>Périphérique de démarrage</button>
+    <button role="tab" id="tab4" aria-controls="tab4-panel" aria-selected="true" tabindex="0"><i class="fa fa-snowflake-o"></i>Opération sur la matrice</button>
+  </div>
+  <span class="status"><a style="cursor:pointer" class="tooltip_diskio" title="Basculer l'affichage lectures/écritures"><i class="toggle fa fa-tachometer"></i></a></span>
+</nav>
+<section id="tab1-panel" role="tabpanel" aria-labelledby="tab1" class="tab-content content" tabindex="0" style="display:none"></section>
+<section id="tab2-panel" role="tabpanel" aria-labelledby="tab2" class="tab-content content" tabindex="0" style="display:none"></section>
+<section id="tab3-panel" role="tabpanel" aria-labelledby="tab3" class="tab-content content" tabindex="0" style="display:none"></section>
+<section id="tab4-panel" role="tabpanel" aria-labelledby="tab4" class="tab-content content" tabindex="0" style="display:block">
+<script>/* ArrayOperation.page's inline script (nchan subscribers) is not part of the mock. */</script>
+<form name="arrayOps" method="POST" action="/update.htm" target="progressFrame">
+<input type="hidden" name="startState" value="STARTED">
+<input type="hidden" name="file" value="">
+
+<table markdown="1" class="ArrayOperation-Table array_status">
+      <tr><td><a class='info'><i class='fa fa-circle orb grey-orb'></i><span>Arrêtée</span></a><strong>Arrêtée</strong>. Configuration valide.</td><td><input type="button" id="cmdStart" value="Démarrer" onclick="prepareInput(this.form,this)"></td>
+        <td><strong>Démarrer</strong> mettra la matrice en ligne.</td></tr>
+<tr><td></td><td><label class='flex flex-row items-center gap-2'><input type='checkbox' name='startMode' value='Maintenance'>Mode maintenance</label></td><td><b>Mode maintenance</b> - si coché, démarre la matrice sans monter les disques</td></tr>
+  <tr><td></td><td class="line" colspan="2"></td></tr>
+</table>
+</form>
+<!-- markdown fix -->
+<form name="shutdownOps" method="POST" action="/webGui/include/Boot.php">
+<table markdown="1" class="ArrayOperation-Table array_status noshift">
+ <tr><td></td><td><span class="buttons-spaced"><input type="button" name="reboot" value="Redémarrer" onclick="shutdown_now(this.form,'reboot')"><input type="button" name="shutdown" value="Arrêter le système" onclick="shutdown_now(this.form,'shutdown')"></span></td>
+ <td><strong>Redémarrer</strong> effectuera une réinitialisation <em>propre</em> du système.<br><strong>Arrêter le système</strong> effectuera une mise hors tension <em>propre</em> du système.<br><label class="flex flex-row items-center gap-2"><input type="checkbox" name="safemode">Redémarrer en mode sans échec</label></td></tr>
+ <tr><td></td><td class="line" colspan="2"></td></tr>
+</table>
+</form>
+<!-- markdown fix --><p></p>
+<blockquote class="inline_help" style="display:none"><p>Le bouton <strong>Arrêter</strong> met la matrice hors ligne.</p></blockquote>
+</section>
+</div>

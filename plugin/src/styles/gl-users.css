@@ -1,0 +1,257 @@
+/*
+ * Glacier Theme: Users tab as cards (scripts/gl-users.js).
+ * Adapted from Aurora Theme (https://github.com/Tunefish92/Aurora-Theme),
+ * Copyright (c) 2026 Tunefish, MIT License; see NOTICE.md.
+ */
+
+/* Search and "Add user" in the heading (gl-panels.css styles the search field). */
+html.glacier .gl-users-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 0 1.6rem;
+}
+
+html.glacier button:is(.gl-users-add, .gl-user-add) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    margin: 0;
+    letter-spacing: 0;
+    text-transform: none;
+    cursor: pointer;
+}
+
+html.glacier button.gl-users-add {
+    flex: none;
+    min-height: 4.4rem;
+    padding: 0 2rem;
+    border: 1px solid var(--gl-accent);
+    border-radius: var(--gl-r-full);
+    color: var(--gl-accent-text);
+    font-size: 1.35rem;
+    font-weight: 600;
+    white-space: nowrap;
+    background: var(--gl-accent);
+    box-shadow: var(--gl-shadow-sm);
+}
+
+html.glacier button.gl-users-add:hover {
+    color: var(--gl-accent-text);
+    background: color-mix(in oklab, var(--gl-accent), black 14%);
+}
+
+html.glacier button:is(.gl-users-add, .gl-user-add):focus-visible {
+    outline: 2px solid var(--gl-accent);
+    outline-offset: 2px;
+}
+
+html.glacier .gl-heading-tools:has(.gl-users-add) {
+    flex-basis: 60rem;
+    flex-wrap: nowrap;
+}
+
+html.glacier .gl-users-search {
+    flex: 1 1 24rem;
+}
+
+html.glacier .gl-users-search + .gl-panel-search-empty,
+html.glacier .Panels.gl-users ~ .gl-panel-search-empty {
+    margin-top: 1.6rem;
+}
+
+/* Section titles with a count */
+html.glacier #displaybox div.title.gl-users-title .gl-users-count {
+    margin-left: 0.2rem;
+}
+
+/* The cards */
+html.glacier #displaybox .Panels.gl-users {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 28rem), 1fr));
+    gap: 1.2rem;
+    margin: 0;
+}
+
+/* Unraid's UserList.css makes each user a narrow centred column. */
+html.glacier #displaybox .Panels.gl-users > .user-list.gl-user {
+    display: block;
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-lg);
+    text-align: left;
+    word-break: normal;
+    background: var(--gl-subtle);
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s var(--gl-ease);
+}
+
+html.glacier #displaybox .Panels.gl-users > .user-list.gl-user:hover {
+    border-color: var(--gl-accent-ring);
+    box-shadow: var(--gl-shadow-md);
+    transform: translateY(-1px);
+}
+
+html.glacier #displaybox .Panels.gl-users > .user-list.gl-user > a.gl-user-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1.4rem;
+    box-sizing: border-box;
+    height: 100%;
+    padding: 1.6rem;
+    border-radius: inherit;
+    color: var(--gl-text);
+    text-align: left;
+    text-decoration: none;
+}
+
+html.glacier #displaybox a.gl-user-card:focus-visible {
+    outline: 2px solid var(--gl-accent);
+    outline-offset: 2px;
+}
+
+html.glacier .gl-user-avatar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 5.2rem;
+    height: 5.2rem;
+    overflow: hidden;
+    border-radius: 50%;
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    background: var(--gl-subtle-2);
+    box-shadow: 0 0 0 3px var(--gl-surface), 0 0 0 4px var(--gl-border);
+}
+
+html.glacier #displaybox .gl-user-avatar img {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    object-fit: cover;
+}
+
+/* Initials: six tones from the theme's own pairs, readable in light and dark mode. */
+html.glacier .gl-user-initials.gl-avatar-tone-0 { color: var(--gl-accent); background: var(--gl-accent-soft); }
+html.glacier .gl-user-initials.gl-avatar-tone-1 { color: var(--gl-info-text); background: var(--gl-info-bg); }
+html.glacier .gl-user-initials.gl-avatar-tone-2 { color: var(--gl-success-text); background: var(--gl-success-bg); }
+html.glacier .gl-user-initials.gl-avatar-tone-3 { color: var(--gl-warn-text); background: var(--gl-warn-bg); }
+html.glacier .gl-user-initials.gl-avatar-tone-4 { color: var(--gl-danger-text); background: var(--gl-danger-bg); }
+html.glacier .gl-user-initials.gl-avatar-tone-5 { color: var(--gl-text-2); background: var(--gl-subtle-2); }
+
+html.glacier .gl-user-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+html.glacier .gl-user-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 0.8rem;
+    min-width: 0;
+}
+
+html.glacier .gl-user-name {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--gl-text);
+    font-size: 1.55rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+html.glacier .gl-user-desc {
+    overflow: hidden;
+    color: var(--gl-muted);
+    font-size: 1.25rem;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+html.glacier .gl-user-desc.is-empty {
+    font-style: italic;
+}
+
+html.glacier .gl-user-go {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-full);
+    color: var(--gl-muted);
+    font-size: 1.1rem;
+    background: var(--gl-surface);
+    transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+}
+
+html.glacier a.gl-user-card:is(:hover, :focus-visible) .gl-user-go {
+    border-color: var(--gl-accent);
+    color: var(--gl-accent-text);
+    background: var(--gl-accent);
+}
+
+/* "Add user" as the last card of the share users. */
+html.glacier #displaybox .Panels.gl-users > button.gl-user-add {
+    min-height: 8.6rem;
+    padding: 1.6rem;
+    border: 1.5px dashed var(--gl-input);
+    border-radius: var(--gl-r-lg);
+    color: var(--gl-muted);
+    font-size: 1.35rem;
+    font-weight: 600;
+    background: transparent;
+    box-shadow: none;
+    transition: border-color 0.2s, color 0.2s, background-color 0.2s;
+}
+
+html.glacier #displaybox .Panels.gl-users > button.gl-user-add:hover {
+    border-color: var(--gl-accent);
+    color: var(--gl-accent);
+    background: var(--gl-accent-soft);
+}
+
+html.glacier #displaybox .Panels.gl-users + div.title {
+    margin-top: 3.2rem;
+}
+
+html.glacier p.gl-users-none {
+    color: var(--gl-muted);
+}
+
+/* Unraid's own Add User / Done buttons: the buttons above take their place. */
+html.glacier form.gl-users-form {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    html.glacier .gl-users-tools,
+    html.glacier .gl-heading-tools:has(.gl-users-add) {
+        flex-basis: 100%;
+        flex-wrap: wrap;
+    }
+
+    html.glacier button.gl-users-add {
+        flex: 1 1 auto;
+    }
+}

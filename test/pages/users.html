@@ -1,0 +1,77 @@
+page: Users
+active: Users
+sheet: UserList.css
+---
+<div id="displaybox">
+<div class="content">
+<div class="title">
+<span class='left inline-flex flex-row items-center gap-1'><i class='fa fa-th title'></i>Utilisateurs</span>                    <span class="right inline-flex flex-row items-center gap-1"></span>
+                </div>
+<div id="title" class="title">
+    <span class="left">
+        <i class="fa fa-bell title"></i>Accès de gestion
+    </span>
+</div>
+<div class="Panels">
+        <div class="user-list">
+            <a class="info" href="/Users/UserEdit?name=root">
+                <img src="/webGui/images/user.png" class="picture" border="0" width="48" height="48">
+                <br>
+                root
+                <span>Console and webGui login account</span>
+            </a>
+        </div>
+    </div>
+<div class="title">
+    <span class="left">
+        <i class="fa fa-cloud title"></i>Accès aux partages
+    </span>
+</div>
+<div class="Panels">
+        <div class="user-list">
+            <a class="info" href="/Users/UserEdit?name=alice">
+                <img src="/webGui/images/plg.png" class="picture" border="0" width="48" height="48">
+                <br>
+                alice
+                <span>Famille – photos et documents</span>
+            </a>
+        </div>
+        <div class="user-list">
+            <a class="" href="/Users/UserEdit?name=bob">
+                <img src="/webGui/images/user.png" class="picture" border="0" width="48" height="48">
+                <br>
+                bob
+                <span></span>
+            </a>
+        </div>
+        <div class="user-list">
+            <a class="info" href="/Users/UserEdit?name=media_server">
+                <img src="/webGui/images/user.png" class="picture" border="0" width="48" height="48">
+                <br>
+                media_server
+                <span>Plex / Jellyfin read-only</span>
+            </a>
+        </div>
+        <div class="user-list">
+            <a class="info" href="/Users/UserEdit?name=timemachine">
+                <img src="/webGui/images/user.png" class="picture" border="0" width="48" height="48">
+                <br>
+                timemachine
+                <span>Sauvegardes macOS</span>
+            </a>
+        </div>
+        <div class="user-list">
+            <a class="info" href="/Users/UserEdit?name=élodie.martin">
+                <img src="/webGui/images/user.png" class="picture" border="0" width="48" height="48">
+                <br>
+                élodie.martin
+                <span>Comptabilité</span>
+            </a>
+        </div>
+</div>
+<form method="POST" action="/Users/UserAdd" onsubmit="document.title='submitted'; return false">
+    <input type="submit" value="Ajouter un utilisateur">
+    <input type="button" value="Terminé" onclick="done()">
+</form>
+</div>
+</div>

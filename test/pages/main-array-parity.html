@@ -1,0 +1,71 @@
+page: ArrayOperation
+active: Main
+sheet: ArrayOperation.css
+---
+<!-- Unraid 7.3.4 ArrayOperation.page as rendered: array started, a correcting Parity-Check
+     running ($spot: Pause/Cancel row, "Current operation" row, #line0-#line5 filled by the
+     parity nchan channel), so Stop, Spin up/down and Move are disabled by the mymonitor channel. -->
+<div id="displaybox">
+<nav class="tabs" role="tablist" aria-label="Page Tabs">
+  <div class="tabs-container">
+    <button role="tab" id="tab1" aria-controls="tab1-panel" aria-selected="false" tabindex="-1"><i class="fa fa-hdd-o"></i>Périphériques de la matrice</button>
+    <button role="tab" id="tab2" aria-controls="tab2-panel" aria-selected="false" tabindex="-1"><i class="fa fa-bullseye"></i>Périphériques de pool</button>
+    <button role="tab" id="tab3" aria-controls="tab3-panel" aria-selected="false" tabindex="-1"><i class="fa fa-usb"></i>Périphérique de démarrage</button>
+    <button role="tab" id="tab4" aria-controls="tab4-panel" aria-selected="true" tabindex="0"><i class="fa fa-snowflake-o"></i>Opération sur la matrice</button>
+  </div>
+  <span class="status"><a style="cursor:pointer" class="tooltip_diskio" title="Basculer l'affichage lectures/écritures"><i class="toggle fa fa-tachometer"></i></a></span>
+</nav>
+<section id="tab1-panel" role="tabpanel" aria-labelledby="tab1" class="tab-content content" tabindex="0" style="display:none"></section>
+<section id="tab2-panel" role="tabpanel" aria-labelledby="tab2" class="tab-content content" tabindex="0" style="display:none"></section>
+<section id="tab3-panel" role="tabpanel" aria-labelledby="tab3" class="tab-content content" tabindex="0" style="display:none"></section>
+<section id="tab4-panel" role="tabpanel" aria-labelledby="tab4" class="tab-content content" tabindex="0" style="display:block">
+<script>/* ArrayOperation.page's inline script (nchan subscribers) is not part of the mock. */</script>
+<form name="arrayOps" method="POST" action="/update.htm" target="progressFrame">
+<input type="hidden" name="startState" value="STARTED">
+<input type="hidden" name="file" value="">
+
+<table markdown="1" class="ArrayOperation-Table array_status">
+    <tr><td><a class='info'><i class='fa fa-circle orb green-orb'></i><span>Démarrée, matrice protégée</span></a><strong>Démarrée</strong></td>
+    <td><input type="button" id="stop-button" value="Arrêter" onclick="stopArray(this.form)" disabled></td>
+    <td><strong>Arrêter</strong> mettra la matrice hors ligne.<span id="stop-text"><br><small>Désactivé -- Une opération de parité est en cours</small></span></td></tr>
+        <tr><td>Contrôle de parité en cours.</td><td>
+        <span class="buttons-spaced">
+        <input type="button" id="pauseButton" value="Pause" onclick="pauseParity(this.form)">
+        <input type="button" id="cancelButton" value="Annuler" onclick="stopParity(this.form,'Parity-Check')">
+        </span></td>
+        <td id="cancelText"><strong>Pause</strong> mettra en pause le contrôle de parité.<br><strong>Annuler</strong> arrêtera le contrôle de parité.</td></tr>
+      <tr><td></td><td><input type="button" value="Historique" onclick="parityHistory()"></td>
+      <td>Opération en cours démarrée le <strong>dim. 25/10/2026 03:00</strong> (aujourd'hui)</td></tr>
+      <tr><td>Taille totale :</td><td id="line0">18 To</td><td></td></tr>
+      <tr><td>Temps écoulé :</td><td id="line1">10 heures, 31 minutes</td><td></td></tr>
+      <tr><td>Position actuelle :</td><td id="line2">7,46 To (41,4 %)</td><td></td></tr>
+      <tr><td>Vitesse estimée :</td><td id="line3">196,7 Mo/s</td><td></td></tr>
+      <tr><td>Fin estimée :</td><td id="line4">14 heures, 52 minutes</td><td></td></tr>
+      <tr><td>Erreurs de synchronisation corrigées :</td><td id="line5">0</td><td></td></tr>
+  <tr><td></td><td class="line" colspan="2"></td></tr>
+</table>
+</form>
+<!-- markdown fix -->
+<table markdown="1" class="ArrayOperation-Table array_status noshift">
+ <tr><td></td><td><span class="buttons-spaced"><input type="button" id="spinup-button" onclick="$('[id^=button-]').prop('disabled',true);toggle_state('up')" value="Réveiller" disabled><input type="button" id="spindown-button" onclick="$('[id^=button-]').prop('disabled',true);toggle_state('down')" value="Mettre en veille" disabled></span></td>
+ <td><strong>Réveiller</strong> lancera immédiatement la rotation de tous les disques.<br><strong>Mettre en veille</strong> arrêtera immédiatement la rotation de tous les disques.</td></tr>
+ <tr id="clearstats" class="hidden"><td></td><td><input type="button" value="Effacer les stats" onclick="toggle_state('Clear')"></td><td><strong>Effacer les stats</strong> effacera immédiatement toutes les statistiques des disques.</td></tr>
+ <tr><td></td><td class="line" colspan="2"></td></tr>
+</table>
+<form name="mover_schedule" method="POST" action="/update.htm" target="progressFrame">
+<table markdown="1" class="ArrayOperation-Table array_status noshift">
+<tr><td></td><td><input type="submit" id="mover-button" name="cmdStartMover" value="Déplacer" disabled></td><td id="mover-text">Désactivé -- Une opération de parité est en cours</td></tr>
+</table>
+</form>
+<!-- markdown fix -->
+<form name="shutdownOps" method="POST" action="/webGui/include/Boot.php">
+<table markdown="1" class="ArrayOperation-Table array_status noshift">
+ <tr><td></td><td><span class="buttons-spaced"><input type="button" name="reboot" value="Redémarrer" onclick="shutdown_now(this.form,'reboot')"><input type="button" name="shutdown" value="Arrêter le système" onclick="shutdown_now(this.form,'shutdown')"></span></td>
+ <td><strong>Redémarrer</strong> effectuera une réinitialisation <em>propre</em> du système.<br><strong>Arrêter le système</strong> effectuera une mise hors tension <em>propre</em> du système.<br><label class="flex flex-row items-center gap-2"><input type="checkbox" name="safemode">Redémarrer en mode sans échec</label></td></tr>
+ <tr><td></td><td class="line" colspan="2"></td></tr>
+</table>
+</form>
+<!-- markdown fix --><p></p>
+<blockquote class="inline_help" style="display:none"><p>Le bouton <strong>Arrêter</strong> met la matrice hors ligne.</p></blockquote>
+</section>
+</div>

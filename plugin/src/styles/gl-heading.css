@@ -1,0 +1,86 @@
+/*
+ * Glacier Theme: page heading (scripts/gl-heading.js).
+ * Adapted from Aurora Theme (https://github.com/Tunefish92/Aurora-Theme),
+ * Copyright (c) 2026 Tunefish, MIT License; see NOTICE.md.
+ */
+html.glacier .gl-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.6rem 2.4rem;
+    margin: 0.8rem 0 2rem;
+}
+
+html.glacier .gl-heading-text {
+    flex: 1 1 32rem;
+    min-width: 0;
+}
+
+html.glacier .gl-heading .gl-eyebrow {
+    margin: 0 0 0.6rem;
+    color: var(--gl-accent);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    line-height: 1.2;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+html.glacier .gl-heading h1.gl-heading-title {
+    margin: 0;
+    color: var(--gl-text);
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+}
+
+html.glacier .gl-heading .gl-subtitle {
+    margin: 0.6rem 0 0;
+    color: var(--gl-muted);
+    font-size: 1.35rem;
+    line-height: 1.45;
+    text-align: left;
+}
+
+/* Tools placed by other features (search field, buttons), on the right of the title. */
+html.glacier .gl-heading-tools {
+    display: flex;
+    flex: 0 1 46rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    min-width: 0;
+}
+
+html.glacier .gl-heading-tools:empty {
+    display: none;
+}
+
+/* A first section title that repeats the heading. */
+html.glacier #displaybox div.title.gl-heading-dup {
+    display: none;
+}
+
+html.glacier #displaybox div.title.gl-heading-dup + * {
+    margin-top: 0;
+}
+
+@media (max-width: 767px) {
+    html.glacier .gl-heading {
+        margin: 0.4rem 0 1.6rem;
+    }
+
+    html.glacier .gl-heading h1.gl-heading-title {
+        font-size: 2.3rem;
+    }
+
+    html.glacier .gl-heading-tools {
+        flex: 1 1 100%;
+        justify-content: stretch;
+    }
+}

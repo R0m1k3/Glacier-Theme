@@ -1,0 +1,83 @@
+page: Tools
+active: Tools
+---
+<script>
+  // Stands in for include/head-favourites.php and include/favourites.php.
+  window.glacierFavourites = {"enabled":false,"list":[]};
+  (function () {
+    var real = window.fetch;
+    window.fetch = function (url, options) {
+      if (String(url).indexOf('/include/favourites.php') < 0) return real.apply(this, arguments);
+      var body = options && options.body ? new URLSearchParams(options.body).get('favourites') : null;
+      var list = body ? JSON.parse(body) : (window.glacierFavourites.list || []);
+      return Promise.resolve(new Response(JSON.stringify({ favourites: list }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+    };
+  })();
+</script>
+<div id="displaybox">
+<div class="content">
+<div class="title">
+                    <span class='left inline-flex flex-row items-center gap-1'><i class='fa fa-info-circle title'></i>À propos</span>                    <span class="right inline-flex flex-row items-center gap-1"></span>
+                </div>
+<div class="Panels"><div class="Panel">
+            <a href="/Tools/Credits" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-users PanelIcon"></i></span>
+                <div class="PanelText">Crédits</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Tools/EULA" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-gavel PanelIcon"></i></span>
+                <div class="PanelText">Contrat de licence</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Tools/Registration" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-id-badge PanelIcon"></i></span>
+                <div class="PanelText">Enregistrement</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Tools/Update" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-refresh PanelIcon"></i></span>
+                <div class="PanelText">Mise à jour du système</div>
+            </a>
+        </div></div>
+<div class="title">
+                    <span class='left inline-flex flex-row items-center gap-1'><i class='fa fa-cog title'></i>Outils Unraid OS</span>                    <span class="right inline-flex flex-row items-center gap-1"></span>
+                </div>
+<div class="Panels"><div class="Panel">
+            <a href="/Tools/Diagnostics" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-medkit PanelIcon"></i></span>
+                <div class="PanelText">Diagnostics</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Tools/NewConfig" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-file-o PanelIcon"></i></span>
+                <div class="PanelText">Nouvelle configuration</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Tools/PCIe" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-microchip PanelIcon"></i></span>
+                <div class="PanelText">Périphériques système</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Tools/Processes" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-tasks PanelIcon"></i></span>
+                <div class="PanelText">Processus</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Tools/Syslog" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-list PanelIcon"></i></span>
+                <div class="PanelText">Journal système</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Tools/SystemDrivers" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-cogs PanelIcon"></i></span>
+                <div class="PanelText">Pilotes système</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Tools/Vars" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-code PanelIcon"></i></span>
+                <div class="PanelText">Variables</div>
+            </a>
+        </div></div>
+</div>
+</div>

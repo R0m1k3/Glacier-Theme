@@ -1,0 +1,146 @@
+page: Settings
+active: Settings
+---
+<script>
+  // Stands in for include/head-favourites.php and include/favourites.php.
+  window.glacierFavourites = {"enabled":true,"list":["Settings/Notifications","Settings/DateTime"]};
+  (function () {
+    var real = window.fetch;
+    window.fetch = function (url, options) {
+      if (String(url).indexOf('/include/favourites.php') < 0) return real.apply(this, arguments);
+      var body = options && options.body ? new URLSearchParams(options.body).get('favourites') : null;
+      var list = body ? JSON.parse(body) : (window.glacierFavourites.list || []);
+      return Promise.resolve(new Response(JSON.stringify({ favourites: list }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+    };
+  })();
+</script>
+<div id="displaybox">
+<div class="content">
+<div class="title">
+                    <span class='left inline-flex flex-row items-center gap-1'><i class='fa fa-cogs title'></i>Paramètres système</span>                    <span class="right inline-flex flex-row items-center gap-1"></span>
+                </div>
+<div class="Panels"><div class="Panel">
+            <a href="/Settings/CPUset" onclick="$.cookie('one','tab1')">
+                <span><i class="icon-cpu PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Épinglage CPU</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/DateTime" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-clock-o PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Date et heure</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/DiskSettings" onclick="$.cookie('one','tab1')">
+                <span><i class="icon-disk PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Paramètres des disques</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/DockerSettings" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-cubes PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Docker</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/Identification" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-home PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Identification</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/NetworkSettings" onclick="$.cookie('one','tab1')">
+                <span><i class="icon-network PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Paramètres réseau</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/GlobalShareSettings" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-share-alt PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Paramètres de partage globaux</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/PowerMode" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-bolt PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Mode d’alimentation</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/VMSettings" onclick="$.cookie('one','tab1')">
+                <span><i class="icon-virtualization PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Gestionnaire de VM</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/UPSsettings" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-battery-three-quarters PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Paramètres UPS</div>
+            </a>
+        </div></div>
+<div class="title">
+                    <span class='left inline-flex flex-row items-center gap-1'><i class='fa fa-globe title'></i>Services réseau</span>                    <span class="right inline-flex flex-row items-center gap-1"></span>
+                </div>
+<div class="Panels"><div class="Panel">
+            <a href="/Settings/NFS" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-linux PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">NFS</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/SMB" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-windows PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">SMB</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/FTP" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-upload PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Serveur FTP</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/Syslog" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-file-text-o PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Serveur Syslog</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/ManagementAccess" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-key PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Accès de gestion</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/VPNmanager" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-shield PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">VPN Manager</div>
+            </a>
+        </div></div>
+<div class="title">
+                    <span class='left inline-flex flex-row items-center gap-1'><i class='fa fa-user title'></i>Préférences utilisateur</span>                    <span class="right inline-flex flex-row items-center gap-1"></span>
+                </div>
+<div class="Panels"><div class="Panel">
+            <a href="/Settings/Confirmations" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-check-square-o PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Confirmations</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/DisplaySettings" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-desktop PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Paramètres d’affichage</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/Notifications" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-bell PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Paramètres de notification</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/Scheduler" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-calendar PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Planificateur</div>
+            </a>
+        </div></div>
+<div class="title">
+                    <span class='left inline-flex flex-row items-center gap-1'><i class='fa fa-wrench title'></i>Utilitaires utilisateur</span>                    <span class="right inline-flex flex-row items-center gap-1"></span>
+                </div>
+<div class="Panels"><div class="Panel">
+            <a href="/Settings/GlacierThemeSettings" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-paint-brush PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">Glacier Theme</div>
+            </a>
+        </div><div class="Panel">
+            <a href="/Settings/Userscripts" onclick="$.cookie('one','tab1')">
+                <span><i class="fa fa-file-code-o PanelIcon"></i><i class="fa fa-heart favo" title="Ajouter aux favoris" onclick="return false"></i></span>
+                <div class="PanelText">User Scripts</div>
+            </a>
+        </div></div>
+</div>
+</div>
