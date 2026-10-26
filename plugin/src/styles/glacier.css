@@ -103,8 +103,8 @@ html.glacier {
     --gl-r-lg: 1.8rem;
     --gl-r-xl: 2.4rem;
     --gl-r-full: 999px;
-    --gl-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
-    --gl-shadow-md: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 24px -12px rgba(15, 23, 42, 0.16);
+    --gl-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.07);
+    --gl-shadow-md: 0 1px 3px rgba(15, 23, 42, 0.07), 0 10px 28px -10px rgba(15, 23, 42, 0.22), 0 2px 6px -2px rgba(15, 23, 42, 0.06);
     --gl-shadow-lg: 0 24px 56px -20px rgba(15, 23, 42, 0.32);
     --gl-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
     --gl-font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -260,7 +260,7 @@ html.glacier.gl-dark {
     --gl-info-text: #7dd3fc;
 
     --gl-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
-    --gl-shadow-md: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 28px -14px rgba(0, 0, 0, 0.65);
+    --gl-shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4), 0 12px 32px -10px rgba(0, 0, 0, 0.7), 0 2px 6px -2px rgba(0, 0, 0, 0.35);
     --gl-shadow-lg: 0 28px 64px -24px rgba(0, 0, 0, 0.8);
     --gl-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
 
@@ -402,10 +402,28 @@ html.glacier #header unraid-header-os-version span[role="button"]:not([aria-hasp
     background: var(--gl-warn-bg);
 }
 
+/* Unraid lays the profile over the header's right end (absolutely positioned), past the
+   header's padding. Back in the header's flow, it ends exactly at the right edge of the page
+   content and centres on the logo card. */
+html.glacier #header {
+    align-items: center;
+}
+
+html.glacier #header unraid-user-profile {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    margin-left: auto;
+}
+
 html.glacier #UserProfile {
+    position: static !important;
+    inset: auto !important;
     flex-direction: row;
     align-items: center;
     gap: 1.2rem;
+    height: auto;
+    margin: 0;
     padding: 0;
 }
 
@@ -659,11 +677,10 @@ html.glacier #menu .usage-bar > span {
 }
 
 /* ==========================================================================
-   Wide screens: the main menu in a card on the left of the page, the quick actions centred
-   on a row under the header. The page body becomes a grid and #menu steps aside
-   (display: contents), so its two halves take their own places in it: no script, no flash.
-   Everything else Unraid puts in <body> (fixed footer, spinner, scroll buttons, dialogs)
-   spans the full width below.
+   Wide screens: a sidebar on the left of the page with two cards, the main menu and under it
+   the quick actions as a grid of small round buttons. The page body becomes a grid and #menu
+   is the sidebar (sticky), so no script moves anything: no flash. Everything else Unraid puts
+   in <body> (fixed footer, spinner, scroll buttons, dialogs) spans the full width below.
    ========================================================================== */
 @media (min-width: 1024px) {
     html.glacier body {
@@ -671,7 +688,6 @@ html.glacier #menu .usage-bar > span {
         grid-template-columns: 24rem minmax(0, 1fr);
         grid-template-areas:
             "head head"
-            "acts acts"
             "nav  main";
         align-items: start;
     }
@@ -685,39 +701,105 @@ html.glacier #menu .usage-bar > span {
     }
 
     html.glacier #menu {
-        display: contents;
+        grid-area: nav;
+        position: relative;
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 2.4rem;
+        box-sizing: border-box;
+        width: auto;
+        margin: 0 0 0 2.8rem;
+        padding: 0 0 1.6rem;
+        overflow: visible;
+        background: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        scrollbar-width: thin;
     }
 
     html.glacier body > #displaybox {
         grid-area: main;
         max-width: none;
         margin: 0;
-        padding: 0 2.8rem 8rem 1.6rem;
+        padding: 0 2.8rem 8rem 2.4rem;
     }
 
-    /* Quick actions, centred */
+    /* Quick actions card: small round buttons, five to a row; the array usage bar spans the
+       row above them. */
     html.glacier .nav-tile.right {
-        grid-area: acts;
-        justify-content: center;
+        display: grid;
+        flex: none;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 0.6rem;
+        height: auto;
         margin: 0;
-        padding: 0.4rem 2.8rem 2rem;
+        padding: 1rem;
+        overflow: visible;
+        border-radius: var(--gl-r-xl);
+        background: var(--gl-surface);
+        box-shadow: var(--gl-shadow-md);
+    }
+
+    html.glacier .nav-tile.right > * {
+        min-width: 0;
+    }
+
+    html.glacier .nav-tile.right .nav-item.util {
+        justify-content: center;
+    }
+
+    html.glacier .nav-tile.right .nav-item.util a {
+        width: 100%;
+        max-width: 3.8rem;
+        height: auto;
+        aspect-ratio: 1;
+        border: 1px solid var(--gl-border);
+        background: var(--gl-subtle);
+        box-shadow: none;
+    }
+
+    html.glacier .nav-tile.right .nav-item.util a:hover {
+        border-color: var(--gl-accent);
+        background: var(--gl-surface);
+        box-shadow: none;
+    }
+
+    html.glacier .nav-tile.right .nav-item .system {
+        font-size: 1.4rem;
+    }
+
+    html.glacier .nav-tile.right .nav-item img.system {
+        width: 1.6rem;
+        height: 1.6rem;
+    }
+
+    html.glacier #menu .nav-tile.right .usage-bar {
+        grid-column: 1 / -1;
+        order: -1;
+        width: auto;
+        height: 2.6rem;
+        margin: 0 0 0.4rem;
+        background: var(--gl-subtle-2);
+        box-shadow: none;
+    }
+
+    html.glacier #menu .nav-tile.right .usage-bar > span {
+        line-height: 2.6rem;
     }
 
     /* The menu card */
     html.glacier .nav-tile:not(.right) {
-        grid-area: nav;
-        position: sticky;
-        top: 1.6rem;
+        flex: none;
         flex-direction: column;
         align-items: stretch;
         gap: 0.2rem;
         height: auto;
-        max-height: calc(100vh - 8rem);
-        margin-left: 2.8rem;
+        margin: 0;
         padding: 1rem;
         border-radius: var(--gl-r-xl);
-        overflow-x: hidden;
-        overflow-y: auto;
+        overflow: visible;
         white-space: normal;
         box-shadow: var(--gl-shadow-md);
     }
@@ -768,6 +850,15 @@ html.glacier #menu .usage-bar > span {
 
     html.glacier #menu .nav-tile:not(.right) .nav-item a[data-gl-count]::after {
         margin-left: auto;
+    }
+}
+
+/* The sidebar stays in view while the page scrolls, on windows tall enough to show all of it
+   (it has no scrollbar of its own, which would cut the cards' shadows). */
+@media (min-width: 1024px) and (min-height: 800px) {
+    html.glacier #menu {
+        position: sticky;
+        top: 2.4rem;
     }
 }
 
@@ -1291,7 +1382,7 @@ html.glacier .graybar { background: var(--gl-input) !important; }
    Dashboard: each tile section becomes a white card with a tinted icon squircle.
    ========================================================================== */
 html.glacier div.grid {
-    gap: 1.6rem;
+    gap: 2rem;
 }
 
 html.glacier .tile {
@@ -1306,7 +1397,7 @@ html.glacier table.dashboard {
 /* Unraid puts a spacer row (thead.stopgap) before every section: it is the gap between cards. */
 html.glacier table.dashboard thead.stopgap {
     display: block;
-    height: 1.6rem;
+    height: 2rem;
 }
 
 html.glacier table.dashboard thead.stopgap:first-child {
@@ -1429,7 +1520,7 @@ html.glacier .gl-hero {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    margin: 0 0 1.6rem;
+    margin: 0 0 2rem;
     padding: 2.8rem;
     border-radius: var(--gl-r-xl);
     color: #ffffff;
@@ -1767,10 +1858,29 @@ html.glacier #header unraid-header-os-version span[role="button"][aria-haspopup]
     background: rgba(255, 255, 255, 0.18);
 }
 
+/* Wide screens: as wide as the sidebar, the logo large and the version under it. */
 @media (min-width: 1024px) {
+    html.glacier #header {
+        min-height: 0;
+        padding-top: 2rem;
+        padding-bottom: 2.4rem;
+    }
+
     html.glacier #header unraid-header-os-version > div {
-        justify-content: space-between;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 1rem;
         width: 21.2rem;
+        min-height: 9.2rem;
+        padding: 1.6rem 2rem;
+        border-radius: var(--gl-r-xl);
+    }
+
+    html.glacier #header unraid-header-os-version > div > a :is(svg, img) {
+        width: 100%;
+        max-width: 17rem;
+        height: auto;
     }
 }
 

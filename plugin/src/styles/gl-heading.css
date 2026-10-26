@@ -3,13 +3,18 @@
  * Adapted from Aurora Theme (https://github.com/Tunefish92/Aurora-Theme),
  * Copyright (c) 2026 Chris (Tunefish), MIT License; see NOTICE.md.
  */
+/* A card, like the menu card beside it. */
 html.glacier .gl-heading {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
     gap: 1.6rem 2.4rem;
-    margin: 0.8rem 0 2rem;
+    margin: 0 0 2.4rem;
+    padding: 2rem 2.4rem;
+    border-radius: var(--gl-r-xl);
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-md);
 }
 
 html.glacier .gl-heading-text {
@@ -72,7 +77,9 @@ html.glacier #displaybox div.title.gl-heading-dup + * {
 
 @media (max-width: 767px) {
     html.glacier .gl-heading {
-        margin: 0.4rem 0 1.6rem;
+        margin: 0 0 1.2rem;
+        padding: 1.6rem;
+        border-radius: var(--gl-r-lg);
     }
 
     html.glacier .gl-heading h1.gl-heading-title {

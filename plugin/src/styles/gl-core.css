@@ -44,8 +44,8 @@ html.glacier .gl-icon-button:disabled {
 html.glacier .gl-summary {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
-    gap: 1.2rem;
-    margin: 0 0 1.6rem;
+    gap: 2rem;
+    margin: 0 0 2rem;
 }
 
 html.glacier .gl-summary-item {

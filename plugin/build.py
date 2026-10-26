@@ -79,6 +79,12 @@ plg = f"""<?xml version='1.0' standalone='yes'?>
 
 <CHANGES>
 ###{version}
+- Wide screens: the quick actions move into a card in the sidebar, under the menu card, as small round buttons five to a row with the array usage bar above them.
+- Larger Unraid card (logo and version) aligned with the sidebar; page headings on a card; 24px between cards and deeper drop shadows, in light and dark.
+- The server name, notifications and menu at the top right now end at the right edge of the page content and centre on the logo card.
+- The sidebar stays in view while scrolling when the window is tall enough to show all of it.
+
+###2026.10.26.1709
 - Page enhancements adapted from Aurora Theme (MIT, see NOTICE.md), in French and English:
 - Page headings on every tab. Dashboard: key figures strip, processor cores as tiles, charts and rings in theme colours, fan and VM-usage cards, an update badge on container icons, and a container dialog with all actions.
 - Settings and Tools: search ("/" to focus) and favourites with a star. Users: cards with initials, roles, search and Add user.

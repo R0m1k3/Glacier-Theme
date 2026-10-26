@@ -27,6 +27,9 @@
     unraid-header-os-version, unraid-user-profile { display: block; }
     unraid-user-profile { margin-left: auto; align-self: stretch; display: flex; }
     #UserProfile span[role="button"] { display: inline-flex; align-items: center; cursor: pointer; }
+    /* As on a real server: Unraid's profile sits absolutely over the header's right end. */
+    #header { position: relative; }
+    #UserProfile { position: absolute; top: 0; right: 0; }
   </style>
 </head>
 <body>
