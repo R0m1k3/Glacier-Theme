@@ -2565,7 +2565,8 @@ html.glacier[lang^="fr"] div.spinner.fixed:has(.unraid_mark)::after {
     content: "Un instant…";
 }
 
-/* The ring, 4rem, 2.4rem below the card's top edge; above the card, which comes after it. */
+/* The ring, 4rem, centred in the 8.4rem above the line (2.2rem above and below it); above the
+   card, which comes after it. */
 html.glacier div.spinner.fixed:has(.unraid_mark)::before {
     position: fixed;
     top: 50%;
@@ -2573,7 +2574,7 @@ html.glacier div.spinner.fixed:has(.unraid_mark)::before {
     z-index: 1;
     width: 4rem;
     height: 4rem;
-    margin: -4rem 0 0 -2rem;
+    margin: -4.2rem 0 0 -2rem;
     border-width: 4px;
 }
 
@@ -2586,7 +2587,7 @@ html.glacier div.spinner.fixed:has(.unraid_mark)::before {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    html.glacier div.spinner::before,
+    html.glacier div.spinner:has(.unraid_mark)::before,
     html.glacier .la-ball-fall > div {
         animation-duration: 2.4s;
     }
