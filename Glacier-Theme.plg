@@ -3,7 +3,7 @@
 
 <PLUGIN name="Glacier-Theme"
         author="R0m1k3"
-        version="2026.10.29.0922"
+        version="2026.10.29.0937"
         launch="Settings/GlacierThemeSettings"
         pluginURL="https://raw.githubusercontent.com/R0m1k3/Glacier-Theme/main/Glacier-Theme.plg"
         support="https://github.com/R0m1k3/Glacier-Theme/issues"
@@ -11,6 +11,9 @@
         min="7.2.0">
 
 <CHANGES>
+###2026.10.29.0937
+- Dashboard: the case picture on the server tile no longer rises over the tile's buttons; it sits under the header, in the muted colour, the accent on hover.
+
 ###2026.10.29.0922
 - Dashboard organise mode: opening the Dashboard after leaving it (or the Docker or VMs page) unlocked no longer shows the organise bar with locked tiles, where Done unlocked them. The hint now says the layout is saved on the server, for every browser, as Unraid does. Close buttons line up with the tile's controls in every tile, plugins' too; the tile manager takes the accent colour; keyboard focus moves to Done and back.
 
@@ -94,7 +97,7 @@ Title="Glacier Theme"
 // so this is where the theme attaches its files. Link="nav-user" keeps it from adding a button.
 $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierCustomDir = '/boot/config/plugins/Glacier-Theme';
-$glacierVersion = '2026.10.29.0922';
+$glacierVersion = '2026.10.29.0937';
 
 // Emergency switch: any page opened with ?glacier=off stops the theme in this browser
 // (remembered in a cookie) until a page is opened with ?glacier=on.
@@ -227,7 +230,7 @@ $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierAccent = preg_match('/^#[0-9a-fA-F]{6}$/', $glacier['accent'] ?? '') ? $glacier['accent'] : '#0f766e';
 $glacierOnTopTheme = in_array($display['theme'] ?? '', ['white', 'black'], true);
 ?>
-<p class="gl-version">_(Version)_ <strong>2026.10.29.0922</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
+<p class="gl-version">_(Version)_ <strong>2026.10.29.0937</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
 <?php if (!$glacierOnTopTheme): ?>
 <p class="notice">_(Glacier is drawn over the Dynamix White and Black themes. Choose one of them in Settings > Display Settings to see it.)_</p>
 <?php endif; ?>
@@ -12014,6 +12017,28 @@ html.glacier #current_time {
     letter-spacing: -0.02em;
 }
 
+/* The case picture on the server tile (Unraid's case-* icon font, 80 to 128px): with the
+   cells' 2.4rem line height its glyph rose over the tile's header buttons. It sits in its own
+   line box, in the muted colour, the accent on hover (a click picks the case model). */
+html.glacier #tile1 .tile-select-case {
+    margin-top: 0.4rem;
+    color: var(--gl-muted);
+    line-height: 1;
+}
+
+html.glacier #tile1 .tile-select-case:hover {
+    color: var(--gl-accent);
+}
+
+html.glacier #tile1 #mycase {
+    display: inline-block;
+    line-height: 1;
+}
+
+html.glacier #tile1 .tile-select-case > br {
+    display: none;
+}
+
 html.glacier div.pie span {
     font-weight: 700;
 }
@@ -13605,7 +13630,7 @@ done
 find /usr/local/emhttp/plugins/Glacier-Theme -type d -exec chmod 755 {} +
 find /usr/local/emhttp/plugins/Glacier-Theme -type f -exec chmod 644 {} +
 echo ""
-echo "Glacier-Theme 2026.10.29.0922 is installed."
+echo "Glacier-Theme 2026.10.29.0937 is installed."
 echo "Settings: Settings > User Utilities > Glacier Theme"
 echo "The theme shows while Settings > Display Settings > Dynamix color theme is White."
 echo ""
