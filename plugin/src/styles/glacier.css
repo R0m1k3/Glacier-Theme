@@ -2255,14 +2255,20 @@ html.glacier .dockerHubHolder {
     border-radius: var(--gl-r-lg);
     background: var(--gl-surface) !important;
     box-shadow: var(--gl-shadow-sm);
-    transition: transform 0.25s var(--gl-ease), box-shadow 0.25s var(--gl-ease), border-color 0.25s;
+    transition: box-shadow 0.25s var(--gl-ease), border-color 0.25s;
 }
 
+/* No lift on hover: a moving card is repainted as its own layer, and the status flag CA clips
+   into its corner (a triangle, or badges in newer versions) can vanish from it while the pointer
+   is over the card. The flag is kept above the card's content. */
 html.glacier .ca_holder:hover,
 html.glacier .dockerHubHolder:hover {
     border-color: var(--gl-accent-ring);
     box-shadow: var(--gl-shadow-md);
-    transform: translateY(-2px);
+}
+
+html.glacier .ca_holder > :is(.cardFlagStack, .installedCardBackground, .betaCardBackground, .warningCardBackground, .greenCardBackground, .officialCardBackground, .LTOfficialCardBackground, .spotlightCardBackground) {
+    z-index: 2;
 }
 
 html.glacier :is(.ca_homeTemplatesHeader, .ca_applicationName) {
@@ -2467,9 +2473,9 @@ html.glacier .sweet-alert button.cancel {
     background: var(--gl-surface) !important;
 }
 
-/* Busy dialogs (Unraid's "la-ball-fall" loader over a disabled confirm button): three dots in
-   the accent colour circle like a comet with a fading tail. Each dot turns on its own, so the
-   loader keeps the centring transform SweetAlert gives it. */
+/* Busy dialogs (Unraid's "la-ball-fall" loader over a disabled confirm button): the theme's
+   loading ring (as in the Docker list) in the accent colour. Its first dot becomes the ring and
+   turns inside the loader, which keeps the centring transform SweetAlert gives it. */
 html.glacier .sweet-alert button.confirm[disabled] {
     color: transparent !important;
     background: var(--gl-accent-soft) !important;
@@ -2478,104 +2484,109 @@ html.glacier .sweet-alert button.confirm[disabled] {
 }
 
 html.glacier .la-ball-fall {
-    --gl-comet-radius: 1rem;
-    width: 2.8rem;
-    height: 2.8rem;
-    color: var(--gl-accent);
+    width: 2.4rem;
+    height: 2.4rem;
 }
 
 html.glacier .la-ball-fall.la-sm {
-    --gl-comet-radius: 0.65rem;
     width: 1.8rem;
     height: 1.8rem;
 }
 
 html.glacier .la-ball-fall > div {
-    --gl-comet-start: 0deg;
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0.8rem;
-    height: 0.8rem;
-    margin: -0.4rem 0 0 -0.4rem;
-    border: 0;
+    inset: 0;
+    width: auto;
+    height: auto;
+    margin: 0;
+    border: 2px solid color-mix(in srgb, var(--gl-accent) 25%, transparent);
+    border-top-color: var(--gl-accent);
     border-radius: 50%;
-    background: currentColor;
+    background: none;
     opacity: 1;
-    animation: gl-comet 0.9s linear infinite;
-    animation-delay: 0s;
+    box-sizing: border-box;
+    animation: gl-spin 0.8s linear infinite;
 }
 
-html.glacier .la-ball-fall > div:nth-child(2) {
-    --gl-comet-start: -34deg;
-    width: 0.6rem;
-    height: 0.6rem;
-    margin: -0.3rem 0 0 -0.3rem;
-    opacity: 0.55;
-    animation-delay: 0s;
+html.glacier .la-ball-fall > div ~ div {
+    display: none;
 }
 
-html.glacier .la-ball-fall > div:nth-child(3) {
-    --gl-comet-start: -64deg;
-    width: 0.5rem;
-    height: 0.5rem;
-    margin: -0.25rem 0 0 -0.25rem;
-    opacity: 0.25;
-    animation-delay: 0s;
-}
-
-/* Unraid's page loader (div.spinner: the orange animated logo, full screen while an action runs
-   and inside tables while they load) becomes the same comet, on a light veil over the page. The
-   logo is fixed at the centre of the screen even in table spinners; it is hidden everywhere. The
-   comet is one rotating square painted with three dots: a head and a fading tail. */
+/* Unraid's page loader (div.spinner: the orange animated logo, full screen while a page loads or
+   an action runs, and inside tables while they load) becomes the same loading ring. Full screen,
+   the ring and a short line sit on a card in the middle of a veil, shown after a short delay so
+   quick actions do not flash it. The logo is fixed at the centre of the screen even in table
+   spinners; it is hidden everywhere. */
 html.glacier div.spinner .unraid_mark {
     display: none !important;
 }
 
-html.glacier div.spinner.fixed {
-    background: color-mix(in srgb, var(--gl-bg) 55%, transparent);
-    backdrop-filter: blur(2px);
-}
-
 html.glacier div.spinner:has(.unraid_mark)::before {
-    --gl-comet-size: 3.6rem;
     content: "";
     display: block;
-    width: var(--gl-comet-size);
-    height: var(--gl-comet-size);
+    width: 2.8rem;
+    height: 2.8rem;
     margin: 1.6rem auto;
-    background:
-        radial-gradient(circle at 50% 14.3%, var(--gl-accent) 12.5%, transparent 13.5%),
-        radial-gradient(circle at 30% 20.4%, color-mix(in srgb, var(--gl-accent) 55%, transparent) 9.5%, transparent 10.5%),
-        radial-gradient(circle at 17.9% 34.3%, color-mix(in srgb, var(--gl-accent) 25%, transparent) 7.5%, transparent 8.5%);
-    animation: gl-spin 0.9s linear infinite;
+    border: 3px solid var(--gl-border);
+    border-top-color: var(--gl-accent);
+    border-radius: 50%;
+    box-sizing: border-box;
+    animation: gl-spin 0.8s linear infinite;
 }
 
-html.glacier div.spinner.fixed:has(.unraid_mark)::before {
-    --gl-comet-size: 5.6rem;
+html.glacier div.spinner.fixed {
+    background: rgba(15, 23, 42, 0.4);
+    animation: gl-spinner-in 0.2s ease 0.15s both;
+}
+
+/* The card: 12.8rem high (8.4rem above the line for the ring, a 2rem line, 2.4rem below). */
+html.glacier div.spinner.fixed:has(.unraid_mark)::after {
+    content: "One moment…";
     position: fixed;
     top: 50%;
     left: 50%;
-    margin: calc(var(--gl-comet-size) / -2) 0 0 calc(var(--gl-comet-size) / -2);
-    filter: drop-shadow(0 4px 12px color-mix(in srgb, var(--gl-accent) 35%, transparent));
+    width: 18rem;
+    padding: 8.4rem 2rem 2.4rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-xl);
+    color: var(--gl-muted);
+    font-family: var(--gl-font);
+    font-size: 1.3rem;
+    font-weight: 600;
+    line-height: 2rem;
+    text-align: center;
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-lg);
+    box-sizing: border-box;
+    transform: translate(-50%, -50%);
+}
+
+html.glacier[lang^="fr"] div.spinner.fixed:has(.unraid_mark)::after {
+    content: "Un instant…";
+}
+
+/* The ring, 4rem, 2.4rem below the card's top edge; above the card, which comes after it. */
+html.glacier div.spinner.fixed:has(.unraid_mark)::before {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 1;
+    width: 4rem;
+    height: 4rem;
+    margin: -4rem 0 0 -2rem;
+    border-width: 4px;
 }
 
 @keyframes gl-spin {
     to { transform: rotate(360deg); }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    html.glacier div.spinner::before {
-        animation-duration: 2.4s;
-    }
-}
-
-@keyframes gl-comet {
-    from { transform: rotate(var(--gl-comet-start)) translateY(calc(var(--gl-comet-radius) * -1)); }
-    to { transform: rotate(calc(var(--gl-comet-start) + 360deg)) translateY(calc(var(--gl-comet-radius) * -1)); }
+@keyframes gl-spinner-in {
+    from { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
+    html.glacier div.spinner::before,
     html.glacier .la-ball-fall > div {
         animation-duration: 2.4s;
     }
