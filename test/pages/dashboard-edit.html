@@ -227,9 +227,10 @@ sheet: DashStats.css
 <script src="/webGui/javascript/dynamix.js"></script>
 <script>
 // From DashStats.page: the stopgap row, the close buttons, dismiss() and LockButton() (top-nav
-// theme). The cookie holding the layout is kept in window.mockCookie instead.
+// theme). The layout Unraid saves on the server is kept in window.mockCookie instead.
 var stopgap = '<thead class="stopgap"><tr><td class="stopgap"></td></tr></thead>';
 var cookie = {};
+// Unraid posts it to InitCharts.php, which writes /boot/config/dashboard_settings.json.
 function saveCookie() { window.mockCookie = JSON.stringify(cookie); }
 function dismiss(button) {
   var tbody = button.closest('tbody');
@@ -291,7 +292,9 @@ function LockButton() {
   }
 }
 $('div#tile1,div#tile2,div#tile3').show();
-$.removeCookie('lockbutton');
+// As on a server, a cookie another page left is cleared in a ready handler, after the theme's
+// deferred scripts ran.
+$(function(){ $.removeCookie('lockbutton'); });
 $('div.nav-item.LockButton a').attr('onclick', 'LockButton();return false;');
 </script>
 <script src="/webGui/javascript/smoothie.js"></script>

@@ -523,20 +523,27 @@ html.glacier.gl-dash-edit table.dashboard tbody.sortable {
     outline-offset: -2px;
 }
 
-/* A tile's close button sits at the end of its header row, after the tile's own controls. */
-html.glacier table.dashboard tbody > tr:first-child > td:has(> i.control.tile) {
+/* A tile's close button sits at the end of its header row, level with the tile's own controls
+   (Unraid aligns them to the top of the header, under the cell's 1.4rem top padding). The cell
+   keeps room for it on the right, whatever the header holds (plugins' tiles too). */
+html.glacier table.dashboard tbody > tr:first-child > td {
     position: relative;
 }
 
 html.glacier.gl-dash-edit table.dashboard tbody > tr:first-child > td > i.control.tile {
     position: absolute;
-    top: calc(50% - 0.6rem);
+    top: 1.4rem;
     right: 2rem;
-    transform: translateY(-50%);
 }
 
-html.glacier.gl-dash-edit table.dashboard tbody > tr:first-child > td:has(> i.control.tile) > .tile-header {
-    padding-right: 4rem;
+html.glacier.gl-dash-edit table.dashboard tbody > tr:first-child > td:has(> i.control.tile) {
+    padding-right: 6rem;
+}
+
+/* The tile manager (wrench) in the accent colour instead of Unraid's blue (DashStats.css). */
+html.glacier table.dashboard i.fa-wrench.control.tile {
+    color: var(--gl-accent) !important;
+    background-color: var(--gl-accent-soft) !important;
 }
 
 html.glacier table.dashboard tbody > tr:first-child > td > i.control.tile:hover {
@@ -555,7 +562,6 @@ html.glacier table.dashboard tbody.dashboard-sortable {
     border: 2px dashed var(--gl-accent);
     background: var(--gl-accent-soft);
     box-shadow: none;
-    visibility: visible !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
