@@ -95,6 +95,9 @@ plg = f"""<?xml version='1.0' standalone='yes'?>
 
 <CHANGES>
 ###{version}
+- Header: the notifications bell and "Unraid OS" in the licence pill are light on the dark header card again (Unraid's components coloured them dark).
+
+###2026.10.29.0809
 - Docker update counter: counts each container once, as the Docker page does. A container in a Compose Manager stack was counted twice (Compose and Unraid's check file its image under two names), and images no container uses any more were counted too.
 - Unraid's page loader becomes the theme's loading ring: full screen, on a card in the middle of the page with "One moment…" ("Un instant…" in French), shown after a short delay; in loading tables, the ring alone. Busy dialogs use the same ring instead of the comet.
 - Apps: cards no longer lift on hover, which could make Community Applications' corner flag (installed, beta…) vanish while the pointer was over the card.

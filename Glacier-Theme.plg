@@ -3,7 +3,7 @@
 
 <PLUGIN name="Glacier-Theme"
         author="R0m1k3"
-        version="2026.10.29.0809"
+        version="2026.10.29.0826"
         launch="Settings/GlacierThemeSettings"
         pluginURL="https://raw.githubusercontent.com/R0m1k3/Glacier-Theme/main/Glacier-Theme.plg"
         support="https://github.com/R0m1k3/Glacier-Theme/issues"
@@ -11,6 +11,9 @@
         min="7.2.0">
 
 <CHANGES>
+###2026.10.29.0826
+- Header: the notifications bell and "Unraid OS" in the licence pill are light on the dark header card again (Unraid's components coloured them dark).
+
 ###2026.10.29.0809
 - Docker update counter: counts each container once, as the Docker page does. A container in a Compose Manager stack was counted twice (Compose and Unraid's check file its image under two names), and images no container uses any more were counted too.
 - Unraid's page loader becomes the theme's loading ring: full screen, on a card in the middle of the page with "One moment…" ("Un instant…" in French), shown after a short delay; in loading tables, the ring alone. Busy dialogs use the same ring instead of the comet.
@@ -84,7 +87,7 @@ Title="Glacier Theme"
 // so this is where the theme attaches its files. Link="nav-user" keeps it from adding a button.
 $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierCustomDir = '/boot/config/plugins/Glacier-Theme';
-$glacierVersion = '2026.10.29.0809';
+$glacierVersion = '2026.10.29.0826';
 
 // Emergency switch: any page opened with ?glacier=off stops the theme in this browser
 // (remembered in a cookie) until a page is opened with ?glacier=on.
@@ -217,7 +220,7 @@ $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierAccent = preg_match('/^#[0-9a-fA-F]{6}$/', $glacier['accent'] ?? '') ? $glacier['accent'] : '#0f766e';
 $glacierOnTopTheme = in_array($display['theme'] ?? '', ['white', 'black'], true);
 ?>
-<p class="gl-version">_(Version)_ <strong>2026.10.29.0809</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
+<p class="gl-version">_(Version)_ <strong>2026.10.29.0826</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
 <?php if (!$glacierOnTopTheme): ?>
 <p class="notice">_(Glacier is drawn over the Dynamix White and Black themes. Choose one of them in Settings > Display Settings to see it.)_</p>
 <?php endif; ?>
@@ -12180,6 +12183,13 @@ html.glacier #header {
     box-sizing: border-box;
     width: auto;
     min-height: 0;
+    /* Unraid's Vue components colour the bell and "Unraid OS" with these; the --color-* copies
+       are what their Tailwind classes read, set at the root from the page's dark-on-light
+       values, so both pairs are set again for the dark card. */
+    --header-text-primary: #ffffff;
+    --header-text-secondary: #cbd5e1;
+    --color-header-text-primary: #ffffff;
+    --color-header-text-secondary: #cbd5e1;
     margin: 2rem 2.8rem 2.4rem;
     padding: 1.6rem 2.4rem;
     border-radius: var(--gl-r-xl);
@@ -13433,7 +13443,7 @@ done
 find /usr/local/emhttp/plugins/Glacier-Theme -type d -exec chmod 755 {} +
 find /usr/local/emhttp/plugins/Glacier-Theme -type f -exec chmod 644 {} +
 echo ""
-echo "Glacier-Theme 2026.10.29.0809 is installed."
+echo "Glacier-Theme 2026.10.29.0826 is installed."
 echo "Settings: Settings > User Utilities > Glacier Theme"
 echo "The theme shows while Settings > Display Settings > Dynamix color theme is White."
 echo ""
