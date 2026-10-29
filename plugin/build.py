@@ -95,6 +95,9 @@ plg = f"""<?xml version='1.0' standalone='yes'?>
 
 <CHANGES>
 ###{version}
+- Dashboard organise mode: opening the Dashboard after leaving it (or the Docker or VMs page) unlocked no longer shows the organise bar with locked tiles, where Done unlocked them. The hint now says the layout is saved on the server, for every browser, as Unraid does. Close buttons line up with the tile's controls in every tile, plugins' too; the tile manager takes the accent colour; keyboard focus moves to Done and back.
+
+###2026.10.29.0912
 - Dashboard: an Organise button above the tiles. It unlocks them as Unraid's lock does: drag them between the columns, close the ones you do not need, show hidden ones again or reset the layout, then Done. The tile being dragged stays opaque and its landing place shows as a dashed card.
 - Dashboard: the tiles' close buttons and the tile manager show only while the tiles are unlocked, at the end of the tile's header row; they no longer sit above the icon all the time.
 

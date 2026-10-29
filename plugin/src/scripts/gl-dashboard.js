@@ -102,7 +102,7 @@
       if (!strip.isConnected) {
         var hero = frame.querySelector(':scope > .gl-hero');
         if (hero) hero.after(strip);
-        else grid.before(strip);
+        else (frame.querySelector(':scope > .gl-dash-organise') || grid).before(strip);
       }
     }
 
@@ -377,19 +377,20 @@
 
   // ---- Organise mode ----------------------------------------------------------------------------
   // Unraid's LockButton() (the lock in the menu) makes the tiles draggable between the three
-  // columns and shows their close buttons and the tile manager; the layout is kept in Unraid's
-  // dashboard cookie. The bar above the tiles calls the same function, and every call (from the
-  // bar or the menu) marks the page with gl-dash-edit, which gl-dashboard.css styles.
+  // columns and shows their close buttons and the tile manager; Unraid saves the layout on the
+  // server (/boot/config/dashboard_settings.json). The bar above the tiles calls the same
+  // function, and every call (from the bar or the menu) marks the page with gl-dash-edit, which
+  // gl-dashboard.css styles. The state is read from the tiles (jQuery UI's ui-sortable class),
+  // not from Unraid's lockbutton cookie: a cookie left by another page is only cleared by
+  // Unraid's ready handler, after this feature has run.
   G.feature('dashboard-organise', function () {
     var grid = document.querySelector('#displaybox > .content > .frame > .grid');
     if (!grid || !onDashboard() || typeof window.LockButton !== 'function') return;
 
     var root = document.documentElement;
     var bar = G.el('div', 'gl-toolbar gl-dash-organise');
-    bar.setAttribute('role', 'region');
-    bar.setAttribute('aria-label', t('Organise the dashboard', 'Organiser le tableau de bord'));
-    var hint = G.el('p', 'gl-dash-organise-hint', t('Drag the tiles to move them between the columns, or close the ones you do not need. The layout is saved in this browser.',
-      'Glissez les cartes pour les déplacer entre les colonnes, ou fermez celles dont vous n’avez pas besoin. La disposition est gardée dans ce navigateur.'));
+    var hint = G.el('p', 'gl-dash-organise-hint', t('Drag the tiles to move them between the columns, or close the ones you do not need. The layout is saved on the server, for every browser.',
+      'Glissez les cartes pour les déplacer entre les colonnes, ou fermez celles dont vous n’avez pas besoin. La disposition est enregistrée sur le serveur, pour tous les navigateurs.'));
     var tools = G.el('div', 'gl-tools');
 
     function button(icon, label, className, onClick) {
@@ -401,29 +402,30 @@
       node.addEventListener('click', onClick);
       return node;
     }
-    var organise = button('arrows', t('Organise', 'Organiser'), 'gl-tool-button', function () { window.LockButton(); });
+    var organise = button('arrows', t('Organise', 'Organiser'), 'gl-tool-button', function () {
+      window.LockButton();
+      if (!done.hidden) done.focus();
+    });
     organise.title = t('Move, hide or show the dashboard tiles', 'Déplacer, masquer ou réafficher les cartes du tableau de bord');
     var manage = button('eye', t('Hidden tiles', 'Cartes masquées'), 'gl-tool-button', function () {
       if (typeof window.contentMgmt === 'function') window.contentMgmt();
     });
     manage.title = t('Choose the tiles shown, or reset the layout', 'Choisir les cartes affichées, ou revenir à la disposition d’origine');
-    var done = button('check', t('Done', 'Terminer'), 'gl-modal-button gl-modal-primary', function () { window.LockButton(); });
+    var done = button('check', t('Done', 'Terminer'), 'gl-modal-button gl-modal-primary', function () {
+      window.LockButton();
+      if (!organise.hidden) organise.focus();
+    });
     if (typeof window.contentMgmt === 'function') tools.append(manage);
     tools.append(organise, done);
     bar.append(hint, tools);
 
-    function editing() {
-      return /(?:^|;\s*)lockbutton=/.test(document.cookie);
-    }
     function sync() {
-      var on = editing();
+      var on = Boolean(document.querySelector('table.dashboard.ui-sortable'));
       root.classList.toggle('gl-dash-edit', on);
       hint.hidden = !on;
       manage.hidden = !on;
       done.hidden = !on;
       organise.hidden = on;
-      organise.setAttribute('aria-expanded', String(on));
-      if (grid.previousElementSibling !== bar) grid.before(bar);
     }
 
     var original = window.LockButton;
@@ -432,6 +434,7 @@
       sync();
       return result;
     };
+    grid.before(bar);
     sync();
   });
 })();
