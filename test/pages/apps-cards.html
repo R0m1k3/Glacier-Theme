@@ -1,0 +1,38 @@
+page: Apps
+active: Apps
+---
+<!-- App cards as Community Applications builds them up to its May 2026 versions (displayCard()
+     in skins/Narrow/skin.php), with the rules of its community.applications.css that place them:
+     the status flag (INSTALLED, BETA, DEPRECATED...) is a triangle clipped in the card's top-right
+     corner, absolutely positioned against the card. Hovering a card must leave it visible. -->
+<style>
+.ca_templatesDisplay{display:flex;flex-wrap:wrap;}
+.ca_holder{float:left;height:24rem;width:36rem;padding:1.25rem 0.625rem 1.25rem 1.25rem;margin:0 1rem 1rem 0;font-size:1.2rem;position:relative;flex-shrink:0;background-color:#f5f5f5;border:1px solid #e3e3e3;overflow:hidden;cursor:pointer;content-visibility:auto;contain-intrinsic-size:auto 36rem 24rem;}
+.ca_holder:hover{background-color:#fff;box-shadow:5px 5px 5px -3px rgba(255,140,47,.5);}
+.officialCardBackground,.LTOfficialCardBackground,.spotlightCardBackground,.warningCardBackground,.betaCardBackground,.greenCardBackground,.installedCardBackground{clip-path:polygon(0 0,100% 0,100% 100%);position:absolute;top:0;right:0;height:9rem;width:9rem;pointer-events:none;}
+.installedCardBackground{background-color:#322fff;}
+.warningCardBackground{background-color:#810000;}
+.betaCardBackground{background-color:#ff8c2f;}
+.installedCardText{position:absolute;transform:rotate(45deg);color:#fff;font-size:1.1rem;top:2rem;right:0;width:6rem;overflow:hidden;height:2.5rem;display:inline;text-transform:uppercase;}
+.ca_center{margin:auto;text-align:center;}
+.ca_bottomLine .caButton{display:inline-block;margin-right:1rem;padding:0.35rem 0.9rem;font-size:1.1rem;}
+.ca_bottomLine{display:block;position:relative;top:18rem;}
+.ca_bottomLineSpotLight{top:15rem !important;}
+.appDocker,.appPlugin{float:right;font-size:2rem;opacity:0.7;margin-left:1rem;}
+.ca_backgroundClickable{height:18.5rem;cursor:pointer;}
+.ca_iconArea{width:100%;height:6.4rem;margin-top:-2rem;margin-left:1rem;}
+.ca_displayIcon{height:6.4rem;width:6.4rem;}
+.ca_applicationName{width:34rem;max-height:3rem;margin-left:0.75rem;padding-top:1.5rem;font-size:2rem;font-weight:bold;}
+.ca_author{font-size:1rem;margin-left:0.75rem;margin-top:0.75rem;}
+.cardDescription{display:block;position:relative;top:0.5rem;line-height:1.5rem;}
+</style>
+<div id="displaybox">
+<div class="content">
+<div class="ca_templatesDisplay">
+<div class='ca_holder' data-appname='plex'><div class='installedCardBackground'><div class='installedCardText ca_center'>&nbsp;&nbsp;Installed&nbsp;&nbsp;</div></div><div class='ca_bottomLine ca_bottomLineSpotLight'><div class='caButton infoButton'>Details</div><div class='caButton actionsButton'>Install</div><span class='appDocker'></span></div><div class='ca_backgroundClickable'><div class='ca_iconArea'><img class='ca_displayIcon' src='/webGui/images/plg.png' alt='Application Icon'></div><div class='ca_applicationName'>plex</div><div class='ca_author'>linuxserver</div></div><div class='cardDescription ca_backgroundClickable'><div class='cardDesc'>Plex organizes video, music and photos from personal media libraries and streams them.</div></div></div>
+<div class='ca_holder' data-appname='speedketchup'><div class='betaCardBackground'><div class='installedCardText ca_center'>Beta</div></div><div class='ca_bottomLine ca_bottomLineSpotLight'><div class='caButton infoButton'>Details</div><div class='caButton actionsButton'>Install</div><span class='appDocker'></span></div><div class='ca_backgroundClickable'><div class='ca_iconArea'><img class='ca_displayIcon' src='/webGui/images/plg.png' alt='Application Icon'></div><div class='ca_applicationName'>speedketchup</div><div class='ca_author'>gatispei</div></div><div class='cardDescription ca_backgroundClickable'><div class='cardDesc'>Runs an internet speed test every 10 minutes against the nearest speedtest.net server.</div></div></div>
+<div class='ca_holder' data-appname='old-app'><div class='warningCardBackground'><div class='installedCardText ca_center' title='This application template has been deprecated'>Deprecated</div></div><div class='ca_bottomLine ca_bottomLineSpotLight'><div class='caButton infoButton'>Details</div><div class='caButton actionsButton'>Install</div><span class='appPlugin'></span></div><div class='ca_backgroundClickable'><div class='ca_iconArea'><img class='ca_displayIcon' src='/webGui/images/plg.png' alt='Application Icon'></div><div class='ca_applicationName'>old-app</div><div class='ca_author'>someone</div></div><div class='cardDescription ca_backgroundClickable'><div class='cardDesc'>A plugin whose template is deprecated.</div></div></div>
+<div class='ca_holder' data-appname='isputnik'><div class='ca_bottomLine ca_bottomLineSpotLight'><div class='caButton infoButton'>Details</div><div class='caButton actionsButton'>Install</div><span class='appDocker'></span></div><div class='ca_backgroundClickable'><div class='ca_iconArea'><img class='ca_displayIcon' src='/webGui/images/plg.png' alt='Application Icon'></div><div class='ca_applicationName'>isputnik</div><div class='ca_author'>isputnik-home</div></div><div class='cardDescription ca_backgroundClickable'><div class='cardDesc'>Private self-hosted family media library.</div></div></div>
+</div>
+</div>
+</div>

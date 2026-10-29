@@ -56,7 +56,7 @@ Dans **Settings → User Utilities → Glacier Theme** :
 - **Formulaires** : champs et listes arrondis avec un anneau de focus, interrupteurs en pilule, boutons en pilule (validation dans la couleur d'accent), rangées de boutons sur une ligne.
 - **Tableaux** : coins arrondis, lignes fines, en-tête discret et survol des lignes. Les barres d'utilisation sont arrondies.
 - **Panneau des notifications** : une carte flottante arrondie, onglets Non lu/Archivé en contrôle segmenté, filtres en pastilles et chaque notification sur sa carte, dans la couleur d'accent au lieu de l'orange d'Unraid.
-- **Dialogues, menus, infobulles, avis et pied de page** : harmonisés, avec une comète aux couleurs du thème à la place des trois points verts pendant les opérations, avec l'état de l'array en pastille dans le pied de page.
+- **Dialogues, menus, infobulles, avis et pied de page** : harmonisés, avec un anneau de chargement aux couleurs du thème à la place des trois points verts et du logo animé (en plein écran, sur une carte au milieu de la page), avec l'état de l'array en pastille dans le pied de page.
 - **Téléphone** : le menu défile horizontalement, les actions passent à la ligne et l'en-tête se simplifie.
 
 ## Améliorations des pages
