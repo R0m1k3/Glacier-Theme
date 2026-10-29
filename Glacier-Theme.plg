@@ -3,7 +3,7 @@
 
 <PLUGIN name="Glacier-Theme"
         author="R0m1k3"
-        version="2026.10.29.0826"
+        version="2026.10.29.0912"
         launch="Settings/GlacierThemeSettings"
         pluginURL="https://raw.githubusercontent.com/R0m1k3/Glacier-Theme/main/Glacier-Theme.plg"
         support="https://github.com/R0m1k3/Glacier-Theme/issues"
@@ -11,6 +11,10 @@
         min="7.2.0">
 
 <CHANGES>
+###2026.10.29.0912
+- Dashboard: an Organise button above the tiles. It unlocks them as Unraid's lock does: drag them between the columns, close the ones you do not need, show hidden ones again or reset the layout, then Done. The tile being dragged stays opaque and its landing place shows as a dashed card.
+- Dashboard: the tiles' close buttons and the tile manager show only while the tiles are unlocked, at the end of the tile's header row; they no longer sit above the icon all the time.
+
 ###2026.10.29.0826
 - Header: the notifications bell and "Unraid OS" in the licence pill are light on the dark header card again (Unraid's components coloured them dark).
 
@@ -87,7 +91,7 @@ Title="Glacier Theme"
 // so this is where the theme attaches its files. Link="nav-user" keeps it from adding a button.
 $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierCustomDir = '/boot/config/plugins/Glacier-Theme';
-$glacierVersion = '2026.10.29.0826';
+$glacierVersion = '2026.10.29.0912';
 
 // Emergency switch: any page opened with ?glacier=off stops the theme in this browser
 // (remembered in a cookie) until a page is opened with ?glacier=on.
@@ -220,7 +224,7 @@ $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierAccent = preg_match('/^#[0-9a-fA-F]{6}$/', $glacier['accent'] ?? '') ? $glacier['accent'] : '#0f766e';
 $glacierOnTopTheme = in_array($display['theme'] ?? '', ['white', 'black'], true);
 ?>
-<p class="gl-version">_(Version)_ <strong>2026.10.29.0826</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
+<p class="gl-version">_(Version)_ <strong>2026.10.29.0912</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
 <?php if (!$glacierOnTopTheme): ?>
 <p class="notice">_(Glacier is drawn over the Dynamix White and Black themes. Choose one of them in Settings > Display Settings to see it.)_</p>
 <?php endif; ?>
@@ -3232,6 +3236,8 @@ cat > /usr/local/emhttp/plugins/Glacier-Theme/scripts/gl-dashboard.js <<'GLACIER
  * - Processor tile: the cores as a grid of small tiles, power and temperature as chips.
  * - Airflow tile: one small card per fan. VM usage tile: one card per running VM.
  * - System tile: the usage rings in the theme's colours.
+ * - Organise mode: a bar above the tiles to unlock them (Unraid's lock), with a hint, the tile
+ *   manager and Done while they can be dragged, hidden or shown again.
  *
  * Unraid keeps writing into its own elements by id or class, so elements are moved, never
  * copied, and every value is only written when it changed, so the observers do not loop.
@@ -3592,6 +3598,66 @@ cat > /usr/local/emhttp/plugins/Glacier-Theme/scripts/gl-dashboard.js <<'GLACIER
       observe(value, update, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ['style'] });
       update();
     });
+  });
+
+  // ---- Organise mode ----------------------------------------------------------------------------
+  // Unraid's LockButton() (the lock in the menu) makes the tiles draggable between the three
+  // columns and shows their close buttons and the tile manager; the layout is kept in Unraid's
+  // dashboard cookie. The bar above the tiles calls the same function, and every call (from the
+  // bar or the menu) marks the page with gl-dash-edit, which gl-dashboard.css styles.
+  G.feature('dashboard-organise', function () {
+    var grid = document.querySelector('#displaybox > .content > .frame > .grid');
+    if (!grid || !onDashboard() || typeof window.LockButton !== 'function') return;
+
+    var root = document.documentElement;
+    var bar = G.el('div', 'gl-toolbar gl-dash-organise');
+    bar.setAttribute('role', 'region');
+    bar.setAttribute('aria-label', t('Organise the dashboard', 'Organiser le tableau de bord'));
+    var hint = G.el('p', 'gl-dash-organise-hint', t('Drag the tiles to move them between the columns, or close the ones you do not need. The layout is saved in this browser.',
+      'Glissez les cartes pour les déplacer entre les colonnes, ou fermez celles dont vous n’avez pas besoin. La disposition est gardée dans ce navigateur.'));
+    var tools = G.el('div', 'gl-tools');
+
+    function button(icon, label, className, onClick) {
+      var node = G.el('button', className);
+      node.type = 'button';
+      var mark = G.el('i', 'fa fa-' + icon);
+      mark.setAttribute('aria-hidden', 'true');
+      node.append(mark, G.el('span', null, label));
+      node.addEventListener('click', onClick);
+      return node;
+    }
+    var organise = button('arrows', t('Organise', 'Organiser'), 'gl-tool-button', function () { window.LockButton(); });
+    organise.title = t('Move, hide or show the dashboard tiles', 'Déplacer, masquer ou réafficher les cartes du tableau de bord');
+    var manage = button('eye', t('Hidden tiles', 'Cartes masquées'), 'gl-tool-button', function () {
+      if (typeof window.contentMgmt === 'function') window.contentMgmt();
+    });
+    manage.title = t('Choose the tiles shown, or reset the layout', 'Choisir les cartes affichées, ou revenir à la disposition d’origine');
+    var done = button('check', t('Done', 'Terminer'), 'gl-modal-button gl-modal-primary', function () { window.LockButton(); });
+    if (typeof window.contentMgmt === 'function') tools.append(manage);
+    tools.append(organise, done);
+    bar.append(hint, tools);
+
+    function editing() {
+      return /(?:^|;\s*)lockbutton=/.test(document.cookie);
+    }
+    function sync() {
+      var on = editing();
+      root.classList.toggle('gl-dash-edit', on);
+      hint.hidden = !on;
+      manage.hidden = !on;
+      done.hidden = !on;
+      organise.hidden = on;
+      organise.setAttribute('aria-expanded', String(on));
+      if (grid.previousElementSibling !== bar) grid.before(bar);
+    }
+
+    var original = window.LockButton;
+    window.LockButton = function () {
+      var result = original.apply(this, arguments);
+      sync();
+      return result;
+    };
+    sync();
   });
 })();
 GLACIER_THEME_EOF
@@ -8096,6 +8162,90 @@ html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) legend 
 html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) #dynamic i.fa-circle {
     font-size: 1rem;
     vertical-align: 0.1rem;
+}
+
+/* ---- Organise mode (scripts/gl-dashboard.js): the bar above the tiles and the tiles while they
+   can be moved. Unraid shows its close buttons (i.tile) and the tile manager only then, with
+   jQuery's show(), which sets an inline display; the theme's round .control would show them
+   all the time, so they are hidden here and shown again only in this mode. */
+html.glacier .gl-toolbar.gl-dash-organise {
+    justify-content: flex-end;
+}
+
+html.glacier.gl-dash-edit .gl-toolbar.gl-dash-organise {
+    justify-content: space-between;
+    padding: 1rem 1rem 1rem 1.8rem;
+    border: 1px dashed var(--gl-accent);
+    border-radius: var(--gl-r-xl);
+    background: var(--gl-accent-soft);
+}
+
+html.glacier .gl-dash-organise-hint {
+    flex: 1 1 auto;
+    min-width: min(100%, 28rem);
+    margin: 0;
+    color: var(--gl-text-2);
+    font-size: 1.3rem;
+    line-height: 1.5;
+}
+
+html.glacier .gl-dash-organise :is(.gl-dash-organise-hint, button)[hidden] {
+    display: none;
+}
+
+html.glacier .gl-dash-organise .gl-modal-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin: 0;
+}
+
+html.glacier table.dashboard .control.tile {
+    display: none;
+}
+
+html.glacier.gl-dash-edit table.dashboard .control.tile {
+    display: inline-grid !important;
+}
+
+html.glacier.gl-dash-edit table.dashboard tbody.sortable {
+    outline: 2px dashed var(--gl-accent-ring);
+    outline-offset: -2px;
+}
+
+/* A tile's close button sits at the end of its header row, after the tile's own controls. */
+html.glacier table.dashboard tbody > tr:first-child > td:has(> i.control.tile) {
+    position: relative;
+}
+
+html.glacier.gl-dash-edit table.dashboard tbody > tr:first-child > td > i.control.tile {
+    position: absolute;
+    top: calc(50% - 0.6rem);
+    right: 2rem;
+    transform: translateY(-50%);
+}
+
+html.glacier.gl-dash-edit table.dashboard tbody > tr:first-child > td:has(> i.control.tile) > .tile-header {
+    padding-right: 4rem;
+}
+
+html.glacier table.dashboard tbody > tr:first-child > td > i.control.tile:hover {
+    color: var(--gl-danger-text);
+    background: var(--gl-danger-bg);
+}
+
+/* The tile being dragged stays opaque (Unraid fades it to 0.6, which shows the tiles under it
+   through the card), lifted by a deeper shadow; jQuery UI's placeholder shows where it lands. */
+html.glacier table.dashboard tbody.ui-sortable-helper {
+    box-shadow: var(--gl-shadow-lg);
+    opacity: 1 !important;
+}
+
+html.glacier table.dashboard tbody.dashboard-sortable {
+    border: 2px dashed var(--gl-accent);
+    background: var(--gl-accent-soft);
+    box-shadow: none;
+    visibility: visible !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -13443,7 +13593,7 @@ done
 find /usr/local/emhttp/plugins/Glacier-Theme -type d -exec chmod 755 {} +
 find /usr/local/emhttp/plugins/Glacier-Theme -type f -exec chmod 644 {} +
 echo ""
-echo "Glacier-Theme 2026.10.29.0826 is installed."
+echo "Glacier-Theme 2026.10.29.0912 is installed."
 echo "Settings: Settings > User Utilities > Glacier Theme"
 echo "The theme shows while Settings > Display Settings > Dynamix color theme is White."
 echo ""

@@ -1,0 +1,351 @@
+page: Dashboard
+active: Dashboard
+sheet: DashStats.css
+---
+<!-- The Dashboard with its organise mode: Unraid's own code from DashStats.page (7.3.4) for the
+     close buttons (addProperties), dismiss() and LockButton() with its jQuery UI sortable, over
+     dynamix.js (jQuery, jQuery UI, jquery.cookie). A Parity tile as on a server with parity. -->
+<div id="displaybox">
+<div class="content">
+<div class='frame'>
+<div class='grid'>
+<div class='tile' id='tile1'>
+<table id='db_box1' class='dashboard'>
+<thead class="stopgap"><tr><td class="stopgap"></td></tr></thead><tbody class='system'>
+<tr><td>
+<span class='tile-header'>
+  <span class='tile-header-left'>
+    <i class='icon-performance f32'></i>
+    <div class='section'>
+      <h3 class='tile-header-main'>Tower</h3>
+      <span>Media &amp; backups</span>
+      <span id="current_time_" class="switch head_time"></span><br>
+    </div>
+  </span>
+  <span class='tile-header-right'>
+    <span class='tile-ctrl flex flex-row items-center gap-4'>
+      <span class='fa fa-fw fa-stop-circle hand' title="Arrêter l'array"></span>
+      <span class='fa fa-fw fa-refresh hand' title="Redémarrer"></span>
+      <span class='fa fa-fw fa-power-off hand' title="Éteindre"></span>
+    </span>
+    <span class='tile-header-right-controls'>
+      <a href='/Dashboard/Settings/Identification'><i class='fa fa-fw fa-cog control'></i></a>
+      <i class='fa fa-fw fa-wrench control tile' title="Gestion des tuiles"></i>
+    </span>
+  </span>
+</span>
+</td></tr>
+<tr><td>
+<div class='leftside'>
+  <a href="/Settings/DateTime" class="hand none"><span id="current_time">21:42</span></a><br>
+  <span id="current_date">lundi 26 octobre 2026</span><br><br>
+  <span class='header'><i class='indent fa fa-file-text-o'></i>Modèle</span><br>
+  <i class='indent'></i>Custom<br><br>
+  <span class='header'><i class='indent fa fa-clock-o'></i>Disponibilité</span><br>
+  <i class='indent'></i><span class='uptime'>12 jours, 4 heures, 18 minutes</span>
+</div>
+</td></tr>
+</tbody><thead class="stopgap"><tr><td class="stopgap"></td></tr></thead><tbody title="Informations sur le processeur" data="toggleCPU(true)">
+<tr><td>
+<span class='tile-header'>
+  <span class='tile-header-left'>
+    <i class='icon-cpu f32'></i>
+    <div class='section'><h3 class='tile-header-main'>Processeur</h3>AMD Ryzen 7 7700 8-Core @ 3800 MHz</div>
+  </span>
+  <span class='tile-header-right'><span class='tile-header-right-controls'><a href='/Dashboard/Settings/CPUset'><i class='fa fa-fw fa-cog control'></i></a></span></span>
+</span>
+</td></tr>
+<tr><td>
+  <span class='flex flex-row flex-wrap items-center gap-4'>
+    <span class="head_info">
+      <span id='cpu-total-power'><i class='fa fa-fw fa-plug'></i> Total Puissance: N/A</span>
+    </span>
+    <span class="head_info">
+      <i class="fa fa-thermometer"></i> Température: <span id='cpu-temp0'>52&#8201;&#176;C</span>
+    </span>
+    <span class="switch">Charge:<span class="head_bar"><span class='cpu_ load'>23%</span><div class='usage-disk sys'><span id='cpu_'></span><span></span></div></span><br>
+  </span>
+</td></tr>
+<tr><td>
+  <span class='w26'>Charge globale:</span>
+  <span class='w72'><span class='cpu load resize'>23%</span><div class='usage-disk sys'><span id='cpu' style='width:23%'></span><span></span></div></span>
+</td></tr>
+<tr id='cpu_main'><td>
+  <span class='flex flex-row items-center justify-between gap-4'>
+    <a onclick='toggleCPU()' title="Afficher/masquer" class='cpu_close'>Masquer les détails</a>
+    <span id='chart-toggle' class='flex flex-row items-center gap-4'>
+      <span><select id='cpuline' class='auto'><option value="10">10 s</option><option value="30" selected>30 s</option></select></span>
+      <a onclick='toggleChart()'><span class="fa fa-fw fa-bar-chart hand"></span></a>
+    </span>
+  </span>
+</td></tr>
+<tr>
+<tr class='cpu_open'><td><span class='w26'>CPU 0  - HT 8 </span><span class='dashboard w36'><span class='cpu0 load resize'>34%</span><div class='usage-disk sys'><span id='cpu0' style='width:34%' class=''></span><span></span></div></span><span class='dashboard w36'><span class='cpu8 load resize'>12%</span><div class='usage-disk sys'><span id='cpu8' style='width:12%'></span><span></span></div></span></td></tr>
+<tr class='cpu_open'><td><span class='w26'>CPU 1  - HT 9 </span><span class='dashboard w36'><span class='cpu1 load resize'>58%</span><div class='usage-disk sys'><span id='cpu1' style='width:58%' class=''></span><span></span></div></span><span class='dashboard w36'><span class='cpu9 load resize'>21%</span><div class='usage-disk sys'><span id='cpu9' style='width:21%'></span><span></span></div></span></td></tr>
+<tr class='cpu_open'><td><span class='w26'>CPU 2  - HT 10 </span><span class='dashboard w36'><span class='cpu2 load resize'>7%</span><div class='usage-disk sys'><span id='cpu2' style='width:7%' class=''></span><span></span></div></span><span class='dashboard w36'><span class='cpu10 load resize'>66%</span><div class='usage-disk sys'><span id='cpu10' style='width:66%'></span><span></span></div></span></td></tr>
+<tr class='cpu_open'><td><span class='w26'>CPU 3  - HT 11 </span><span class='dashboard w36'><span class='cpu3 load resize'>43%</span><div class='usage-disk sys'><span id='cpu3' style='width:43%' class=''></span><span></span></div></span><span class='dashboard w36'><span class='cpu11 load resize'>18%</span><div class='usage-disk sys'><span id='cpu11' style='width:18%'></span><span></span></div></span></td></tr>
+<tr class='cpu_open'><td><span class='w26'>CPU 4  - HT 12 </span><span class='dashboard w36'><span class='cpu4 load resize'>91%</span><div class='usage-disk sys'><span id='cpu4' style='width:91%' class='redbar'></span><span></span></div></span><span class='dashboard w36'><span class='cpu12 load resize'>25%</span><div class='usage-disk sys'><span id='cpu12' style='width:25%'></span><span></span></div></span></td></tr>
+<tr class='cpu_open'><td><span class='w26'>CPU 5  - HT 13 </span><span class='dashboard w36'><span class='cpu5 load resize'>30%</span><div class='usage-disk sys'><span id='cpu5' style='width:30%' class=''></span><span></span></div></span><span class='dashboard w36'><span class='cpu13 load resize'>5%</span><div class='usage-disk sys'><span id='cpu13' style='width:5%'></span><span></span></div></span></td></tr>
+<tr class='cpu_open'><td><span class='w26'>CPU 6  - HT 14 </span><span class='dashboard w36'><span class='cpu6 load resize'>48%</span><div class='usage-disk sys'><span id='cpu6' style='width:48%' class=''></span><span></span></div></span><span class='dashboard w36'><span class='cpu14 load resize'>72%</span><div class='usage-disk sys'><span id='cpu14' style='width:72%'></span><span></span></div></span></td></tr>
+<tr class='cpu_open'><td><span class='w26'>CPU 7  - HT 15 </span><span class='dashboard w36'><span class='cpu7 load resize'>15%</span><div class='usage-disk sys'><span id='cpu7' style='width:15%' class=''></span><span></span></div></span><span class='dashboard w36'><span class='cpu15 load resize'>9%</span><div class='usage-disk sys'><span id='cpu15' style='width:9%'></span><span></span></div></span></td></tr>
+<tr id='cpu_chart'><td><canvas id='cpuchart' style='width:100%; height:96px'></canvas></td></tr>
+</tbody><thead class="stopgap"><tr><td class="stopgap"></td></tr></thead><tbody title="Utilisation de la mémoire">
+<tr><td>
+<span class='tile-header'>
+  <span class='tile-header-left'>
+    <i class='icon-ram f32'></i>
+    <div class='section'>
+      <h3 class='tile-header-main'>Système</h3>
+      <span class='flex flex-row flex-wrap items-center gap-4'>
+        <span class="head_info"><span><i class='ups fa fa-line-chart'></i>Mémoire: 64 GiB DDR5 Multi-bit ECC</span></span>
+        <span class="switch">RAM:<span class="head_bar"><span class='sys0_ load'>41%</span><div class='usage-disk sys'><span id='sys0_'></span><span></span></div></span></span><br>
+      </span>
+    </div>
+  </span>
+  <span class='tile-header-right'><span class='tile-header-right-controls'><a href='/Dashboard/Tools/Processes'><i class='fa fa-fw fa-info-circle control'></i></a></span></span>
+</span>
+</td></tr>
+<tr><td>
+<div class="tile-system-memory-body">
+  <div class="tile-system-memory-labels">
+    <div><i class='ups fa fa-compress'></i>Taille utilisable: 62.5 GiB<br><i class='ups fa fa-expand'></i>Taille maximale: 128 GiB</div>
+    <div><legend>Légende</legend><span id='dynamic'></span></div>
+  </div>
+  <div class='tile-system-memory-charts'>
+    <span><a class='info hand none'>Utilisation RAM<span>Pourcentage de mémoire utilisée (62.5 GiB)</span></a><div class='pie' id='sys0'><span class='sys0'></span><span class='var0'></span></div></span>
+    <span><a class='info hand none'>Périphérique de démarrage<span>Utilisation (32 GB)</span></a><div class='pie' id='sys1'><span class='sys1'></span><span class='var1'></span></div></span>
+    <span><a class='info hand none'>Journal<span>Utilisation (128 MiB)</span></a><div class='pie' id='sys2'><span class='sys2'></span><span class='var2'></span></div></span>
+    <span><a class='info hand none'>Docker vdisk<span>Utilisation (40 GB)</span></a><div class='pie' id='sys3'><span class='sys3'></span><span class='var3'></span></div></span>
+  </div>
+</div>
+</td></tr>
+</tbody><thead class="stopgap"><tr><td class="stopgap"></td></tr></thead><tbody title="Informations sur l'interface" class="mixed">
+<tr><td>
+<span class='tile-header'>
+  <span class='tile-header-left'>
+    <i class='icon-network f32'></i>
+    <div class='section'><h3 class='tile-header-main'>Interface</h3><span>eth0 &bull; 2.5 Gbps</span></div>
+  </span>
+  <span class='tile-header-right'><span class='tile-header-right-controls'><a href='#'><i class='fa fa-fw fa-cog control'></i></a></span></span>
+</span>
+</td></tr>
+<tr><td><canvas id="netchart" style='width:100%; height:120px'></canvas></td></tr>
+</tbody><thead class="stopgap"><tr><td class="stopgap"></td></tr></thead><tbody title="Informations sur les ventilateurs">
+<tr><td>
+<span class='tile-header'>
+  <span class='tile-header-left'>
+    <i class='icon-fan f32'></i>
+    <div class='section'><h3 class='tile-header-main'>Ventilation</h3><span><i class='ups fa fa-sort-amount-asc'></i>Nombre de ventilateurs: 5</span><br></div>
+  </span>
+  <span class='tile-header-right'><span class='tile-header-right-controls'><a href='#'><i class='fa fa-fw fa-cog control'></i></a></span></span>
+</span>
+</td></tr>
+<tr><td><span class='fan'>FAN 1</span><span class='fan'>FAN 2</span><span>FAN 3</span><br><span class='fan' id='fan0'>1180 RPM</span><span class='fan' id='fan1'>940 RPM</span><span id='fan2'>0 RPM</span><br><br><span class='fan'>FAN 4</span><span class='fan'>FAN 5</span><br><span class='fan' id='fan3'>1520 RPM</span><span class='fan' id='fan4'>760 RPM</span><br></td></tr>
+</tbody>
+</table>
+</div>
+<div class='tile' id='tile2'>
+<table id='db_box2' class='dashboard'>
+<thead class="stopgap"><tr><td class="stopgap"></td></tr></thead><tbody id='docker_view' title="Conteneurs Docker" data="noApps()">
+<tr><td>
+<span class='tile-header'>
+  <span class='tile-header-left'>
+    <i class='icon-docker f32'></i>
+    <div class='section'><h3 class='tile-header-main'>Conteneurs Docker</h3><span class='apps switch'></span><br></div>
+  </span>
+  <span class='tile-header-right'><span class='tile-header-right-controls'><a href='#'><i class='fa fa-fw fa-cog control'></i></a></span></span>
+</span>
+</td></tr>
+<tr title='' class='updated'><td><span class='outer solid apps started'><span id='idplex' onclick="addDockerContainerContext('plex','sha256:1','/boot/config/plugins/dockerMan/templates-user/my-plex.xml',1,0,0,true,'http://[IP]:[PORT:8080]/','','bash','idplex','','','','','')" class='hand'><img src='/webGui/images/plg.png' class='img'></span><span class='inner'><span class=''>plex</span><br><i class='fa fa-play started green-text'></i><span class='state'>started</span></span></span><span class='outer solid apps started'><span id='idimmich' onclick="addDockerContainerContext('immich','sha256:1','/boot/config/plugins/dockerMan/templates-user/my-immich.xml',1,0,1,true,'http://[IP]:[PORT:8080]/','','bash','idimmich','','','','','')" class='hand'><img src='/webGui/images/plg.png' class='img'></span><span class='inner'><span class='blue-text'>immich</span><br><i class='fa fa-play started green-text'></i><span class='state'>started</span></span></span><span class='outer solid apps paused'><span id='idnextcloud' onclick="addDockerContainerContext('nextcloud','sha256:1','/boot/config/plugins/dockerMan/templates-user/my-nextcloud.xml',1,1,0,true,'http://[IP]:[PORT:8080]/','','bash','idnextcloud','','','','','')" class='hand'><img src='/webGui/images/plg.png' class='img'></span><span class='inner'><span class=''>nextcloud</span><br><i class='fa fa-pause paused orange-text'></i><span class='state'>paused</span></span></span><span class='outer solid apps stopped'><span id='idjellyfin' onclick="addDockerContainerContext('jellyfin','sha256:1','/boot/config/plugins/dockerMan/templates-user/my-jellyfin.xml',0,0,1,true,'http://[IP]:[PORT:8080]/','','bash','idjellyfin','','','','','')" class='hand'><img src='/webGui/images/plg.png' class='img'></span><span class='inner'><span class='blue-text'>jellyfin</span><br><i class='fa fa-square stopped red-text'></i><span class='state'>stopped</span></span></span><span class='outer solid apps started'><span id='idhomeassistant' onclick="addDockerContainerContext('homeassistant','sha256:1','/boot/config/plugins/dockerMan/templates-user/my-homeassistant.xml',1,0,0,true,'http://[IP]:[PORT:8080]/','','bash','idhomeassistant','','','','','')" class='hand'><img src='/webGui/images/plg.png' class='img'></span><span class='inner'><span class=''>homeassistant</span><br><i class='fa fa-play started green-text'></i><span class='state'>started</span></span></span><span id='no_apps' style='display:none'>Aucun conteneur<br><br></span></td></tr>
+</tbody><thead class="stopgap"><tr><td class="stopgap"></td></tr></thead><tbody id='vm_view' title="Machines virtuelles" data="noVMs()">
+<tr><td>
+<span class='tile-header'>
+  <span class='tile-header-left'>
+    <i class='icon-virtualization f32'></i>
+    <div class='section'><h3 class='tile-header-main'>Machines virtuelles</h3><span class='vms switch'></span><br></div>
+  </span>
+  <span class='tile-header-right'><span class='tile-header-right-controls'><a href='#'><i class='fa fa-fw fa-cog control'></i></a></span></span>
+</span>
+</td></tr>
+<tr title='' class='updated'><td><span class='outer solid vms started'><span id='vm-u1' onclick="addVMContext('Windows 11','u1')" class='hand'><img src='/webGui/images/plg.png' class='img'></span><span class='inner'>Windows 11<br><i class='fa fa-play started green-text'></i><span class='state'>started</span></span></span><span class='outer solid vms started'><span id='vm-u2' onclick="addVMContext('Home Assistant OS','u2')" class='hand'><img src='/webGui/images/plg.png' class='img'></span><span class='inner'>Home Assistant OS<br><i class='fa fa-play started green-text'></i><span class='state'>started</span></span></span><span class='outer solid vms stopped'><span id='vm-u3' onclick="addVMContext('Ubuntu Server','u3')" class='hand'><img src='/webGui/images/plg.png' class='img'></span><span class='inner'>Ubuntu Server<br><i class='fa fa-square stopped red-text'></i><span class='state'>stopped</span></span></span><span id='no_vms' style='display:none'>Aucune VM<br><br></span></td></tr>
+</tbody><thead class="stopgap"><tr><td class="stopgap"></td></tr></thead><tbody id='vm_view_usage' title="Utilisation des machines virtuelles">
+<tr><td>
+<span class='tile-header'>
+  <span class='tile-header-left'>
+    <i class='icon-virtualization f32'></i>
+    <div class='section'><h3 class='tile-header-main'>Utilisation des machines virtuelles</h3></div>
+  </span>
+  <span class='tile-header-right'><span class='tile-header-right-controls'><a href='#'><i class='fa fa-fw fa-cog control'></i></a></span></span>
+</span>
+</td></tr>
+<tr title='' class='useupdated'><td><span class='outer solid vmsuse started'><span id='vmusage-u1' onclick="addVMContext('Windows 11','u1')" class='hand'><img src='/webGui/images/plg.png' class='img'></span><span class='inner'>Windows 11<br><i class='fa fa-play started green-text'></i><span class='state'>started</span></span><br><br><span id='vmmetrics-gcpu-u1'><span class='advanced'>Guest CPU: <span class='cpug-x'>18%</span><div class='usage-disk mm'><span id='cpug-x' style='width:18%;'>&nbsp&nbsp</span><span></span></div></span></span><br><span id='vmmetrics-hcpu-u1'><span class='advanced'>Host CPU: <span class='cpug-x'>22%</span><div class='usage-disk mm'><span id='cpug-x' style='width:22%;'>&nbsp&nbsp</span><span></span></div></span></span><br><span id='vmmetrics-mem-u1'><span>Mem: 8.0GiB / 8.0GiB&nbsp&nbsp</span></span><br><span id='vmmetrics-disk-u1'><span>Disk: Rd: 1.2MB/s Wr: 340KB/s&nbsp&nbsp</span></span><br><span id='vmmetrics-net-u1'><span>Net: RX: 24KB/s TX: 8KB/s&nbsp&nbsp</span></span></span><span class='outer solid vmsuse started'><span id='vmusage-u2' onclick="addVMContext('Home Assistant OS','u2')" class='hand'><img src='/webGui/images/plg.png' class='img'></span><span class='inner'>Home Assistant OS<br><i class='fa fa-play started green-text'></i><span class='state'>started</span></span><br><br><span id='vmmetrics-gcpu-u2'><span class='advanced'>Guest CPU: <span class='cpug-x'>3%</span><div class='usage-disk mm'><span id='cpug-x' style='width:3%;'>&nbsp&nbsp</span><span></span></div></span></span><br><span id='vmmetrics-hcpu-u2'><span class='advanced'>Host CPU: <span class='cpug-x'>4%</span><div class='usage-disk mm'><span id='cpug-x' style='width:4%;'>&nbsp&nbsp</span><span></span></div></span></span><br><span id='vmmetrics-mem-u2'><span>Mem: 2.0GiB / 2.0GiB&nbsp&nbsp</span></span><br><span id='vmmetrics-disk-u2'><span>Disk: Rd: 0B/s Wr: 12KB/s&nbsp&nbsp</span></span><br><span id='vmmetrics-net-u2'><span>Net: RX: 1KB/s TX: 2KB/s&nbsp&nbsp</span></span></span></td></tr>
+</tbody>
+</table>
+</div>
+<div class='tile' id='tile3'>
+<table id='db_box3' class='dashboard'>
+<thead class="stopgap"><tr><td class="stopgap"></td></tr></thead><tbody id='array_list' title="Informations sur l'array">
+<tr><td>
+<span class='tile-header'>
+  <span class='tile-header-left'>
+    <i class='icon-disks f32'></i>
+    <div class='section'><h3 class='tile-header-main'>Array</h3><span>13,0 To utilisés sur 68 To (48,5 %)</span><br></div>
+  </span>
+  <span class='tile-header-right'><span class='tile-header-right-controls'><a href='/Dashboard/Settings/DiskSettings'><i class='fa fa-fw fa-cog control'></i></a></span></span>
+</span>
+</td></tr>
+<tr><td id='array_info'></td></tr>
+<tr class='header'><td><span class='w26'>Périphérique</span><span class='w18'>État</span><span class='w18'>Temp</span><span class='w18'>SMART</span><span class='w18'>Utilisation</span></td></tr>
+<tr><td><span class='w26'><i class='fa fa-circle orb green-orb'></i> Parité</span><span class='w18'>Actif</span><span class='w18'>34&#8201;&#176;C</span><span class='w18'>OK</span><span class='w18'></span></td></tr>
+<tr><td><span class='w26'><i class='fa fa-circle orb green-orb'></i> Disque 1</span><span class='w18'>Actif</span><span class='w18'>36&#8201;&#176;C</span><span class='w18'>OK</span><span class='w18'><div class='usage-disk mm'><span style='width:72%' class='greenbar'></span><span></span></div></span></td></tr>
+<tr><td><span class='w26'><i class='fa fa-circle orb green-orb'></i> Disque 2</span><span class='w18'>Actif</span><span class='w18'>47&#8201;&#176;C</span><span class='w18'>OK</span><span class='w18'><div class='usage-disk mm'><span style='width:88%' class='orangebar'></span><span></span></div></span></td></tr>
+</tbody><thead class="stopgap"><tr><td class="stopgap"></td></tr></thead><tbody title="Informations sur la parité">
+<tr><td>
+<span class='tile-header'>
+  <span class='tile-header-left'>
+    <i class='icon-health f32'></i>
+    <div class='section'>
+      <h3 class='tile-header-main'>Parité</h3>
+      <span class='parity'><span class='green-text'>La parité est valide</span></span><br>
+    </div>
+  </span>
+  <span class='tile-header-right'>
+    <span class='tile-header-right-controls'>
+    <a href='/Dashboard/Settings/Scheduler' title="Aller aux réglages du planificateur"><i class='fa fa-fw fa-cog control'></i></a>
+  </span>
+</span>
+</td></tr>
+<tr><td id='parity' class="wrap">Dernière vérification complétée sur <strong>mar. 27 oct. 2026 06:36 AM</strong> <span class='green-text'>(il y a deux jours)</span><br><i class='fa fa-fw fa-clock-o'></i> Durée: 17 heures, 33 minutes, 26 secondes. Vitesse moyenne: 63.3 Mo/s<br><i class='fa fa-fw fa-search'></i> Trouve: 78 erreurs</td></tr>
+<tr><td id='program' class="wrap">Le contrôle de parité programmé est désactivé</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script src="/webGui/javascript/dynamix.js"></script>
+<script>
+// From DashStats.page: the stopgap row, the close buttons, dismiss() and LockButton() (top-nav
+// theme). The cookie holding the layout is kept in window.mockCookie instead.
+var stopgap = '<thead class="stopgap"><tr><td class="stopgap"></td></tr></thead>';
+var cookie = {};
+function saveCookie() { window.mockCookie = JSON.stringify(cookie); }
+function dismiss(button) {
+  var tbody = button.closest('tbody');
+  var table = tbody.parent();
+  var tile = table.parent();
+  var inactive = cookie.inactive_content;
+  tbody.hide();
+  tbody.prev().hide();
+  if (table.find('tbody:visible').length>0) tile.show(); else tile.hide();
+  inactive = inactive ? inactive.split(';') : [];
+  inactive.push(tbody.attr('sort'));
+  cookie.inactive_content = inactive.join(';');
+  saveCookie();
+}
+function contentMgmt() { window.mockCalls = (window.mockCalls || []).concat([['contentMgmt']]); }
+$('div.frame tbody.system').addClass('sortable').attr('sort','_system_information_');
+$('div.frame tbody').not('.system').each(function(n){
+  $(this).addClass('sortable').attr('sort','tile' + n);
+  $(this).find('td:first').prepend("<i class='fa fa-fw fa-close control tile' onclick='dismiss($(this))' title=\"Fermer la tuile\"></i>");
+});
+var sortableHelper = function(e,ui){
+  ui.prev().remove();
+  ui.find('tr:first').children().each(function(){$(this).width($(this).width());});
+  return ui;
+};
+function LockButton() {
+  if ($.cookie('lockbutton') == null) {
+    $.cookie('lockbutton','lockbutton');
+    $('div.nav-item.LockButton a').prop('title',"Verrouiller les éléments triables");
+    $('div.nav-item.LockButton b').removeClass('icon-u-lock green-text').addClass('icon-u-lock-open red-text');
+    $('i.tile').show();
+    $('tbody.sortable').css({'cursor':'move'});
+    $('div.nav-item.LockButton span').text("Verrouiller les éléments triables");
+    $('#db_box1,#db_box2,#db_box3').sortable({connectWith:'#db_box1,#db_box2,#db_box3'});
+    $('table.dashboard').sortable({helper:sortableHelper,items:'.sortable',cursor:'grab',opacity:0.6,placeholder:'dashboard-sortable',zIndex:9999,forceHelperSize:true,forcePlaceholderSize:true,
+    receive:function(e,ui){
+      var table = ui.sender, index = [];
+      var tile = table.parent();
+      var gap = ui.item.prev();
+      if (table.find('tbody:visible').length > 0) { tile.show(); gap.show(); } else { tile.hide(); gap.hide(); }
+      table.find('tbody').each(function(){index.push($(this).attr('sort'));});
+      cookie[table.prop('id')] = index.join(';');
+    },
+    stop:function(e,ui){
+      var table = ui.item.parent(), index = [];
+      if (ui.item.prev().html().search('stopgap')>0) ui.item.after(stopgap); else ui.item.before(stopgap);
+      table.find('tbody').each(function(){index.push($(this).attr('sort'));});
+      cookie[table.prop('id')] = index.join(';');
+      saveCookie();
+    }});
+  } else {
+    $.removeCookie('lockbutton');
+    $('div.nav-item.LockButton a').prop('title',"Déverrouiller les éléments triables");
+    $('div.nav-item.LockButton b').removeClass('icon-u-lock-open red-text').addClass('icon-u-lock green-text');
+    $('i.tile').hide();
+    $('tbody.sortable').css({'cursor':'default'});
+    $('div.nav-item.LockButton span').text("Déverrouiller les éléments triables");
+    $('table.dashboard').sortable('destroy');
+  }
+}
+$('div#tile1,div#tile2,div#tile3').show();
+$.removeCookie('lockbutton');
+$('div.nav-item.LockButton a').attr('onclick', 'LockButton();return false;');
+</script>
+<script src="/webGui/javascript/smoothie.js"></script>
+<script>
+  // What DashStats.page sets up in its own script (colours for the White theme), with sample data.
+  var colors = ['#a8a8a8','#dcdcdc','#d77e0d','#d4ac0d','#cd5c5c','#ffc0cb','#e6e6fa','#9370db','#7cfc00','#228b22','#00ffff','#4682b4'];
+  var blue = '#486dba';
+  var chartOptions = function (extra) {
+    return Object.assign({ millisPerPixel: 50, minValue: 0, responsive: true,
+      grid: { strokeStyle: '#e3e3e3', fillStyle: 'transparent', lineWidth: 1, millisPerLine: 5000, verticalSections: 4 },
+      labels: { fillStyle: '#1c1b1b', fontSize: 11, precision: 0 },
+      timestampFormatter: function () { return ''; } }, extra);
+  };
+  var cpuchart = new SmoothieChart(chartOptions({ maxValue: 100, yMinFormatter: function (v) { return Math.max(0, Math.floor(v)) + ' %'; }, yMaxFormatter: function (v) { return Math.ceil(v) + ' %'; } }));
+  var netchart = new SmoothieChart(chartOptions({ labels: { fillStyle: '#1c1b1b', fontSize: 11, placement: 'left' }, yMaxFormatter: function (v) { return Math.floor(v) + ' kbps'; } }));
+  var cpuTimeSeries = new TimeSeries(), rxTimeSeries = new TimeSeries(), txTimeSeries = new TimeSeries();
+  cpuchart.addTimeSeries(cpuTimeSeries, { strokeStyle: '#ff8c2f', lineWidth: 1 });
+  netchart.addTimeSeries(rxTimeSeries, { strokeStyle: '#e22828', lineWidth: 1 });
+  netchart.addTimeSeries(txTimeSeries, { strokeStyle: '#ff8c2f', lineWidth: 1 });
+  var now = Date.now();
+  for (var i = 60; i >= 0; i--) {
+    cpuTimeSeries.append(now - i * 500, 20 + 15 * Math.sin(i / 4) + (i % 7));
+    rxTimeSeries.append(now - i * 500, 400 + 300 * Math.sin(i / 5));
+    txTimeSeries.append(now - i * 500, 150 + 100 * Math.cos(i / 3));
+  }
+  cpuchart.streamTo(document.getElementById('cpuchart'), 1000);
+  netchart.streamTo(document.getElementById('netchart'), 1000);
+  // Unraid shows the tiles from its Dashboard script, and the cores with "Show details".
+  document.querySelectorAll('div.tile').forEach(function (tile) { tile.style.display = 'block'; });
+  document.querySelectorAll('tr.cpu_open, #cpu_chart').forEach(function (row) { row.style.display = 'table-row'; });
+  // The first message of Unraid's update1 channel (RAM and disk rings), drawn as DashStats.page does.
+  function fontColor(l) { return l >= 90 ? '#f0000c' : l >= 70 ? '#e68a00' : '#4f8a10'; }
+  setTimeout(function () {
+    var ram = ['41%', '25.6 GiB', '', '36.9 GiB', '22', '14.1 GiB', '12', '7.5 GiB', '7', '4.4 GiB'];
+    var names = ['Système', 'Libre', 'VMs', 'Docker'];
+    var end = parseInt(ram[4]), ring = [colors[0] + ' 0% ' + end + '%'];
+    for (var i = 6; i < ram.length; i += 2) { var start = end; end += parseInt(ram[i]); ring.push((colors[(i - 2) / 2] || blue) + ' ' + start + '% ' + end + '%'); }
+    ring.push(colors[1] + ' ' + ram[0] + ' 100%');
+    document.getElementById('sys0').style.background = 'conic-gradient(' + ring.join(',') + ')';
+    var s0 = document.querySelector('.sys0'); s0.textContent = ram[0]; s0.style.color = fontColor(41);
+    var html = [];
+    for (var n = 0; n < names.length; n++) if (n != 1) html.push("<i class='ups fa fa-circle' style='color:" + (colors[n] || blue) + "'></i>" + names[n] + ': ' + (n == 0 ? ram[5] : ram[n * 2 + 3]));
+    html.push("<i class='ups fa fa-circle' style='color:" + colors[1] + "'></i>" + names[1] + ': ' + ram[3]);
+    document.getElementById('dynamic').innerHTML = html.join('<br>');
+    [['12%', 12], ['74%', 74], ['93%', 93]].forEach(function (sys, k) {
+      var el = document.querySelector('.sys' + (k + 1)); el.textContent = sys[0]; el.style.color = fontColor(sys[1]);
+      document.getElementById('sys' + (k + 1)).style.background = 'conic-gradient(' + colors[0] + ' 0% ' + sys[0] + ',' + colors[1] + ' ' + sys[0] + ' 100%)';
+    });
+    // Unraid rewrites readings by id after the theme moved them: they must keep updating.
+    document.getElementById('fan1').innerHTML = '980 RPM';
+    document.getElementById('cpu-total-power').innerHTML = '<i class="fa fa-fw fa-plug"></i> Total Puissance: 51.04 W';
+    document.getElementById('cpu-temp0').innerHTML = '54&#8201;&#176;C';
+    document.querySelector('span.cpu.load').textContent = '27%';
+    document.getElementById('vmmetrics-mem-u2').innerHTML = '<span>Mem: 2.0GiB / 4.0GiB&nbsp&nbsp</span>';
+  }, 200);
+</script>
+

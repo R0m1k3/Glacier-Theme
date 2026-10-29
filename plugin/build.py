@@ -95,6 +95,10 @@ plg = f"""<?xml version='1.0' standalone='yes'?>
 
 <CHANGES>
 ###{version}
+- Dashboard: an Organise button above the tiles. It unlocks them as Unraid's lock does: drag them between the columns, close the ones you do not need, show hidden ones again or reset the layout, then Done. The tile being dragged stays opaque and its landing place shows as a dashed card.
+- Dashboard: the tiles' close buttons and the tile manager show only while the tiles are unlocked, at the end of the tile's header row; they no longer sit above the icon all the time.
+
+###2026.10.29.0826
 - Header: the notifications bell and "Unraid OS" in the licence pill are light on the dark header card again (Unraid's components coloured them dark).
 
 ###2026.10.29.0809
