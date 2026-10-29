@@ -474,6 +474,90 @@ html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) #dynami
     vertical-align: 0.1rem;
 }
 
+/* ---- Organise mode (scripts/gl-dashboard.js): the bar above the tiles and the tiles while they
+   can be moved. Unraid shows its close buttons (i.tile) and the tile manager only then, with
+   jQuery's show(), which sets an inline display; the theme's round .control would show them
+   all the time, so they are hidden here and shown again only in this mode. */
+html.glacier .gl-toolbar.gl-dash-organise {
+    justify-content: flex-end;
+}
+
+html.glacier.gl-dash-edit .gl-toolbar.gl-dash-organise {
+    justify-content: space-between;
+    padding: 1rem 1rem 1rem 1.8rem;
+    border: 1px dashed var(--gl-accent);
+    border-radius: var(--gl-r-xl);
+    background: var(--gl-accent-soft);
+}
+
+html.glacier .gl-dash-organise-hint {
+    flex: 1 1 auto;
+    min-width: min(100%, 28rem);
+    margin: 0;
+    color: var(--gl-text-2);
+    font-size: 1.3rem;
+    line-height: 1.5;
+}
+
+html.glacier .gl-dash-organise :is(.gl-dash-organise-hint, button)[hidden] {
+    display: none;
+}
+
+html.glacier .gl-dash-organise .gl-modal-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin: 0;
+}
+
+html.glacier table.dashboard .control.tile {
+    display: none;
+}
+
+html.glacier.gl-dash-edit table.dashboard .control.tile {
+    display: inline-grid !important;
+}
+
+html.glacier.gl-dash-edit table.dashboard tbody.sortable {
+    outline: 2px dashed var(--gl-accent-ring);
+    outline-offset: -2px;
+}
+
+/* A tile's close button sits at the end of its header row, after the tile's own controls. */
+html.glacier table.dashboard tbody > tr:first-child > td:has(> i.control.tile) {
+    position: relative;
+}
+
+html.glacier.gl-dash-edit table.dashboard tbody > tr:first-child > td > i.control.tile {
+    position: absolute;
+    top: calc(50% - 0.6rem);
+    right: 2rem;
+    transform: translateY(-50%);
+}
+
+html.glacier.gl-dash-edit table.dashboard tbody > tr:first-child > td:has(> i.control.tile) > .tile-header {
+    padding-right: 4rem;
+}
+
+html.glacier table.dashboard tbody > tr:first-child > td > i.control.tile:hover {
+    color: var(--gl-danger-text);
+    background: var(--gl-danger-bg);
+}
+
+/* The tile being dragged stays opaque (Unraid fades it to 0.6, which shows the tiles under it
+   through the card), lifted by a deeper shadow; jQuery UI's placeholder shows where it lands. */
+html.glacier table.dashboard tbody.ui-sortable-helper {
+    box-shadow: var(--gl-shadow-lg);
+    opacity: 1 !important;
+}
+
+html.glacier table.dashboard tbody.dashboard-sortable {
+    border: 2px dashed var(--gl-accent);
+    background: var(--gl-accent-soft);
+    box-shadow: none;
+    visibility: visible !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
     html.glacier .gl-fan-icon {
         animation: none;

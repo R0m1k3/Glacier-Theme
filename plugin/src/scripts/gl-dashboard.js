@@ -11,6 +11,8 @@
  * - Processor tile: the cores as a grid of small tiles, power and temperature as chips.
  * - Airflow tile: one small card per fan. VM usage tile: one card per running VM.
  * - System tile: the usage rings in the theme's colours.
+ * - Organise mode: a bar above the tiles to unlock them (Unraid's lock), with a hint, the tile
+ *   manager and Done while they can be dragged, hidden or shown again.
  *
  * Unraid keeps writing into its own elements by id or class, so elements are moved, never
  * copied, and every value is only written when it changed, so the observers do not loop.
@@ -371,5 +373,65 @@
       observe(value, update, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ['style'] });
       update();
     });
+  });
+
+  // ---- Organise mode ----------------------------------------------------------------------------
+  // Unraid's LockButton() (the lock in the menu) makes the tiles draggable between the three
+  // columns and shows their close buttons and the tile manager; the layout is kept in Unraid's
+  // dashboard cookie. The bar above the tiles calls the same function, and every call (from the
+  // bar or the menu) marks the page with gl-dash-edit, which gl-dashboard.css styles.
+  G.feature('dashboard-organise', function () {
+    var grid = document.querySelector('#displaybox > .content > .frame > .grid');
+    if (!grid || !onDashboard() || typeof window.LockButton !== 'function') return;
+
+    var root = document.documentElement;
+    var bar = G.el('div', 'gl-toolbar gl-dash-organise');
+    bar.setAttribute('role', 'region');
+    bar.setAttribute('aria-label', t('Organise the dashboard', 'Organiser le tableau de bord'));
+    var hint = G.el('p', 'gl-dash-organise-hint', t('Drag the tiles to move them between the columns, or close the ones you do not need. The layout is saved in this browser.',
+      'Glissez les cartes pour les déplacer entre les colonnes, ou fermez celles dont vous n’avez pas besoin. La disposition est gardée dans ce navigateur.'));
+    var tools = G.el('div', 'gl-tools');
+
+    function button(icon, label, className, onClick) {
+      var node = G.el('button', className);
+      node.type = 'button';
+      var mark = G.el('i', 'fa fa-' + icon);
+      mark.setAttribute('aria-hidden', 'true');
+      node.append(mark, G.el('span', null, label));
+      node.addEventListener('click', onClick);
+      return node;
+    }
+    var organise = button('arrows', t('Organise', 'Organiser'), 'gl-tool-button', function () { window.LockButton(); });
+    organise.title = t('Move, hide or show the dashboard tiles', 'Déplacer, masquer ou réafficher les cartes du tableau de bord');
+    var manage = button('eye', t('Hidden tiles', 'Cartes masquées'), 'gl-tool-button', function () {
+      if (typeof window.contentMgmt === 'function') window.contentMgmt();
+    });
+    manage.title = t('Choose the tiles shown, or reset the layout', 'Choisir les cartes affichées, ou revenir à la disposition d’origine');
+    var done = button('check', t('Done', 'Terminer'), 'gl-modal-button gl-modal-primary', function () { window.LockButton(); });
+    if (typeof window.contentMgmt === 'function') tools.append(manage);
+    tools.append(organise, done);
+    bar.append(hint, tools);
+
+    function editing() {
+      return /(?:^|;\s*)lockbutton=/.test(document.cookie);
+    }
+    function sync() {
+      var on = editing();
+      root.classList.toggle('gl-dash-edit', on);
+      hint.hidden = !on;
+      manage.hidden = !on;
+      done.hidden = !on;
+      organise.hidden = on;
+      organise.setAttribute('aria-expanded', String(on));
+      if (grid.previousElementSibling !== bar) grid.before(bar);
+    }
+
+    var original = window.LockButton;
+    window.LockButton = function () {
+      var result = original.apply(this, arguments);
+      sync();
+      return result;
+    };
+    sync();
   });
 })();
