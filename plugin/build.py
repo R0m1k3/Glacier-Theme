@@ -95,6 +95,9 @@ plg = f"""<?xml version='1.0' standalone='yes'?>
 
 <CHANGES>
 ###{version}
+- Dashboard, System tile: laid out by the tile's own width. The memory legend and the usable and maximum sizes share one panel (the sizes no longer overflow a narrow box), beside the rings when the tile is wide and above them otherwise; the four rings go in one row or two by two, never three and one, each with its label under it so they line up.
+
+###2026.10.29.0937
 - Dashboard: the case picture on the server tile no longer rises over the tile's buttons; it sits under the header, in the muted colour, the accent on hover.
 
 ###2026.10.29.0922

@@ -363,11 +363,66 @@ html.glacier .gl-vmuse-readings .usage-disk.mm > span:first-child {
     background: var(--gl-accent);
 }
 
-/* ---- System tile: the four usage rings as small panels, all the same height */
-html.glacier .tile-system-memory-charts.gl-rings {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.4rem), 1fr));
+/* ---- System tile. Unraid lays it out by window width (DashStats.css), not by the tile's width,
+   so a wide tile got a narrow sizes box its text overflowed and the rings went three and one.
+   Here the memory panel (legend, then the usable and maximum sizes) sits beside the rings when
+   the tile is wide enough and above them otherwise, and the rings go four in a row or two by
+   two, never three and one: below 52rem the clamp() turns the column minimum from a quarter
+   into a half. Each ring comes first in its panel and its label under it, so the rings line up
+   whatever the label's length. */
+html.glacier table.dashboard .tile-system-memory-body:has(> .gl-rings) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 1.2rem;
+}
+
+html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) {
+    display: flex;
+    flex: 1 1 24rem;
+    flex-direction: column;
     align-items: stretch;
     gap: 1rem;
+    min-width: 0;
+    padding: 1.4rem 1.6rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-md);
+    line-height: 1.9;
+}
+
+/* The legend first, the two sizes under a divider in the muted colour. */
+html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) > div:has(legend) {
+    order: -1;
+}
+
+html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) > div:not(:has(legend)) {
+    padding-top: 1rem;
+    border-top: 1px solid var(--gl-border);
+    color: var(--gl-muted);
+    font-size: 1.25rem;
+}
+
+html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) legend {
+    margin-bottom: 0.2rem;
+    color: var(--gl-muted);
+    font-size: 1.05rem;
+    font-weight: 700;
+    font-variant: normal;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) #dynamic i.fa-circle {
+    font-size: 1rem;
+    vertical-align: 0.1rem;
+}
+
+html.glacier .tile-system-memory-charts.gl-rings {
+    flex: 9 1 40rem;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(calc(25% - 0.9rem), calc((52rem - 100%) * 999), calc(50% - 0.6rem)), 1fr));
+    align-items: stretch;
+    gap: 1.2rem;
+    min-width: 0;
 }
 
 html.glacier .tile-system-memory-charts.gl-rings > span {
@@ -376,13 +431,14 @@ html.glacier .tile-system-memory-charts.gl-rings > span {
     align-items: center;
     gap: 1rem;
     min-width: 0;
-    padding: 1.2rem 0.6rem 1.4rem;
+    padding: 1.6rem 0.8rem 1.4rem;
     border: 1px solid var(--gl-border);
     border-radius: var(--gl-r-md);
     background: var(--gl-subtle);
 }
 
 html.glacier .tile-system-memory-charts.gl-rings > span > a.info {
+    order: 1;
     color: var(--gl-muted);
     font-size: 1.1rem;
     font-weight: 700;
@@ -399,7 +455,7 @@ html.glacier .tile-system-memory-charts.gl-rings div.pie {
     width: min(9.6rem, 100%);
     height: auto;
     aspect-ratio: 1;
-    margin: auto 0 0;
+    margin: 0;
 }
 
 /* Boot device, log and Docker vdisk: one value each, drawn here in the level's colour. */
@@ -438,40 +494,10 @@ html.glacier .tile-system-memory-charts.gl-rings div.pie[data-level="critical"] 
     color: var(--gl-danger-text) !important;
 }
 
-/* Labels and legend next to the rings. The tile's row is a table that would grow with its
-   content past a phone's width (and be cut off); it keeps the card's width instead. */
+/* The tile's row is a table that would grow with its content past a phone's width (and be cut
+   off); it keeps the card's width instead. */
 html.glacier table.dashboard tbody > tr:has(.gl-rings) {
     table-layout: fixed;
-}
-
-html.glacier table.dashboard .tile-system-memory-body:has(> .gl-rings) {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
-}
-
-html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-}
-
-html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) > div {
-    padding: 1.2rem 1.4rem;
-    border: 1px solid var(--gl-border);
-    border-radius: var(--gl-r-md);
-    line-height: 1.9;
-}
-
-html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) legend {
-    margin-bottom: 0.2rem;
-    color: var(--gl-muted);
-    font-size: 1.05rem;
-    font-weight: 700;
-    font-variant: normal;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) #dynamic i.fa-circle {
-    font-size: 1rem;
-    vertical-align: 0.1rem;
 }
 
 /* ---- Organise mode (scripts/gl-dashboard.js): the bar above the tiles and the tiles while they
