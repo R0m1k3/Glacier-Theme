@@ -95,6 +95,9 @@ plg = f"""<?xml version='1.0' standalone='yes'?>
 
 <CHANGES>
 ###{version}
+- Dashboard: the case picture on the server tile no longer rises over the tile's buttons; it sits under the header, in the muted colour, the accent on hover.
+
+###2026.10.29.0922
 - Dashboard organise mode: opening the Dashboard after leaving it (or the Docker or VMs page) unlocked no longer shows the organise bar with locked tiles, where Done unlocked them. The hint now says the layout is saved on the server, for every browser, as Unraid does. Close buttons line up with the tile's controls in every tile, plugins' too; the tile manager takes the accent colour; keyboard focus moves to Done and back.
 
 ###2026.10.29.0912

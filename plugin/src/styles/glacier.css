@@ -1552,6 +1552,28 @@ html.glacier #current_time {
     letter-spacing: -0.02em;
 }
 
+/* The case picture on the server tile (Unraid's case-* icon font, 80 to 128px): with the
+   cells' 2.4rem line height its glyph rose over the tile's header buttons. It sits in its own
+   line box, in the muted colour, the accent on hover (a click picks the case model). */
+html.glacier #tile1 .tile-select-case {
+    margin-top: 0.4rem;
+    color: var(--gl-muted);
+    line-height: 1;
+}
+
+html.glacier #tile1 .tile-select-case:hover {
+    color: var(--gl-accent);
+}
+
+html.glacier #tile1 #mycase {
+    display: inline-block;
+    line-height: 1;
+}
+
+html.glacier #tile1 .tile-select-case > br {
+    display: none;
+}
+
 html.glacier div.pie span {
     font-weight: 700;
 }
