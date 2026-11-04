@@ -26,12 +26,12 @@ html.glacier button:is(.gl-users-add, .gl-user-add) {
 
 html.glacier button.gl-users-add {
     flex: none;
-    min-height: 4.4rem;
-    padding: 0 2rem;
+    min-height: 3.6rem;
+    padding: 0 1.8rem;
     border: 1px solid var(--gl-accent);
     border-radius: var(--gl-r-full);
     color: var(--gl-accent-text);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     font-weight: 600;
     white-space: nowrap;
     background: var(--gl-accent);
@@ -171,7 +171,7 @@ html.glacier .gl-user-name {
     max-width: 100%;
     overflow: hidden;
     color: var(--gl-text);
-    font-size: 1.55rem;
+    font-size: 1.6rem;
     font-weight: 700;
     line-height: 1.2;
     text-overflow: ellipsis;
@@ -181,7 +181,7 @@ html.glacier .gl-user-name {
 html.glacier .gl-user-desc {
     overflow: hidden;
     color: var(--gl-muted);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     line-height: 1.4;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -218,7 +218,7 @@ html.glacier #displaybox .Panels.gl-users > button.gl-user-add {
     border: 1.5px dashed var(--gl-input);
     border-radius: var(--gl-r-lg);
     color: var(--gl-muted);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     font-weight: 600;
     background: transparent;
     box-shadow: none;

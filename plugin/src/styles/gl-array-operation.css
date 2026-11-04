@@ -67,7 +67,7 @@ html.glacier .gl-ops tr.gl-op > td {
     padding: 0 !important;
     border: 0;
     color: var(--gl-text);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     line-height: 1.55;
     text-align: left;
     white-space: normal;
@@ -99,8 +99,8 @@ html.glacier .gl-op-icon {
     display: grid;
     flex: none;
     place-items: center;
-    width: 3.6rem;
-    height: 3.6rem;
+    width: 3.4rem;
+    height: 3.4rem;
     border-radius: var(--gl-r-sm);
     color: var(--gl-accent);
     font-size: 1.6rem;
@@ -110,7 +110,7 @@ html.glacier .gl-op-icon {
 html.glacier .gl-op-title {
     min-width: 0;
     color: var(--gl-text);
-    font-size: 1.55rem;
+    font-size: 1.6rem;
     font-weight: 700;
     letter-spacing: -0.01em;
     line-height: 1.25;
@@ -157,7 +157,7 @@ html.glacier .gl-ops td.gl-op-desc i.fa {
 }
 
 html.glacier .gl-ops td.gl-op-desc small {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
 }
 
 html.glacier .gl-ops .gl-op-option {
@@ -241,7 +241,7 @@ html.glacier .gl-ops tr.gl-op > td.gl-op-pill {
     padding: 0.3rem 1.2rem !important;
     border-radius: var(--gl-r-full);
     color: var(--gl-text-2);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     line-height: 1.6;
     background: var(--gl-subtle-2);
 }
@@ -294,7 +294,7 @@ html.glacier .gl-ops tr.gl-op > td.gl-op-list {
     padding: 1rem 1.2rem !important;
     border-radius: var(--gl-r-sm);
     color: var(--gl-text-2);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 500;
     background: var(--gl-surface);
     box-shadow: inset 0 0 0 1px var(--gl-border);
@@ -319,7 +319,7 @@ html.glacier .gl-ops tr.gl-op-array > td.gl-op-head {
 html.glacier .gl-ops tr.gl-op-array > td.gl-op-pill {
     align-self: center;
     padding: 0.5rem 1.4rem !important;
-    font-size: 1.35rem;
+    font-size: 1.3rem;
 }
 
 html.glacier .gl-ops tr.gl-op-array > td.gl-op-desc {
@@ -447,19 +447,20 @@ html.glacier .gl-progress-label {
 html.glacier .gl-stats {
     grid-column: 1 / -1;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
     gap: 0.8rem;
 }
 
 html.glacier .gl-stat {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 0.3rem;
     min-width: 0;
-    padding: 1.1rem 1.3rem;
+    padding: 1.4rem 1.6rem;
     border: 1px solid var(--gl-border);
     border-radius: var(--gl-r-md);
-    background: var(--gl-surface);
+    background: var(--gl-subtle);
 }
 
 html.glacier .gl-stat.gl-stat-wide {
@@ -478,11 +479,11 @@ html.glacier .gl-ops .gl-stat > td {
 
 html.glacier .gl-ops .gl-stat-label {
     color: var(--gl-muted);
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 600;
-    letter-spacing: 0.06em;
+    letter-spacing: 0;
     line-height: 1.4;
-    text-transform: uppercase;
+    text-transform: none;
 }
 
 html.glacier .gl-ops .gl-stat-label span {
@@ -491,7 +492,7 @@ html.glacier .gl-ops .gl-stat-label span {
 
 html.glacier .gl-ops .gl-stat > .gl-stat-value {
     color: var(--gl-text);
-    font-size: 1.45rem;
+    font-size: 1.6rem;
     font-weight: 700;
     line-height: 1.3;
     font-variant-numeric: tabular-nums;

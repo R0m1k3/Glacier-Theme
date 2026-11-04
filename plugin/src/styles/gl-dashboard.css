@@ -78,7 +78,7 @@ html.glacier .gl-cpu-chip[hidden] {
 
 html.glacier .gl-cpu-chip > i {
     color: var(--gl-accent);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
 }
 
 html.glacier .gl-cpu-chip > i.fa-thermometer-half {
@@ -108,10 +108,10 @@ html.glacier .gl-cpu-tile tr.gl-cpu-pkg span.cpu_open {
 
 html.glacier .gl-cpu-pkg-name {
     color: var(--gl-muted);
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
 }
 
 /* The core rows flow into a grid; the tile's other rows span it, as wide as before. */
@@ -168,7 +168,7 @@ html.glacier tbody.gl-cpu-tile > tr.gl-core span.w26 {
     float: none;
     overflow: hidden;
     color: var(--gl-muted);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 700;
     line-height: 1.2;
     text-overflow: ellipsis;
@@ -195,7 +195,7 @@ html.glacier tbody.gl-cpu-tile > tr.gl-core .load {
     width: auto;
     margin: 0;
     color: var(--gl-text);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 700;
     line-height: 1.2;
     font-variant-numeric: tabular-nums;
@@ -222,7 +222,7 @@ html.glacier tbody.gl-cpu-tile > tr.gl-core-pair span.w36:nth-of-type(3) .load {
 html.glacier tbody.gl-cpu-tile > tr.gl-core-pair span.w36:nth-of-type(3) .usage-disk { grid-area: b2; }
 
 html.glacier tbody.gl-cpu-tile > tr.gl-core-pair .load {
-    font-size: 1.15rem;
+    font-size: 1.2rem;
 }
 
 html.glacier tbody.gl-cpu-tile > tr.gl-core-pair .usage-disk {
@@ -262,11 +262,11 @@ html.glacier .gl-fan-name {
     grid-area: name;
     overflow: hidden;
     color: var(--gl-muted);
-    font-size: 1.05rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0;
     text-overflow: ellipsis;
-    text-transform: uppercase;
+    text-transform: none;
     white-space: nowrap;
 }
 
@@ -399,17 +399,17 @@ html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) > div:n
     padding-top: 1rem;
     border-top: 1px solid var(--gl-border);
     color: var(--gl-muted);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
 }
 
 html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) legend {
     margin-bottom: 0.2rem;
     color: var(--gl-muted);
-    font-size: 1.05rem;
-    font-weight: 700;
+    font-size: 1.2rem;
+    font-weight: 600;
     font-variant: normal;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    letter-spacing: 0;
+    text-transform: none;
 }
 
 html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) #dynamic i.fa-circle {
@@ -440,11 +440,11 @@ html.glacier .tile-system-memory-charts.gl-rings > span {
 html.glacier .tile-system-memory-charts.gl-rings > span > a.info {
     order: 1;
     color: var(--gl-muted);
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0;
     line-height: 1.3;
-    text-transform: uppercase;
+    text-transform: none;
     text-wrap: balance;
 }
 

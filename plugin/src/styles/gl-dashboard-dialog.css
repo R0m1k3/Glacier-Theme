@@ -213,10 +213,10 @@ html.glacier button.gl-ct-action.gl-ct-warn:hover {
 html.glacier .gl-ct-section {
     margin: 2rem 0 0.8rem;
     color: var(--gl-muted);
-    font-size: 1.15rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
 }
 
 html.glacier .gl-ct-grid {

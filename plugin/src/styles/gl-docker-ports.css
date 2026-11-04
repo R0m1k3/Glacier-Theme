@@ -147,7 +147,7 @@ html.glacier .gl-alloc-columns {
     padding-bottom: 0.8rem;
     border-bottom: 1px solid var(--gl-border);
     color: var(--gl-muted);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 600;
 }
 
@@ -208,7 +208,7 @@ html.glacier .gl-alloc-port {
     border-radius: var(--gl-r-full);
     color: var(--gl-text-2);
     font-family: var(--gl-mono);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-variant-numeric: tabular-nums;
     background: var(--gl-subtle);
 }

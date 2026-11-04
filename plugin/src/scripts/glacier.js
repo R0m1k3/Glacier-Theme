@@ -241,7 +241,39 @@
     tick();
   }
 
+  // On phones the main menu is one row that scrolls sideways: centre the current page in it.
+  function revealActiveMenuItem() {
+    var item = document.querySelector('#menu .nav-tile:not(.right) .nav-item.active');
+    var row = item && item.parentElement;
+    if (!row || row.scrollWidth <= row.clientWidth) return;
+    var left = item.offsetLeft - row.offsetLeft;
+    row.scrollLeft = Math.max(0, left - (row.clientWidth - item.offsetWidth) / 2);
+  }
+
+  // Rows that scroll sideways (menu, quick actions, tab bars, Docker filters) fade at the edge
+  // that has more to show: the CSS picks the mask from these classes.
+  var SCROLL_ROWS = '#menu .nav-tile, .tabs-container, .gl-toolbar > .gl-segment';
+  function markScrollEdges(row) {
+    var max = row.scrollWidth - row.clientWidth;
+    row.classList.toggle('gl-no-scroll', max <= 1);
+    row.classList.toggle('gl-scrolled', max > 1 && row.scrollLeft > 1 && row.scrollLeft < max - 1);
+    row.classList.toggle('gl-scroll-end', max > 1 && row.scrollLeft >= max - 1);
+  }
+  function watchScrollRows() {
+    var update = function () { Array.prototype.forEach.call(document.querySelectorAll(SCROLL_ROWS), markScrollEdges); };
+    document.addEventListener('scroll', function (event) {
+      var row = event.target;
+      if (row && row.matches && row.matches(SCROLL_ROWS)) markScrollEdges(row);
+    }, true);
+    window.addEventListener('resize', update);
+    window.addEventListener('load', update);
+    setTimeout(update, 600);
+    update();
+  }
+
   markMenuCounts();
+  revealActiveMenuItem();
+  watchScrollRows();
   addClock();
   addCredit();
   buildHero();
