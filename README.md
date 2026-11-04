@@ -57,7 +57,8 @@ Dans **Settings → User Utilities → Glacier Theme** :
 - **Tableaux** : coins arrondis, lignes fines, en-tête discret et survol des lignes. Les barres d'utilisation sont arrondies.
 - **Panneau des notifications** : une carte flottante arrondie, onglets Non lu/Archivé en contrôle segmenté, filtres en pastilles et chaque notification sur sa carte, dans la couleur d'accent au lieu de l'orange d'Unraid.
 - **Dialogues, menus, infobulles, avis et pied de page** : harmonisés, avec un anneau de chargement aux couleurs du thème à la place des trois points verts et du logo animé (en plein écran, sur une carte au milieu de la page), avec l'état de l'array en pastille dans le pied de page.
-- **Téléphone** : le menu défile horizontalement, les actions passent à la ligne et l'en-tête se simplifie.
+- **Téléphone** : le menu défile horizontalement, les actions passent à la ligne et l'en-tête se simplifie. Les listes Plugins, VMs (avec les disques, interfaces et snapshots d'une VM ouverte) et Docker « Toutes les colonnes » passent en cartes, chaque valeur sous le titre de sa colonne.
+- **Applications (CA)** : le drapeau d'état des cartes (Installé, Bêta, Obsolète…) devient une pastille aux couleurs du thème.
 
 ## Améliorations des pages
 
@@ -124,6 +125,8 @@ Banc de test visuel : des pages de maquette qui reprennent la structure HTML d'U
 ```
 git clone --depth 1 --branch 7.3.4 https://github.com/unraid/webgui.git /tmp/webgui
 node test/render.mjs /tmp/webgui    # captures dans test/shots/
+PAGES=plugins,vms-list MODES=glacier node test/render.mjs /tmp/webgui    # un sous-ensemble
+SERVE=1 GL_PORT=8090 node test/render.mjs /tmp/webgui                  # sert seulement les pages
 ```
 
 ## Licence

@@ -520,7 +520,8 @@ html.glacier #docker_containers.gl-compact td.gl-c-version :is(span, a) {
     max-width: 100%;
 }
 
-/* Unraid's update links and status words as pills that end in "…" when the column is short. */
+/* Unraid's status words as pills that end in "…" when the column is short (the "apply update"
+   link wraps instead, below). */
 html.glacier #docker_containers.gl-compact td.gl-c-version a.exec > span,
 html.glacier #docker_containers.gl-compact td.gl-c-version > span,
 html.glacier #docker_containers.gl-compact td.gl-c-version > div:not(.advanced) > span {
@@ -530,6 +531,11 @@ html.glacier #docker_containers.gl-compact td.gl-c-version > div:not(.advanced) 
     text-overflow: ellipsis;
     white-space: nowrap;
     vertical-align: middle;
+}
+
+html.glacier #docker_containers.gl-compact td.gl-c-version > a.exec > span {
+    overflow: visible;
+    white-space: normal !important;
 }
 
 html.glacier #docker_containers.gl-compact td.gl-c-version div.advanced {
