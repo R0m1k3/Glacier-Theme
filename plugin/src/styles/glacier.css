@@ -1462,6 +1462,33 @@ html.glacier .usage-disk:is(.sys, .mm) > span {
     height: 100%;
 }
 
+/* A value followed by its bar (span.load, then div.usage-disk.sys pulled up beside it) in one of
+   Unraid's column cells, as plugin tiles write them (GPU Statistics...): side by side and centred.
+   Unraid's negative margin, with the theme's thinner bar, left the cell shorter than the value,
+   whose top its overflow:hidden cut off. Glacier's CPU tile has its own grid. */
+html.glacier table.dashboard tbody:not(.gl-cpu-tile) span:is(.w18, .w26, .w36, .w44, .w72):has(> .load + .usage-disk.sys) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    box-sizing: border-box;
+    padding-right: 2rem;
+    overflow: visible;
+}
+
+html.glacier table.dashboard tbody:not(.gl-cpu-tile) span:is(.w18, .w26, .w36, .w44, .w72) > .load:has(+ .usage-disk.sys) {
+    flex: none;
+    width: auto;
+    min-width: 3.8rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+html.glacier table.dashboard tbody:not(.gl-cpu-tile) span:is(.w18, .w26, .w36, .w44, .w72) > .load + .usage-disk.sys {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0 !important;
+}
+
 html.glacier .usage-bar {
     border-radius: var(--gl-r-full);
     overflow: hidden;
