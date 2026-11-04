@@ -149,13 +149,3 @@ html.glacier td.gl-snap-empty {
     color: var(--gl-muted);
     font-style: italic;
 }
-
-/* The VM table scrolls sideways on small screens; a section header stays in view with it. */
-@media (max-width: 767px) {
-    html.glacier #kvm_list > tr.gl-group .gl-group-head {
-        position: sticky;
-        left: 1.6rem;
-        box-sizing: border-box;
-        max-width: calc(100vw - 6.4rem);
-    }
-}

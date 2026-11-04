@@ -4,6 +4,7 @@
 // approximated, since they only exist on a running server.
 //
 //   node test/render.mjs /path/to/unraid/webgui      (a checkout of github.com/unraid/webgui, tag 7.3.4)
+//   PAGES=a,b MODES=glacier,dark   a subset;  SERVE=1 GL_PORT=8090   only serve the pages
 //
 // Needs Playwright (require('playwright')) with Chromium.
 import http from 'node:http';
@@ -42,14 +43,21 @@ const types = { '.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/wo
 function page(name, mode) {
   const glacier = mode !== 'stock';
   const body = fs.readFileSync(path.join(pagesDir, `${name}.html`), 'utf8');
-  const [meta, content] = body.split('\n---\n');
+  const [meta] = body.split('\n---\n');
   const opts = Object.fromEntries(meta.split('\n').filter(Boolean).map((l) => l.split(/:\s*/, 2)));
+  // "include: other-page" reuses another mock's content; "storage: key=value" presets localStorage
+  // before Glacier's scripts run (a remembered view, filter...).
+  let content = body.split('\n---\n')[1];
+  if (opts.include) content = fs.readFileSync(path.join(pagesDir, `${opts.include}.html`), 'utf8').split('\n---\n')[1] + content;
+  const storage = opts.storage
+    ? `<script>localStorage.setItem(${JSON.stringify(opts.storage.split('=')[0])}, ${JSON.stringify(opts.storage.split('=').slice(1).join('='))});</script>`
+    : '';
   return template
     .replaceAll('{{CLASSES}}', glacier ? `glacier gl-hero-on gl-page-${opts.page}${mode === 'dark' ? ' gl-dark' : ''}` : '')
     .replaceAll('Theme--white', mode === 'dark' ? 'Theme--black' : 'Theme--white')
     .replaceAll('themes/white.css', mode === 'dark' ? 'themes/black.css' : 'themes/white.css')
     .replaceAll('{{GLACIER}}', glacier
-      ? '<script>window.glacierTemp = {"hot":45,"max":55}; window.glacierUpdates = {"docker":1,"plugins":2}; window.glacierVersion = "2026.10.26.dev";</script>'
+      ? storage + '<script>window.glacierTemp = {"hot":45,"max":55}; window.glacierUpdates = {"docker":1,"plugins":2}; window.glacierVersion = "2026.10.26.dev";</script>'
       + '<link rel="stylesheet" href="/plugins/Glacier-Theme/styles/glacier.css">'
       + enhancements()
       + '<script defer src="/plugins/Glacier-Theme/scripts/glacier.js"></script>'
@@ -75,8 +83,14 @@ const server = http.createServer((req, res) => {
   fs.createReadStream(file).pipe(res);
 });
 
-await new Promise((r) => server.listen(0, '127.0.0.1', r));
+await new Promise((r) => server.listen(Number(process.env.GL_PORT) || 0, '127.0.0.1', r));
 const base = `http://127.0.0.1:${server.address().port}`;
+// SERVE=1 only serves the pages (http://127.0.0.1:<port>/page/<name>/<glacier|dark|stock>), to
+// inspect them with a browser or a script.
+if (process.env.SERVE) {
+  console.log(base);
+  await new Promise(() => {});
+}
 const browser = await chromium.launch();
 const names = process.env.PAGES ? process.env.PAGES.split(',') : fs.readdirSync(pagesDir).filter((f) => f.endsWith('.html')).map((f) => f.slice(0, -5));
 const widths = { wide: 1920, desktop: 1440, tablet: 900, phone: 390 };

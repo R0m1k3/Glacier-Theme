@@ -1934,9 +1934,18 @@ html.glacier td.updatecolumn a.exec:hover > span {
 /* "apply update" (an update is ready) sits straight in the cell; "force update" is in the
    advanced-view block. The first one gets the warm colour. */
 html.glacier td.updatecolumn > a.exec > span {
+    padding-block: 0.2rem;
     border-color: var(--gl-warn-solid);
+    border-radius: var(--gl-r-sm);
     color: #ffffff;
+    line-height: 1.4;
     background: var(--gl-warn-solid);
+}
+
+/* In a narrow column the label goes on two lines rather than ending in "…": it is the one
+   people act on. */
+html.glacier td.updatecolumn > a.exec > span[style*="nowrap"] {
+    white-space: normal !important;
 }
 
 html.glacier td.updatecolumn > a.exec:hover > span {
@@ -2370,6 +2379,63 @@ html.glacier .dockerHubHolder:hover {
 
 html.glacier .ca_holder > :is(.cardFlagStack, .installedCardBackground, .betaCardBackground, .warningCardBackground, .greenCardBackground, .officialCardBackground, .LTOfficialCardBackground, .spotlightCardBackground) {
     z-index: 2;
+}
+
+/* CA's status flag (a coloured triangle with rotated capitals, in CA's own colours) becomes a
+   pill in the card's corner, in the theme's tones: installed in the accent, an update or a beta
+   in orange, blacklisted / incompatible / deprecated in red, an existing template or a signed
+   container in green, official in blue. Absolute against the card, whether CA positions the
+   triangle absolutely (up to May 2026) or relatively (later versions). */
+html.glacier .ca_holder {
+    position: relative;
+}
+
+html.glacier .ca_holder > :is(.installedCardBackground, .betaCardBackground, .warningCardBackground, .greenCardBackground, .officialCardBackground, .LTOfficialCardBackground, .spotlightCardBackground) {
+    --gl-flag-bg: var(--gl-accent-soft);
+    --gl-flag-text: var(--gl-accent);
+    position: absolute !important;
+    top: 1.2rem !important;
+    right: 1.2rem !important;
+    left: auto !important;
+    display: inline-flex;
+    width: auto !important;
+    max-width: calc(100% - 2.4rem);
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0.3rem 1rem;
+    border-radius: var(--gl-r-full);
+    background: var(--gl-flag-bg) !important;
+    clip-path: none !important;
+    pointer-events: auto;
+}
+
+html.glacier .ca_holder > .betaCardBackground { --gl-flag-bg: var(--gl-warn-bg); --gl-flag-text: var(--gl-warn-text); }
+html.glacier .ca_holder > .warningCardBackground { --gl-flag-bg: var(--gl-danger-bg); --gl-flag-text: var(--gl-danger-text); }
+html.glacier .ca_holder > :is(.greenCardBackground, .spotlightCardBackground) { --gl-flag-bg: var(--gl-success-bg); --gl-flag-text: var(--gl-success-text); }
+html.glacier .ca_holder > :is(.officialCardBackground, .LTOfficialCardBackground) { --gl-flag-bg: var(--gl-info-bg); --gl-flag-text: var(--gl-info-text); }
+
+/* The label in sentence case, like every other label of the theme. */
+html.glacier .ca_holder .installedCardText {
+    position: static !important;
+    display: block;
+    width: auto !important;
+    height: auto !important;
+    margin: 0;
+    color: var(--gl-flag-text) !important;
+    font-size: 1.1rem !important;
+    font-weight: 600;
+    line-height: 1.6;
+    letter-spacing: 0;
+    text-align: center;
+    text-transform: lowercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transform: none !important;
+}
+
+html.glacier .ca_holder .installedCardText::first-letter {
+    text-transform: uppercase;
 }
 
 html.glacier :is(.ca_homeTemplatesHeader, .ca_applicationName) {

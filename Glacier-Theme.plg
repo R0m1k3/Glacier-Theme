@@ -3,7 +3,7 @@
 
 <PLUGIN name="Glacier-Theme"
         author="R0m1k3"
-        version="2026.11.04.2032"
+        version="2026.11.04.2335"
         launch="Settings/GlacierThemeSettings"
         pluginURL="https://raw.githubusercontent.com/R0m1k3/Glacier-Theme/main/Glacier-Theme.plg"
         support="https://github.com/R0m1k3/Glacier-Theme/issues"
@@ -11,7 +11,7 @@
         min="7.2.0">
 
 <CHANGES>
-###2026.11.04.2032
+###2026.11.04.2335
 - Dashboard, System tile: laid out by the tile's own width. The memory legend and the usable and maximum sizes share one panel (the sizes no longer overflow a narrow box), beside the rings when the tile is wide and above them otherwise; the four rings go in one row or two by two, never three and one, each with its label under it so they line up.
 
 ###2026.10.29.0937
@@ -100,7 +100,7 @@ Title="Glacier Theme"
 // so this is where the theme attaches its files. Link="nav-user" keeps it from adding a button.
 $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierCustomDir = '/boot/config/plugins/Glacier-Theme';
-$glacierVersion = '2026.11.04.2032';
+$glacierVersion = '2026.11.04.2335';
 
 // Emergency switch: any page opened with ?glacier=off stops the theme in this browser
 // (remembered in a cookie) until a page is opened with ?glacier=on.
@@ -233,7 +233,7 @@ $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierAccent = preg_match('/^#[0-9a-fA-F]{6}$/', $glacier['accent'] ?? '') ? $glacier['accent'] : '#0f766e';
 $glacierOnTopTheme = in_array($display['theme'] ?? '', ['white', 'black'], true);
 ?>
-<p class="gl-version">_(Version)_ <strong>2026.11.04.2032</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
+<p class="gl-version">_(Version)_ <strong>2026.11.04.2335</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
 <?php if (!$glacierOnTopTheme): ?>
 <p class="notice">_(Glacier is drawn over the Dynamix White and Black themes. Choose one of them in Settings > Display Settings to see it.)_</p>
 <?php endif; ?>
@@ -2697,6 +2697,91 @@ cat > /usr/local/emhttp/plugins/Glacier-Theme/scripts/gl-array-operation.js <<'G
     });
 
     grid.classList.add('gl-ops-ready');
+  });
+})();
+GLACIER_THEME_EOF
+cat > /usr/local/emhttp/plugins/Glacier-Theme/scripts/gl-cards.js <<'GLACIER_THEME_EOF'
+/*
+ * Glacier Theme: wide tables as cards on phones (styles/gl-cards.css).
+ *
+ * The Plugins list, the VMs list (with the disks, interfaces and snapshots of an open VM) and the
+ * Docker list in its "All columns" view have too many columns for a phone. Each cell gets the
+ * heading of its column in data-gl-label, which the stylesheet shows above the value once a row
+ * is laid out as a card; rows with a cell per column are marked gl-card-row (section headers,
+ * placeholders and detail rows are not), and empty cells gl-empty, left out of the card.
+ *
+ * Only attributes and classes are written, and only when they change, so Unraid's scripts that
+ * rebuild these rows keep working and the observer settles after one pass.
+ */
+(function () {
+  'use strict';
+
+  var G = window.Glacier;
+  if (!G) return;
+
+  var TABLES = ['plugin_table', 'kvm_table', 'docker_containers'];
+
+  // Cells Glacier adds for the compact Docker list (.gl-extra) are not columns of Unraid's table.
+  function cellsOf(row) {
+    return Array.prototype.filter.call(row.cells, function (cell) { return !cell.classList.contains('gl-extra'); });
+  }
+
+  function headings(head) {
+    var row = head && head.rows[0];
+    if (!row) return null;
+    var names = [];
+    cellsOf(row).forEach(function (cell) {
+      var text = (cell.textContent || '').replace(/\s+/g, ' ').trim();
+      for (var i = 0; i < (cell.colSpan || 1); i += 1) names.push(text);
+    });
+    return names;
+  }
+
+  function isEmpty(cell) {
+    return !(cell.textContent || '').replace(/\s+/g, '') && !cell.querySelector('img, input, button, select, i.fa, .switch-button-background');
+  }
+
+  function setLabel(cell, name) {
+    if (name) {
+      if (cell.getAttribute('data-gl-label') !== name) cell.setAttribute('data-gl-label', name);
+    } else if (cell.hasAttribute('data-gl-label')) {
+      cell.removeAttribute('data-gl-label');
+    }
+    var empty = isEmpty(cell);
+    if (cell.classList.contains('gl-empty') !== empty) cell.classList.toggle('gl-empty', empty);
+  }
+
+  // A table can have several thead/tbody pairs (an open VM's disks, interfaces and snapshots):
+  // each body takes the headings of the head just before it.
+  function label(table) {
+    var names = null;
+    Array.prototype.forEach.call(table.children, function (part) {
+      if (part.tagName === 'THEAD') {
+        names = headings(part);
+        return;
+      }
+      if (part.tagName !== 'TBODY' || !names) return;
+      Array.prototype.forEach.call(part.rows, function (row) {
+        var cells = cellsOf(row);
+        var matches = cells.length === names.length;
+        if (row.classList.contains('gl-card-row') !== matches) row.classList.toggle('gl-card-row', matches);
+        if (!matches) return;
+        cells.forEach(function (cell, index) { setLabel(cell, names[index]); });
+      });
+    });
+  }
+
+  G.feature('cards', function () {
+    TABLES.forEach(function (id) {
+      var table = document.getElementById(id);
+      if (!table || table.tagName !== 'TABLE' || table.dataset.glCards) return;
+      table.dataset.glCards = '1';
+      table.classList.add('gl-cards');
+      G.watch(table, function () {
+        label(table);
+        table.querySelectorAll('table.domdisk').forEach(label);
+      });
+    });
   });
 })();
 GLACIER_THEME_EOF
@@ -7246,6 +7331,313 @@ html.glacier .gl-ops .gl-stat > .gl-stat-value:empty::before {
 
 }
 GLACIER_THEME_EOF
+cat > /usr/local/emhttp/plugins/Glacier-Theme/styles/gl-cards.css <<'GLACIER_THEME_EOF'
+/*
+ * Glacier Theme: on phones, the Plugins list, the VMs list and the Docker list in its "All
+ * columns" view become one card per row (scripts/gl-cards.js labels the cells). Each card puts
+ * the name first, then the other columns two by two, each value under its column's heading, the
+ * way the compact Docker list does.
+ */
+@media (max-width: 767px) {
+    html.glacier .TableContainer:has(> table.gl-cards:not(.gl-compact)) {
+        overflow-x: visible;
+    }
+
+    html.glacier table.gl-cards:not(.gl-compact) {
+        display: block;
+        width: 100%;
+        min-width: 0 !important;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    html.glacier table.gl-cards:not(.gl-compact) > thead {
+        display: none;
+    }
+
+    html.glacier table.gl-cards:not(.gl-compact) > tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        height: auto !important;
+        max-height: none;
+        overflow: visible;
+    }
+
+    /* ---- One card per row */
+    html.glacier table.gl-cards:not(.gl-compact) > tbody > tr.gl-card-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+        gap: 1.2rem 1.6rem;
+        padding: 1.4rem;
+        border: 1px solid var(--gl-border);
+        border-radius: var(--gl-r-lg);
+        background: var(--gl-surface);
+    }
+
+    html.glacier table.gl-cards:not(.gl-compact) > tbody > tr.gl-card-row:hover {
+        box-shadow: none;
+    }
+
+    html.glacier table.gl-cards:not(.gl-compact) > tbody > tr.gl-card-row > td {
+        display: block;
+        box-sizing: border-box;
+        width: auto !important;
+        min-width: 0;
+        height: auto;
+        margin: 0;
+        padding: 0 !important;
+        border: 0 !important;
+        color: var(--gl-text);
+        font-size: 1.3rem;
+        line-height: 1.5;
+        text-align: left;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        background: transparent !important;
+    }
+
+    html.glacier table.gl-cards:not(.gl-compact) > tbody > tr.gl-card-row > td.gl-empty {
+        display: none;
+    }
+
+    html.glacier table.gl-cards:not(.gl-compact) > tbody > tr.gl-card-row > td[data-gl-label]::before {
+        display: block;
+        margin-bottom: 0.2rem;
+        color: var(--gl-muted);
+        font-size: 1.1rem;
+        font-weight: 600;
+        line-height: 1.4;
+        word-break: normal;
+        overflow-wrap: normal;
+        content: attr(data-gl-label);
+    }
+
+    /* The name opens the card, full width and without a heading. */
+    html.glacier table.gl-cards:not(.gl-compact) > tbody > tr.gl-card-row > td:is(.ct-name, .vm-name) {
+        grid-column: 1 / -1;
+    }
+
+    html.glacier table.gl-cards:not(.gl-compact) > tbody > tr.gl-card-row > td:is(.ct-name, .vm-name)::before {
+        display: none;
+    }
+
+    html.glacier table.gl-cards:not(.gl-compact) > tbody > tr.gl-card-row > td:is(.ct-name, .vm-name) {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        column-gap: 0.4rem;
+    }
+
+    html.glacier table.gl-cards:not(.gl-compact) > tbody > tr.gl-card-row > td:is(.ct-name, .vm-name) > span.outer {
+        margin: 0;
+    }
+
+    html.glacier table.gl-cards:not(.gl-compact) > tbody > tr.gl-card-row > td:is(.ct-name, .vm-name) > :not(span.outer, button, i.mover) {
+        flex-basis: 100%;
+    }
+
+
+    /* Rows that are not cards (section headers, "no containers"): a plain full-width line. */
+    html.glacier table.gl-cards:not(.gl-compact) > tbody > tr:not(.gl-card-row) {
+        display: block;
+    }
+
+    html.glacier table.gl-cards:not(.gl-compact) > tbody > tr:not(.gl-card-row) > td {
+        display: block;
+        box-sizing: border-box;
+        width: auto !important;
+        border: 0;
+    }
+
+    html.glacier table.gl-cards:not(.gl-compact) > tbody > tr.gl-group > td {
+        border: 1px solid var(--gl-border) !important;
+        border-radius: var(--gl-r-lg);
+    }
+
+    html.glacier table.gl-cards:not(.gl-compact) > tbody > tr:not(.gl-card-row, .gl-group) > td:is(:empty, [colspan]:not(:has(*))) {
+        display: none;
+    }
+
+    /* ==========================================================================
+       Plugins: icon and description side by side, then author and version, state and the
+       remove button.
+       ========================================================================== */
+    html.glacier #plugin_table.gl-cards > tbody > tr.gl-card-row {
+        grid-template-columns: 4.4rem minmax(0, 1fr) auto;
+    }
+
+    html.glacier #plugin_table.gl-cards > tbody > tr.gl-card-row > td:nth-child(1) {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    html.glacier #plugin_table.gl-cards > tbody > tr.gl-card-row > td:nth-child(2) {
+        grid-column: 2 / -1;
+        grid-row: 1;
+    }
+
+    html.glacier #plugin_table.gl-cards > tbody > tr.gl-card-row > td:nth-child(3) {
+        grid-column: 1 / 3;
+    }
+
+    html.glacier #plugin_table.gl-cards > tbody > tr.gl-card-row > td:nth-child(5) {
+        grid-column: 1 / 3;
+        align-self: center;
+    }
+
+    html.glacier #plugin_table.gl-cards > tbody > tr.gl-card-row > td:nth-child(6) {
+        align-self: center;
+        justify-self: end;
+    }
+
+    html.glacier #plugin_table.gl-cards > tbody > tr.gl-card-row > td:is(:nth-child(1), :nth-child(2), :nth-child(5), :nth-child(6))::before {
+        display: none;
+    }
+
+    /* ==========================================================================
+       VMs: the name, the description, the other columns, and autostart beside the actions
+       at the bottom, as on the compact Docker cards. An open VM's details hang under its card.
+       ========================================================================== */
+    html.glacier #kvm_table.gl-cards > tbody > tr.gl-card-row > td:nth-child(8) {
+        grid-column: 1;
+        align-self: end;
+    }
+
+    html.glacier #kvm_table.gl-cards > tbody > tr.gl-card-row > td.gl-vm-actions {
+        grid-column: 2;
+        align-self: end;
+        justify-self: end;
+    }
+
+    html.glacier #kvm_table.gl-cards > tbody > tr.gl-card-row > td.gl-vm-actions::before {
+        display: none;
+    }
+
+    html.glacier #kvm_table.gl-cards > tbody > tr.gl-card-row > td:nth-child(2) {
+        grid-column: 1 / -1;
+    }
+
+    html.glacier #kvm_list > tr.gl-vm-open.gl-card-row {
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    html.glacier #kvm_list > tr.gl-vm-details {
+        margin-top: calc(-1rem - 1px);
+        border: 1px solid var(--gl-border);
+        border-radius: 0 0 var(--gl-r-lg) var(--gl-r-lg);
+        overflow: hidden;
+        background: var(--gl-subtle);
+    }
+
+    html.glacier #kvm_list > tr.gl-vm-details > td {
+        height: auto !important;
+        padding: 0 !important;
+    }
+
+    html.glacier #kvm_list table.domdisk {
+        display: block;
+        width: 100%;
+        min-width: 0 !important;
+    }
+
+    html.glacier #kvm_list table.domdisk > :is(thead, tbody) {
+        display: block;
+    }
+
+    html.glacier #kvm_list table.domdisk > thead > tr {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        padding: 1.2rem 1.4rem 0;
+    }
+
+    html.glacier #kvm_list table.domdisk > thead > tr > th {
+        padding: 0 !important;
+        border: 0;
+        background: transparent;
+    }
+
+    html.glacier #kvm_list table.domdisk > thead > tr > th:not(:first-child) {
+        display: none;
+    }
+
+    html.glacier #kvm_list table.domdisk > thead > tr > th:first-child {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.6rem 1rem;
+    }
+
+    html.glacier #kvm_list table.domdisk button.gl-snap-create {
+        margin: 0;
+    }
+
+    html.glacier #kvm_list table.domdisk > tbody > tr {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem 1.6rem;
+        padding: 1rem 1.4rem 1.2rem;
+        border: 0;
+        background: transparent;
+    }
+
+    html.glacier #kvm_list table.domdisk > tbody > tr + tr {
+        border-top: 1px solid var(--gl-border);
+    }
+
+    html.glacier #kvm_list table.domdisk > tbody > tr > td {
+        display: block;
+        min-width: 0;
+        height: auto !important;
+        padding: 0 !important;
+        border: 0 !important;
+        font-size: 1.3rem;
+        overflow-wrap: anywhere;
+        background: transparent !important;
+    }
+
+    html.glacier #kvm_list table.domdisk > tbody > tr > td span.inner {
+        display: block;
+        height: auto;
+        font-size: inherit !important;
+        line-height: 1.5;
+    }
+
+    html.glacier #kvm_list table.domdisk > tbody > tr > td.gl-empty {
+        display: none;
+    }
+
+    html.glacier #kvm_list table.domdisk > tbody > tr > td:first-child {
+        grid-column: 1 / -1;
+        font-weight: 600;
+    }
+
+    html.glacier #kvm_list table.domdisk > tbody > tr > td:not(:first-child)[data-gl-label]::before {
+        display: block;
+        color: var(--gl-muted);
+        font-size: 1.1rem;
+        font-weight: 600;
+        content: attr(data-gl-label);
+    }
+
+    /* ==========================================================================
+       Docker, "All columns": volumes (the cell Unraid sets to break anywhere) and the uptime
+       take the card's width.
+       ========================================================================== */
+    html.glacier #docker_containers.gl-cards:not(.gl-compact) > tbody > tr.gl-card-row > td:is(.gl-c-volumes, .gl-c-uptime, [style*="word-break"]) {
+        grid-column: 1 / -1;
+    }
+
+    html.glacier #docker_containers.gl-cards:not(.gl-compact) .docker_readmore {
+        max-height: none !important;
+    }
+}
+GLACIER_THEME_EOF
 cat > /usr/local/emhttp/plugins/Glacier-Theme/styles/gl-core.css <<'GLACIER_THEME_EOF'
 /*
  * Glacier Theme: shared components for the page enhancements (scripts/gl-core.js).
@@ -9123,7 +9515,8 @@ html.glacier #docker_containers.gl-compact td.gl-c-version :is(span, a) {
     max-width: 100%;
 }
 
-/* Unraid's update links and status words as pills that end in "…" when the column is short. */
+/* Unraid's status words as pills that end in "…" when the column is short (the "apply update"
+   link wraps instead, below). */
 html.glacier #docker_containers.gl-compact td.gl-c-version a.exec > span,
 html.glacier #docker_containers.gl-compact td.gl-c-version > span,
 html.glacier #docker_containers.gl-compact td.gl-c-version > div:not(.advanced) > span {
@@ -9133,6 +9526,11 @@ html.glacier #docker_containers.gl-compact td.gl-c-version > div:not(.advanced) 
     text-overflow: ellipsis;
     white-space: nowrap;
     vertical-align: middle;
+}
+
+html.glacier #docker_containers.gl-compact td.gl-c-version > a.exec > span {
+    overflow: visible;
+    white-space: normal !important;
 }
 
 html.glacier #docker_containers.gl-compact td.gl-c-version div.advanced {
@@ -10537,16 +10935,6 @@ html.glacier :is(button.gl-snap-button, button.gl-snap-create):focus-visible {
 html.glacier td.gl-snap-empty {
     color: var(--gl-muted);
     font-style: italic;
-}
-
-/* The VM table scrolls sideways on small screens; a section header stays in view with it. */
-@media (max-width: 767px) {
-    html.glacier #kvm_list > tr.gl-group .gl-group-head {
-        position: sticky;
-        left: 1.6rem;
-        box-sizing: border-box;
-        max-width: calc(100vw - 6.4rem);
-    }
 }
 GLACIER_THEME_EOF
 cat > /usr/local/emhttp/plugins/Glacier-Theme/styles/glacier.css <<'GLACIER_THEME_EOF'
@@ -12486,9 +12874,18 @@ html.glacier td.updatecolumn a.exec:hover > span {
 /* "apply update" (an update is ready) sits straight in the cell; "force update" is in the
    advanced-view block. The first one gets the warm colour. */
 html.glacier td.updatecolumn > a.exec > span {
+    padding-block: 0.2rem;
     border-color: var(--gl-warn-solid);
+    border-radius: var(--gl-r-sm);
     color: #ffffff;
+    line-height: 1.4;
     background: var(--gl-warn-solid);
+}
+
+/* In a narrow column the label goes on two lines rather than ending in "…": it is the one
+   people act on. */
+html.glacier td.updatecolumn > a.exec > span[style*="nowrap"] {
+    white-space: normal !important;
 }
 
 html.glacier td.updatecolumn > a.exec:hover > span {
@@ -12922,6 +13319,63 @@ html.glacier .dockerHubHolder:hover {
 
 html.glacier .ca_holder > :is(.cardFlagStack, .installedCardBackground, .betaCardBackground, .warningCardBackground, .greenCardBackground, .officialCardBackground, .LTOfficialCardBackground, .spotlightCardBackground) {
     z-index: 2;
+}
+
+/* CA's status flag (a coloured triangle with rotated capitals, in CA's own colours) becomes a
+   pill in the card's corner, in the theme's tones: installed in the accent, an update or a beta
+   in orange, blacklisted / incompatible / deprecated in red, an existing template or a signed
+   container in green, official in blue. Absolute against the card, whether CA positions the
+   triangle absolutely (up to May 2026) or relatively (later versions). */
+html.glacier .ca_holder {
+    position: relative;
+}
+
+html.glacier .ca_holder > :is(.installedCardBackground, .betaCardBackground, .warningCardBackground, .greenCardBackground, .officialCardBackground, .LTOfficialCardBackground, .spotlightCardBackground) {
+    --gl-flag-bg: var(--gl-accent-soft);
+    --gl-flag-text: var(--gl-accent);
+    position: absolute !important;
+    top: 1.2rem !important;
+    right: 1.2rem !important;
+    left: auto !important;
+    display: inline-flex;
+    width: auto !important;
+    max-width: calc(100% - 2.4rem);
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0.3rem 1rem;
+    border-radius: var(--gl-r-full);
+    background: var(--gl-flag-bg) !important;
+    clip-path: none !important;
+    pointer-events: auto;
+}
+
+html.glacier .ca_holder > .betaCardBackground { --gl-flag-bg: var(--gl-warn-bg); --gl-flag-text: var(--gl-warn-text); }
+html.glacier .ca_holder > .warningCardBackground { --gl-flag-bg: var(--gl-danger-bg); --gl-flag-text: var(--gl-danger-text); }
+html.glacier .ca_holder > :is(.greenCardBackground, .spotlightCardBackground) { --gl-flag-bg: var(--gl-success-bg); --gl-flag-text: var(--gl-success-text); }
+html.glacier .ca_holder > :is(.officialCardBackground, .LTOfficialCardBackground) { --gl-flag-bg: var(--gl-info-bg); --gl-flag-text: var(--gl-info-text); }
+
+/* The label in sentence case, like every other label of the theme. */
+html.glacier .ca_holder .installedCardText {
+    position: static !important;
+    display: block;
+    width: auto !important;
+    height: auto !important;
+    margin: 0;
+    color: var(--gl-flag-text) !important;
+    font-size: 1.1rem !important;
+    font-weight: 600;
+    line-height: 1.6;
+    letter-spacing: 0;
+    text-align: center;
+    text-transform: lowercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transform: none !important;
+}
+
+html.glacier .ca_holder .installedCardText::first-letter {
+    text-transform: uppercase;
 }
 
 html.glacier :is(.ca_homeTemplatesHeader, .ca_applicationName) {
@@ -13859,7 +14313,7 @@ done
 find /usr/local/emhttp/plugins/Glacier-Theme -type d -exec chmod 755 {} +
 find /usr/local/emhttp/plugins/Glacier-Theme -type f -exec chmod 644 {} +
 echo ""
-echo "Glacier-Theme 2026.11.04.2032 is installed."
+echo "Glacier-Theme 2026.11.04.2335 is installed."
 echo "Settings: Settings > User Utilities > Glacier Theme"
 echo "The theme shows while Settings > Display Settings > Dynamix color theme is White."
 echo ""
