@@ -25,7 +25,7 @@ html.glacier .gl-heading-text {
 html.glacier .gl-heading .gl-eyebrow {
     margin: 0 0 0.6rem;
     color: var(--gl-accent);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     line-height: 1.2;
@@ -46,7 +46,7 @@ html.glacier .gl-heading h1.gl-heading-title {
 html.glacier .gl-heading .gl-subtitle {
     margin: 0.6rem 0 0;
     color: var(--gl-muted);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     line-height: 1.45;
     text-align: left;
 }

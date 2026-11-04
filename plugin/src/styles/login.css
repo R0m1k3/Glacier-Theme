@@ -142,7 +142,7 @@ html.glacier-login :is(#login, body > section) h2:empty {
 html.glacier-login :is(#login, body > section) header p {
     margin: 1rem 0 0;
     color: var(--gl-text-2);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
 }
 
 /* The server case picture: no room for it beside the form in the narrower card. */
@@ -252,7 +252,7 @@ html.glacier-login #login .error {
     padding: 1.2rem 1.4rem;
     border-radius: 1.4rem;
     color: var(--gl-danger-text);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     background: var(--gl-danger-bg);
 }
 

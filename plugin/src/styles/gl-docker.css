@@ -45,13 +45,13 @@ html.glacier button.gl-seg {
     align-items: center;
     gap: 0.7rem;
     min-width: 0;
-    min-height: 3rem;
+    min-height: 3.2rem;
     margin: 0;
     padding: 0 1.3rem;
     border: 0;
     border-radius: var(--gl-r-full);
     color: var(--gl-text-2);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 500;
     white-space: nowrap;
     background: transparent;
@@ -66,9 +66,10 @@ html.glacier button.gl-seg:hover:not(:disabled) {
 
 html.glacier button.gl-seg[aria-pressed="true"],
 html.glacier button.gl-seg[aria-pressed="true"]:hover {
-    color: var(--gl-ink-text);
+    color: var(--gl-active-text);
     font-weight: 600;
-    background: var(--gl-ink);
+    background: var(--gl-active-bg);
+    box-shadow: inset 0 0 0 1px var(--gl-active-ring);
 }
 
 html.glacier button.gl-seg:focus-visible,
@@ -95,7 +96,7 @@ html.glacier .gl-seg-count {
 
 html.glacier button.gl-seg[aria-pressed="true"] .gl-seg-count {
     color: inherit;
-    background: color-mix(in srgb, var(--gl-ink-text) 18%, transparent);
+    background: color-mix(in srgb, var(--gl-active-text) 18%, transparent);
 }
 
 html.glacier .gl-toolbar input.gl-search {
@@ -202,7 +203,7 @@ html.glacier .gl-row-actions .gl-icon-button {
     height: 3.2rem;
     border-color: transparent;
     color: var(--gl-muted);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     background: transparent;
 }
 
@@ -229,7 +230,7 @@ html.glacier a.gl-webui {
     height: 3.4rem;
     border-radius: 50%;
     color: var(--gl-accent-text);
-    font-size: 1.45rem;
+    font-size: 1.4rem;
     text-decoration: none;
     background: var(--gl-accent);
     box-shadow: 0 6px 14px -8px var(--gl-accent);
@@ -371,7 +372,7 @@ html.glacier #docker_containers.gl-compact tr.gl-ct > td {
 
 html.glacier #docker_containers.gl-compact th {
     color: var(--gl-muted);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 600;
     white-space: nowrap;
 }
@@ -412,7 +413,7 @@ html.glacier #docker_containers.gl-compact td.gl-c-load > :is([class^="cpu-"], [
     min-width: 0;
     overflow: hidden;
     color: var(--gl-text-2);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
     text-overflow: ellipsis;
@@ -448,9 +449,9 @@ html.glacier #docker_containers.gl-compact td.ct-name span.hand {
     display: grid;
     flex: none;
     place-items: center;
-    width: 4.2rem;
-    height: 4.2rem;
-    border-radius: 1.3rem;
+    width: 4.4rem;
+    height: 4.4rem;
+    border-radius: var(--gl-r-md);
     background: var(--gl-subtle-2);
     box-shadow: inset 0 0 0 1px var(--gl-border);
 }
@@ -539,7 +540,7 @@ html.glacier #docker_containers.gl-compact td.gl-c-version div.advanced {
 
 html.glacier #docker_containers.gl-compact td.gl-c-ports {
     color: var(--gl-muted);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-variant-numeric: tabular-nums;
 }
 
@@ -634,6 +635,14 @@ html.glacier #docker_containers.gl-compact tr.gl-ct.gl-has-update td.ct-name spa
 
     html.glacier .gl-toolbar > .gl-segment {
         align-self: flex-start;
+        flex-wrap: nowrap;
+        max-width: 100%;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    html.glacier .gl-toolbar > .gl-segment > button.gl-seg {
+        flex: none;
     }
 
     html.glacier .gl-toolbar input.gl-search {
@@ -707,7 +716,7 @@ html.glacier #docker_containers.gl-compact tr.gl-ct.gl-has-update td.ct-name spa
     html.glacier #docker_containers.gl-compact td.gl-c-load > :is([class^="cpu-"], [class^="mem-"])::before {
         display: block;
         color: var(--gl-muted);
-        font-size: 1.05rem;
+        font-size: 1.1rem;
         font-weight: 600;
         content: attr(data-gl-label);
     }

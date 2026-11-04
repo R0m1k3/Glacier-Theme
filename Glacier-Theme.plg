@@ -3,7 +3,7 @@
 
 <PLUGIN name="Glacier-Theme"
         author="R0m1k3"
-        version="2026.10.29.0945"
+        version="2026.11.04.2032"
         launch="Settings/GlacierThemeSettings"
         pluginURL="https://raw.githubusercontent.com/R0m1k3/Glacier-Theme/main/Glacier-Theme.plg"
         support="https://github.com/R0m1k3/Glacier-Theme/issues"
@@ -11,7 +11,7 @@
         min="7.2.0">
 
 <CHANGES>
-###2026.10.29.0945
+###2026.11.04.2032
 - Dashboard, System tile: laid out by the tile's own width. The memory legend and the usable and maximum sizes share one panel (the sizes no longer overflow a narrow box), beside the rings when the tile is wide and above them otherwise; the four rings go in one row or two by two, never three and one, each with its label under it so they line up.
 
 ###2026.10.29.0937
@@ -100,7 +100,7 @@ Title="Glacier Theme"
 // so this is where the theme attaches its files. Link="nav-user" keeps it from adding a button.
 $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierCustomDir = '/boot/config/plugins/Glacier-Theme';
-$glacierVersion = '2026.10.29.0945';
+$glacierVersion = '2026.11.04.2032';
 
 // Emergency switch: any page opened with ?glacier=off stops the theme in this browser
 // (remembered in a cookie) until a page is opened with ?glacier=on.
@@ -233,7 +233,7 @@ $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierAccent = preg_match('/^#[0-9a-fA-F]{6}$/', $glacier['accent'] ?? '') ? $glacier['accent'] : '#0f766e';
 $glacierOnTopTheme = in_array($display['theme'] ?? '', ['white', 'black'], true);
 ?>
-<p class="gl-version">_(Version)_ <strong>2026.10.29.0945</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
+<p class="gl-version">_(Version)_ <strong>2026.11.04.2032</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
 <?php if (!$glacierOnTopTheme): ?>
 <p class="notice">_(Glacier is drawn over the Dynamix White and Black themes. Choose one of them in Settings > Display Settings to see it.)_</p>
 <?php endif; ?>
@@ -6650,7 +6650,39 @@ cat > /usr/local/emhttp/plugins/Glacier-Theme/scripts/glacier.js <<'GLACIER_THEM
     tick();
   }
 
+  // On phones the main menu is one row that scrolls sideways: centre the current page in it.
+  function revealActiveMenuItem() {
+    var item = document.querySelector('#menu .nav-tile:not(.right) .nav-item.active');
+    var row = item && item.parentElement;
+    if (!row || row.scrollWidth <= row.clientWidth) return;
+    var left = item.offsetLeft - row.offsetLeft;
+    row.scrollLeft = Math.max(0, left - (row.clientWidth - item.offsetWidth) / 2);
+  }
+
+  // Rows that scroll sideways (menu, quick actions, tab bars, Docker filters) fade at the edge
+  // that has more to show: the CSS picks the mask from these classes.
+  var SCROLL_ROWS = '#menu .nav-tile, .tabs-container, .gl-toolbar > .gl-segment';
+  function markScrollEdges(row) {
+    var max = row.scrollWidth - row.clientWidth;
+    row.classList.toggle('gl-no-scroll', max <= 1);
+    row.classList.toggle('gl-scrolled', max > 1 && row.scrollLeft > 1 && row.scrollLeft < max - 1);
+    row.classList.toggle('gl-scroll-end', max > 1 && row.scrollLeft >= max - 1);
+  }
+  function watchScrollRows() {
+    var update = function () { Array.prototype.forEach.call(document.querySelectorAll(SCROLL_ROWS), markScrollEdges); };
+    document.addEventListener('scroll', function (event) {
+      var row = event.target;
+      if (row && row.matches && row.matches(SCROLL_ROWS)) markScrollEdges(row);
+    }, true);
+    window.addEventListener('resize', update);
+    window.addEventListener('load', update);
+    setTimeout(update, 600);
+    update();
+  }
+
   markMenuCounts();
+  revealActiveMenuItem();
+  watchScrollRows();
   addClock();
   addCredit();
   buildHero();
@@ -6727,7 +6759,7 @@ html.glacier .gl-ops tr.gl-op > td {
     padding: 0 !important;
     border: 0;
     color: var(--gl-text);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     line-height: 1.55;
     text-align: left;
     white-space: normal;
@@ -6759,8 +6791,8 @@ html.glacier .gl-op-icon {
     display: grid;
     flex: none;
     place-items: center;
-    width: 3.6rem;
-    height: 3.6rem;
+    width: 3.4rem;
+    height: 3.4rem;
     border-radius: var(--gl-r-sm);
     color: var(--gl-accent);
     font-size: 1.6rem;
@@ -6770,7 +6802,7 @@ html.glacier .gl-op-icon {
 html.glacier .gl-op-title {
     min-width: 0;
     color: var(--gl-text);
-    font-size: 1.55rem;
+    font-size: 1.6rem;
     font-weight: 700;
     letter-spacing: -0.01em;
     line-height: 1.25;
@@ -6817,7 +6849,7 @@ html.glacier .gl-ops td.gl-op-desc i.fa {
 }
 
 html.glacier .gl-ops td.gl-op-desc small {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
 }
 
 html.glacier .gl-ops .gl-op-option {
@@ -6901,7 +6933,7 @@ html.glacier .gl-ops tr.gl-op > td.gl-op-pill {
     padding: 0.3rem 1.2rem !important;
     border-radius: var(--gl-r-full);
     color: var(--gl-text-2);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     line-height: 1.6;
     background: var(--gl-subtle-2);
 }
@@ -6954,7 +6986,7 @@ html.glacier .gl-ops tr.gl-op > td.gl-op-list {
     padding: 1rem 1.2rem !important;
     border-radius: var(--gl-r-sm);
     color: var(--gl-text-2);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 500;
     background: var(--gl-surface);
     box-shadow: inset 0 0 0 1px var(--gl-border);
@@ -6979,7 +7011,7 @@ html.glacier .gl-ops tr.gl-op-array > td.gl-op-head {
 html.glacier .gl-ops tr.gl-op-array > td.gl-op-pill {
     align-self: center;
     padding: 0.5rem 1.4rem !important;
-    font-size: 1.35rem;
+    font-size: 1.3rem;
 }
 
 html.glacier .gl-ops tr.gl-op-array > td.gl-op-desc {
@@ -7107,19 +7139,20 @@ html.glacier .gl-progress-label {
 html.glacier .gl-stats {
     grid-column: 1 / -1;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
     gap: 0.8rem;
 }
 
 html.glacier .gl-stat {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 0.3rem;
     min-width: 0;
-    padding: 1.1rem 1.3rem;
+    padding: 1.4rem 1.6rem;
     border: 1px solid var(--gl-border);
     border-radius: var(--gl-r-md);
-    background: var(--gl-surface);
+    background: var(--gl-subtle);
 }
 
 html.glacier .gl-stat.gl-stat-wide {
@@ -7138,11 +7171,11 @@ html.glacier .gl-ops .gl-stat > td {
 
 html.glacier .gl-ops .gl-stat-label {
     color: var(--gl-muted);
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 600;
-    letter-spacing: 0.06em;
+    letter-spacing: 0;
     line-height: 1.4;
-    text-transform: uppercase;
+    text-transform: none;
 }
 
 html.glacier .gl-ops .gl-stat-label span {
@@ -7151,7 +7184,7 @@ html.glacier .gl-ops .gl-stat-label span {
 
 html.glacier .gl-ops .gl-stat > .gl-stat-value {
     color: var(--gl-text);
-    font-size: 1.45rem;
+    font-size: 1.6rem;
     font-weight: 700;
     line-height: 1.3;
     font-variant-numeric: tabular-nums;
@@ -7264,6 +7297,22 @@ html.glacier .gl-summary {
     margin: 0 0 2rem;
 }
 
+/* Phones: two by two everywhere (as on Docker); a last odd tile takes the full row. */
+@media (max-width: 767px) {
+    html.glacier .gl-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+    }
+
+    html.glacier .gl-summary .gl-summary-item {
+        padding: 1.2rem 1.4rem;
+    }
+
+    html.glacier .gl-summary .gl-summary-item:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+    }
+}
+
 html.glacier .gl-summary-item {
     display: flex;
     flex-direction: column;
@@ -7277,7 +7326,7 @@ html.glacier .gl-summary-item {
 
 html.glacier .gl-summary-label {
     color: var(--gl-muted);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 600;
 }
 
@@ -7301,7 +7350,7 @@ html.glacier .gl-summary-number {
 html.glacier .gl-summary-detail {
     min-width: 0;
     color: var(--gl-muted);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
 }
 
 html.glacier .gl-summary-value.gl-tone-accent .gl-summary-number { color: var(--gl-accent); }
@@ -7323,7 +7372,7 @@ html.glacier .gl-modal-backdrop {
     display: grid;
     place-items: center;
     padding: 2rem;
-    background: rgba(15, 23, 42, 0.45);
+    background: var(--gl-overlay);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
 }
@@ -7365,7 +7414,7 @@ html.glacier .gl-modal-problem {
     min-height: 1.8rem;
     margin: 0.6rem 0 0;
     color: var(--gl-danger-text);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
 }
 
 html.glacier .gl-modal-actions {
@@ -7392,14 +7441,14 @@ html.glacier button.gl-modal-button.gl-modal-primary:hover:not(:disabled) {
 }
 
 html.glacier button.gl-modal-button.gl-modal-danger {
-    border-color: var(--gl-danger);
+    border-color: var(--gl-danger-solid);
     color: #ffffff;
-    background: var(--gl-danger);
+    background: var(--gl-danger-solid);
 }
 
 html.glacier button.gl-modal-button.gl-modal-danger:hover:not(:disabled) {
     color: #ffffff;
-    background: color-mix(in oklab, var(--gl-danger), black 14%);
+    background: color-mix(in oklab, var(--gl-danger-solid), black 14%);
 }
 
 /* ---- Small shared pieces */
@@ -7410,7 +7459,7 @@ html.glacier .gl-pill {
     padding: 0.1rem 0.9rem;
     border-radius: var(--gl-r-full);
     color: var(--gl-text-2);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 600;
     line-height: 1.7;
     white-space: nowrap;
@@ -7647,10 +7696,10 @@ html.glacier button.gl-ct-action.gl-ct-warn:hover {
 html.glacier .gl-ct-section {
     margin: 2rem 0 0.8rem;
     color: var(--gl-muted);
-    font-size: 1.15rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
 }
 
 html.glacier .gl-ct-grid {
@@ -7780,7 +7829,7 @@ html.glacier .gl-cpu-chip[hidden] {
 
 html.glacier .gl-cpu-chip > i {
     color: var(--gl-accent);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
 }
 
 html.glacier .gl-cpu-chip > i.fa-thermometer-half {
@@ -7810,10 +7859,10 @@ html.glacier .gl-cpu-tile tr.gl-cpu-pkg span.cpu_open {
 
 html.glacier .gl-cpu-pkg-name {
     color: var(--gl-muted);
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
 }
 
 /* The core rows flow into a grid; the tile's other rows span it, as wide as before. */
@@ -7870,7 +7919,7 @@ html.glacier tbody.gl-cpu-tile > tr.gl-core span.w26 {
     float: none;
     overflow: hidden;
     color: var(--gl-muted);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 700;
     line-height: 1.2;
     text-overflow: ellipsis;
@@ -7897,7 +7946,7 @@ html.glacier tbody.gl-cpu-tile > tr.gl-core .load {
     width: auto;
     margin: 0;
     color: var(--gl-text);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 700;
     line-height: 1.2;
     font-variant-numeric: tabular-nums;
@@ -7924,7 +7973,7 @@ html.glacier tbody.gl-cpu-tile > tr.gl-core-pair span.w36:nth-of-type(3) .load {
 html.glacier tbody.gl-cpu-tile > tr.gl-core-pair span.w36:nth-of-type(3) .usage-disk { grid-area: b2; }
 
 html.glacier tbody.gl-cpu-tile > tr.gl-core-pair .load {
-    font-size: 1.15rem;
+    font-size: 1.2rem;
 }
 
 html.glacier tbody.gl-cpu-tile > tr.gl-core-pair .usage-disk {
@@ -7964,11 +8013,11 @@ html.glacier .gl-fan-name {
     grid-area: name;
     overflow: hidden;
     color: var(--gl-muted);
-    font-size: 1.05rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0;
     text-overflow: ellipsis;
-    text-transform: uppercase;
+    text-transform: none;
     white-space: nowrap;
 }
 
@@ -8101,17 +8150,17 @@ html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) > div:n
     padding-top: 1rem;
     border-top: 1px solid var(--gl-border);
     color: var(--gl-muted);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
 }
 
 html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) legend {
     margin-bottom: 0.2rem;
     color: var(--gl-muted);
-    font-size: 1.05rem;
-    font-weight: 700;
+    font-size: 1.2rem;
+    font-weight: 600;
     font-variant: normal;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    letter-spacing: 0;
+    text-transform: none;
 }
 
 html.glacier table.dashboard .tile-system-memory-labels:has(~ .gl-rings) #dynamic i.fa-circle {
@@ -8142,11 +8191,11 @@ html.glacier .tile-system-memory-charts.gl-rings > span {
 html.glacier .tile-system-memory-charts.gl-rings > span > a.info {
     order: 1;
     color: var(--gl-muted);
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0;
     line-height: 1.3;
-    text-transform: uppercase;
+    text-transform: none;
     text-wrap: balance;
 }
 
@@ -8448,7 +8497,7 @@ html.glacier .gl-alloc-columns {
     padding-bottom: 0.8rem;
     border-bottom: 1px solid var(--gl-border);
     color: var(--gl-muted);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 600;
 }
 
@@ -8509,7 +8558,7 @@ html.glacier .gl-alloc-port {
     border-radius: var(--gl-r-full);
     color: var(--gl-text-2);
     font-family: var(--gl-mono);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-variant-numeric: tabular-nums;
     background: var(--gl-subtle);
 }
@@ -8599,13 +8648,13 @@ html.glacier button.gl-seg {
     align-items: center;
     gap: 0.7rem;
     min-width: 0;
-    min-height: 3rem;
+    min-height: 3.2rem;
     margin: 0;
     padding: 0 1.3rem;
     border: 0;
     border-radius: var(--gl-r-full);
     color: var(--gl-text-2);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 500;
     white-space: nowrap;
     background: transparent;
@@ -8620,9 +8669,10 @@ html.glacier button.gl-seg:hover:not(:disabled) {
 
 html.glacier button.gl-seg[aria-pressed="true"],
 html.glacier button.gl-seg[aria-pressed="true"]:hover {
-    color: var(--gl-ink-text);
+    color: var(--gl-active-text);
     font-weight: 600;
-    background: var(--gl-ink);
+    background: var(--gl-active-bg);
+    box-shadow: inset 0 0 0 1px var(--gl-active-ring);
 }
 
 html.glacier button.gl-seg:focus-visible,
@@ -8649,7 +8699,7 @@ html.glacier .gl-seg-count {
 
 html.glacier button.gl-seg[aria-pressed="true"] .gl-seg-count {
     color: inherit;
-    background: color-mix(in srgb, var(--gl-ink-text) 18%, transparent);
+    background: color-mix(in srgb, var(--gl-active-text) 18%, transparent);
 }
 
 html.glacier .gl-toolbar input.gl-search {
@@ -8756,7 +8806,7 @@ html.glacier .gl-row-actions .gl-icon-button {
     height: 3.2rem;
     border-color: transparent;
     color: var(--gl-muted);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     background: transparent;
 }
 
@@ -8783,7 +8833,7 @@ html.glacier a.gl-webui {
     height: 3.4rem;
     border-radius: 50%;
     color: var(--gl-accent-text);
-    font-size: 1.45rem;
+    font-size: 1.4rem;
     text-decoration: none;
     background: var(--gl-accent);
     box-shadow: 0 6px 14px -8px var(--gl-accent);
@@ -8925,7 +8975,7 @@ html.glacier #docker_containers.gl-compact tr.gl-ct > td {
 
 html.glacier #docker_containers.gl-compact th {
     color: var(--gl-muted);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 600;
     white-space: nowrap;
 }
@@ -8966,7 +9016,7 @@ html.glacier #docker_containers.gl-compact td.gl-c-load > :is([class^="cpu-"], [
     min-width: 0;
     overflow: hidden;
     color: var(--gl-text-2);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
     text-overflow: ellipsis;
@@ -9002,9 +9052,9 @@ html.glacier #docker_containers.gl-compact td.ct-name span.hand {
     display: grid;
     flex: none;
     place-items: center;
-    width: 4.2rem;
-    height: 4.2rem;
-    border-radius: 1.3rem;
+    width: 4.4rem;
+    height: 4.4rem;
+    border-radius: var(--gl-r-md);
     background: var(--gl-subtle-2);
     box-shadow: inset 0 0 0 1px var(--gl-border);
 }
@@ -9093,7 +9143,7 @@ html.glacier #docker_containers.gl-compact td.gl-c-version div.advanced {
 
 html.glacier #docker_containers.gl-compact td.gl-c-ports {
     color: var(--gl-muted);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-variant-numeric: tabular-nums;
 }
 
@@ -9188,6 +9238,14 @@ html.glacier #docker_containers.gl-compact tr.gl-ct.gl-has-update td.ct-name spa
 
     html.glacier .gl-toolbar > .gl-segment {
         align-self: flex-start;
+        flex-wrap: nowrap;
+        max-width: 100%;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    html.glacier .gl-toolbar > .gl-segment > button.gl-seg {
+        flex: none;
     }
 
     html.glacier .gl-toolbar input.gl-search {
@@ -9261,7 +9319,7 @@ html.glacier #docker_containers.gl-compact tr.gl-ct.gl-has-update td.ct-name spa
     html.glacier #docker_containers.gl-compact td.gl-c-load > :is([class^="cpu-"], [class^="mem-"])::before {
         display: block;
         color: var(--gl-muted);
-        font-size: 1.05rem;
+        font-size: 1.1rem;
         font-weight: 600;
         content: attr(data-gl-label);
     }
@@ -9295,7 +9353,7 @@ html.glacier button.gl-tool-button {
     border: 1px dashed var(--gl-input);
     border-radius: var(--gl-r-full);
     color: var(--gl-text-2);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 600;
     background: transparent;
 }
@@ -9401,7 +9459,7 @@ html.glacier .gl-group-icon {
     place-items: center;
     width: 3.4rem;
     height: 3.4rem;
-    border-radius: 1.1rem;
+    border-radius: var(--gl-r-sm);
     color: var(--gl-accent);
     font-size: 1.5rem;
     background: var(--gl-accent-soft);
@@ -9429,7 +9487,7 @@ html.glacier .gl-group-name {
 
 html.glacier .gl-group-count {
     color: var(--gl-muted);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 500;
     white-space: nowrap;
 }
@@ -9449,7 +9507,7 @@ html.glacier .gl-group-load > span {
     padding: 0.1rem 0.9rem;
     border-radius: var(--gl-r-full);
     color: var(--gl-text-2);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
@@ -9690,7 +9748,7 @@ html.glacier .gl-group-chip-text {
 html.glacier .gl-group-chip-name {
     overflow: hidden;
     color: var(--gl-text);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     font-weight: 700;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -9805,7 +9863,7 @@ html.glacier .gl-heading-text {
 html.glacier .gl-heading .gl-eyebrow {
     margin: 0 0 0.6rem;
     color: var(--gl-accent);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     line-height: 1.2;
@@ -9826,7 +9884,7 @@ html.glacier .gl-heading h1.gl-heading-title {
 html.glacier .gl-heading .gl-subtitle {
     margin: 0.6rem 0 0;
     color: var(--gl-muted);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     line-height: 1.45;
     text-align: left;
 }
@@ -9897,11 +9955,11 @@ html.glacier .tab-content > .gl-panel-search {
 html.glacier .gl-panel-search input.gl-panel-search-input {
     box-sizing: border-box;
     width: 100%;
-    min-height: 4.4rem;
+    min-height: 3.6rem;
     margin: 0;
     padding-right: 9rem;
     border-radius: var(--gl-r-full);
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     background-color: var(--gl-surface);
     box-shadow: var(--gl-shadow-sm);
 }
@@ -10098,12 +10156,12 @@ html.glacier button:is(.gl-users-add, .gl-user-add) {
 
 html.glacier button.gl-users-add {
     flex: none;
-    min-height: 4.4rem;
-    padding: 0 2rem;
+    min-height: 3.6rem;
+    padding: 0 1.8rem;
     border: 1px solid var(--gl-accent);
     border-radius: var(--gl-r-full);
     color: var(--gl-accent-text);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     font-weight: 600;
     white-space: nowrap;
     background: var(--gl-accent);
@@ -10243,7 +10301,7 @@ html.glacier .gl-user-name {
     max-width: 100%;
     overflow: hidden;
     color: var(--gl-text);
-    font-size: 1.55rem;
+    font-size: 1.6rem;
     font-weight: 700;
     line-height: 1.2;
     text-overflow: ellipsis;
@@ -10253,7 +10311,7 @@ html.glacier .gl-user-name {
 html.glacier .gl-user-desc {
     overflow: hidden;
     color: var(--gl-muted);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     line-height: 1.4;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -10290,7 +10348,7 @@ html.glacier #displaybox .Panels.gl-users > button.gl-user-add {
     border: 1.5px dashed var(--gl-input);
     border-radius: var(--gl-r-lg);
     color: var(--gl-muted);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     font-weight: 600;
     background: transparent;
     box-shadow: none;
@@ -10570,6 +10628,15 @@ html.glacier {
     --gl-hero-bg: #0f172a;
     --gl-placeholder: #64748b;
     --gl-active-icon: #5eead4;
+    /* "Selected" state shared by the menu, tabs, segments and the Apps categories */
+    --gl-active-bg: var(--gl-ink);
+    --gl-active-text: var(--gl-ink-text);
+    --gl-active-ring: transparent;
+    --gl-overlay: rgba(15, 23, 42, 0.45);
+    /* Edge fades for rows that scroll sideways (phones) */
+    --gl-fade-r: linear-gradient(90deg, #000 calc(100% - 3.2rem), transparent);
+    --gl-fade-l: linear-gradient(90deg, transparent, #000 3.2rem);
+    --gl-fade-x: linear-gradient(90deg, transparent, #000 3.2rem, #000 calc(100% - 3.2rem), transparent);
 
     /* Accent: GlacierTheme.page overrides these three from the settings page. */
     --gl-accent: #0f766e;
@@ -10586,7 +10653,9 @@ html.glacier {
     --gl-warn: #ea580c;
     --gl-warn-bg: #ffedd5;
     --gl-warn-text: #9a3412;
+    --gl-warn-solid: #c2410c;
     --gl-danger: #dc2626;
+    --gl-danger-solid: #dc2626;
     --gl-danger-bg: #fee2e2;
     --gl-danger-text: #b91c1c;
     --gl-info-bg: #e0f2fe;
@@ -10776,7 +10845,11 @@ html.glacier.gl-dark {
     --gl-ink-text: #0b1120;
     --gl-hero-bg: #182540;
     --gl-placeholder: #7b8aa1;
-    --gl-active-icon: #0f766e;
+    --gl-active-icon: var(--gl-accent);
+    --gl-active-bg: #26344d;
+    --gl-active-text: var(--gl-text);
+    --gl-active-ring: rgba(255, 255, 255, 0.08);
+    --gl-overlay: rgba(2, 6, 15, 0.68);
 
     --gl-accent: #2dd4bf;
     --gl-accent-text: #042f2e;
@@ -10792,7 +10865,9 @@ html.glacier.gl-dark {
     --gl-warn: #f97316;
     --gl-warn-bg: rgba(249, 115, 22, 0.16);
     --gl-warn-text: #fdba74;
+    --gl-warn-solid: #c2410c;
     --gl-danger: #f87171;
+    --gl-danger-solid: #dc2626;
     --gl-danger-bg: rgba(248, 113, 113, 0.14);
     --gl-danger-text: #fca5a5;
     --gl-info-bg: rgba(56, 189, 248, 0.14);
@@ -10881,19 +10956,21 @@ html.glacier pre:where(:not(.unapi *)) {
     border: 1px solid var(--gl-border);
     border-radius: var(--gl-r-md);
     background: var(--gl-subtle);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
 }
 
 /* Status colours used as text across the webGUI */
 html.glacier :is(.green, .green-text, .passed) { color: var(--gl-success-text); }
 html.glacier :is(.orange, .orange-text, .warning) { color: var(--gl-warn-text); }
+/* The container editor marks every field description .orange-text: that is help, not a warning. */
+html.glacier :is(#configLocation, #configLocationAdvanced) .boxed > .orange-text { color: var(--gl-muted); }
 html.glacier :is(.red, .red-text, .failed) { color: var(--gl-danger-text); }
 html.glacier :is(.blue, .blue-text) { color: var(--gl-info-text); }
 html.glacier .grey-text { color: var(--gl-muted); }
 html.glacier .green-orb { color: var(--gl-success); }
 html.glacier .yellow-orb { color: #f59e0b; }
 html.glacier .red-orb { color: var(--gl-danger); }
-html.glacier .grey-orb { color: #94a3b8; }
+html.glacier .grey-orb { color: var(--gl-muted); }
 html.glacier .blue-orb { color: #0ea5e9; }
 
 /* ==========================================================================
@@ -11010,7 +11087,7 @@ html.glacier #UserProfile > div:last-of-type > div:first-child::before {
     place-items: center;
     width: 4rem;
     height: 4rem;
-    border-radius: 1.4rem;
+    border-radius: var(--gl-r-md);
     color: var(--gl-ink-text);
     font: normal 1.6rem/1 FontAwesome;
     background: var(--gl-ink);
@@ -11148,9 +11225,10 @@ html.glacier .nav-tile:not(.right) .nav-item:hover a {
 }
 
 html.glacier .nav-tile:not(.right) .nav-item.active a {
-    color: var(--gl-ink-text);
+    color: var(--gl-active-text);
     font-weight: 600;
-    background: var(--gl-ink);
+    background: var(--gl-active-bg);
+    box-shadow: inset 0 0 0 1px var(--gl-active-ring);
 }
 
 /* Quick actions (lock, search, logout, terminal, feedback, info, log, help…) */
@@ -11458,9 +11536,10 @@ html.glacier .tabs button[role="tab"]:hover {
 }
 
 html.glacier .tabs button[role="tab"][aria-selected="true"] {
-    color: var(--gl-ink-text);
+    color: var(--gl-active-text);
     font-weight: 600;
-    background: var(--gl-ink);
+    background: var(--gl-active-bg);
+    box-shadow: inset 0 0 0 1px var(--gl-active-ring);
 }
 
 html.glacier .tabs button[role="tab"] :is(i, img) {
@@ -11526,7 +11605,7 @@ html.glacier div.title i.title {
     width: 3.4rem;
     height: 3.4rem;
     margin: 0;
-    border-radius: 1.1rem;
+    border-radius: var(--gl-r-sm);
     color: var(--gl-accent);
     font-size: 1.6rem;
     background: var(--gl-accent-soft);
@@ -11579,7 +11658,7 @@ html.glacier .Panel a > span {
     place-items: center;
     width: 4.4rem;
     height: 4.4rem;
-    border-radius: 1.4rem;
+    border-radius: var(--gl-r-md);
     color: var(--gl-accent);
     background: var(--gl-accent-soft);
 }
@@ -11596,7 +11675,7 @@ html.glacier .Panel .PanelImg {
 
 html.glacier .Panel .PanelText {
     font-weight: 600;
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     line-height: 1.3;
 }
 
@@ -11626,7 +11705,7 @@ html.glacier select:where(:not(.unapi *)) {
     border-radius: var(--gl-r-sm);
     color: var(--gl-text);
     font-family: var(--gl-font);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     background-color: var(--gl-surface);
     box-shadow: none;
     box-sizing: border-box;
@@ -11693,14 +11772,44 @@ html.glacier label.checkbox input:checked ~ .checkmark {
     box-shadow: none;
 }
 
+/* A page action placed in the tab bar (Plugins: "Check for updates") sits apart, at the right. */
+@media (min-width: 768px) {
+    html.glacier .tabs-container > input[type="button"] {
+        align-self: center;
+        margin: 0 0 0 auto;
+    }
+}
+
 /* On/off switches (jquery.switchButton) as pill toggles. The plugin positions the knob with
    inline styles sized for its own track, so the knob is placed here by state. */
 html.glacier .switch-button-label {
+    display: inline-block;
+    float: none;
+    text-transform: none;
+    margin: 0 0.8rem;
     color: var(--gl-muted);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 600;
-    letter-spacing: 0.04em;
+    letter-spacing: 0;
+    vertical-align: middle;
 }
+
+/* One layout everywhere: [label] (switch) [label] on one line, centred. */
+html.glacier .switch-button-background {
+    display: inline-block;
+    float: none !important;
+    vertical-align: middle;
+}
+
+html.glacier dd:has(> .switch-button-background) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+html.glacier dd > .switch-button-label:first-child { margin-left: 0; }
+
+html.glacier td:has(> .switch-button-background) { white-space: nowrap; }
 
 html.glacier .switch-button-label.on {
     color: var(--gl-accent);
@@ -11888,7 +11997,7 @@ html.glacier .usage-disk > span:last-child {
     line-height: 1.8rem;
     padding-right: 0.8rem;
     color: var(--gl-text);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 700;
 }
 
@@ -11911,8 +12020,8 @@ html.glacier .usage-bar {
 }
 
 html.glacier :is(.greenbar, .usage-disk > span.greenbar) { background: var(--gl-accent-mid) !important; }
-html.glacier :is(.orangebar, .usage-disk > span.orangebar) { background: #fdba74 !important; }
-html.glacier :is(.redbar, .usage-disk > span.redbar) { background: #fca5a5 !important; }
+html.glacier :is(.orangebar, .usage-disk > span.orangebar) { background: color-mix(in srgb, var(--gl-warn) 65%, var(--gl-surface)) !important; }
+html.glacier :is(.redbar, .usage-disk > span.redbar) { background: color-mix(in srgb, var(--gl-danger) 65%, var(--gl-surface)) !important; }
 html.glacier .graybar { background: var(--gl-input) !important; }
 
 /* ==========================================================================
@@ -11984,7 +12093,7 @@ html.glacier table.dashboard tr:first-child > td > i.f32 {
     width: 4.4rem;
     height: 4.4rem;
     margin-right: 0.4rem;
-    border-radius: 1.4rem;
+    border-radius: var(--gl-r-md);
     color: var(--gl-accent);
     font-size: 2.2rem;
     background: var(--gl-accent-soft);
@@ -12000,7 +12109,7 @@ html.glacier table.dashboard h3.tile-header-main {
 }
 
 html.glacier table.dashboard td div.section {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 500;
     color: var(--gl-muted);
 }
@@ -12032,12 +12141,13 @@ html.glacier table.dashboard .tile-ctrl > span.fa-power-off:hover {
     background: var(--gl-danger-bg);
 }
 
+html.glacier table.dashboard tr.header,
 html.glacier table.dashboard span.header {
     color: var(--gl-muted);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    letter-spacing: 0;
+    text-transform: none;
 }
 
 html.glacier #current_time {
@@ -12167,7 +12277,7 @@ html.glacier .gl-hero-actions a:hover {
 html.glacier .gl-hero-actions a.gl-primary {
     border-color: var(--gl-accent-bright);
     color: #0f172a;
-    font-weight: 700;
+    font-weight: 600;
     background: var(--gl-accent-bright);
 }
 
@@ -12188,7 +12298,7 @@ html.glacier .gl-hero-facts > div {
     flex-direction: column;
     gap: 0.4rem;
     padding: 1.4rem;
-    border-radius: 1.6rem;
+    border-radius: var(--gl-r-md);
     background: rgba(255, 255, 255, 0.06);
 }
 
@@ -12222,7 +12332,7 @@ html.glacier #tile1 .leftside b > em {
     padding: 0.1rem 0.9rem;
     border-radius: var(--gl-r-full);
     color: var(--gl-text-2);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-style: normal;
     font-weight: 600;
     line-height: 1.7;
@@ -12328,7 +12438,7 @@ html.glacier table:not(.dashboard) td > br + span.red-text {
     padding: 0.1rem 0.9rem;
     border-radius: var(--gl-r-full);
     color: var(--gl-warn-text);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 700;
     background: var(--gl-warn-bg);
 }
@@ -12340,15 +12450,15 @@ html.glacier table:not(.dashboard) td > br + span.red-text::before {
 }
 
 html.glacier input[type="button"].update:where(:not(.unapi *)):not(:disabled) {
-    border-color: var(--gl-warn);
+    border-color: var(--gl-warn-solid);
     color: #ffffff;
-    background: var(--gl-warn);
+    background: var(--gl-warn-solid);
 }
 
 html.glacier input[type="button"].update:where(:not(.unapi *)):hover:not(:disabled) {
-    border-color: color-mix(in oklab, var(--gl-warn), black 15%);
+    border-color: color-mix(in oklab, var(--gl-warn-solid), black 15%);
     color: #ffffff;
-    background: color-mix(in oklab, var(--gl-warn), black 15%);
+    background: color-mix(in oklab, var(--gl-warn-solid), black 15%);
 }
 
 /* Docker page: "apply update" / "force update" links as small action pills */
@@ -12361,7 +12471,7 @@ html.glacier td.updatecolumn a.exec > span {
     border: 1px solid var(--gl-input);
     border-radius: var(--gl-r-full);
     color: var(--gl-text-2);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 600;
     line-height: 1.7;
     background: var(--gl-surface);
@@ -12376,14 +12486,14 @@ html.glacier td.updatecolumn a.exec:hover > span {
 /* "apply update" (an update is ready) sits straight in the cell; "force update" is in the
    advanced-view block. The first one gets the warm colour. */
 html.glacier td.updatecolumn > a.exec > span {
-    border-color: var(--gl-warn);
+    border-color: var(--gl-warn-solid);
     color: #ffffff;
-    background: var(--gl-warn);
+    background: var(--gl-warn-solid);
 }
 
 html.glacier td.updatecolumn > a.exec:hover > span {
     color: #ffffff;
-    background: color-mix(in oklab, var(--gl-warn), black 15%);
+    background: color-mix(in oklab, var(--gl-warn-solid), black 15%);
 }
 
 html.glacier .gl-hero-facts dd.is-warn {
@@ -12466,7 +12576,7 @@ html.glacier #header .gl-clock-time {
 
 html.glacier #header .gl-clock-date {
     color: #cbd5e1;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 500;
     white-space: nowrap;
 }
@@ -12557,11 +12667,11 @@ html.glacier #plugin_table tbody td:first-child {
 html.glacier #plugin_table tbody td:first-child :is(img.list, i.list) {
     display: grid;
     place-items: center;
-    width: 4.8rem;
-    height: 4.8rem;
+    width: 4.4rem;
+    height: 4.4rem;
     margin: 0;
     padding: 0.9rem;
-    border-radius: 1.4rem;
+    border-radius: var(--gl-r-md);
     color: var(--gl-accent);
     font-size: 2.2rem;
     line-height: 1;
@@ -12589,7 +12699,7 @@ html.glacier #plugin_table .desc_readmore :is(p, ul, ol) {
 
 html.glacier #plugin_table .desc_readmore > p:first-child {
     color: var(--gl-text);
-    font-size: 1.45rem;
+    font-size: 1.4rem;
 }
 
 html.glacier #plugin_table .desc_readmore > p:first-child strong {
@@ -12598,6 +12708,7 @@ html.glacier #plugin_table .desc_readmore > p:first-child strong {
 
 html.glacier #plugin_table .desc_readmore + a,
 html.glacier #plugin_table td:nth-child(2) > a[target="_blank"] {
+    white-space: nowrap;
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
@@ -12667,7 +12778,7 @@ html.glacier #docker_containers td.ct-name .appname a:hover {
 
 /* Ports and volume mappings fold at 32px (two lines): lines of 1.6rem fill it exactly. */
 html.glacier .docker_readmore {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     line-height: 1.6rem;
 }
 
@@ -12676,7 +12787,7 @@ html.glacier #docker_containers td {
 }
 
 html.glacier #docker_containers td .switch-button-label {
-    font-size: 1.05rem;
+    font-size: 1.1rem;
 }
 
 /* ==========================================================================
@@ -12686,6 +12797,24 @@ html.glacier #docker_containers td .switch-button-label {
 html.glacier .menuItems:not(.menuShowing) {
     flex: none;
     width: 21rem;
+}
+
+/* Phones: the category menu stacks above the cards instead of eating the width. */
+@media (max-width: 767px) {
+    html.glacier :has(> .menuItems:not(.menuShowing)) {
+        flex-wrap: wrap;
+    }
+
+    html.glacier .menuItems:not(.menuShowing) {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+
+    html.glacier .ca_holder {
+        box-sizing: border-box;
+        width: 100% !important;
+        max-width: 100%;
+    }
 }
 
 html.glacier .menuItems {
@@ -12702,7 +12831,7 @@ html.glacier .menuItems ul.caMenu {
     gap: 0.2rem;
     margin: 0 0 0.4rem;
     padding: 0;
-    font-size: 1.35rem;
+    font-size: 1.3rem;
 }
 
 html.glacier .menuItems .caMenuItem {
@@ -12726,9 +12855,10 @@ html.glacier .menuItems .caMenuItem.caMenuEnabled:hover {
 
 html.glacier .menuItems .caMenuItem.selectedMenu,
 html.glacier .menuItems .caMenuItem.selectedMenu:hover {
-    color: var(--gl-ink-text) !important;
+    color: var(--gl-active-text) !important;
     font-weight: 600;
-    background: var(--gl-ink) !important;
+    background: var(--gl-active-bg) !important;
+    box-shadow: inset 0 0 0 1px var(--gl-active-ring);
 }
 
 html.glacier .menuItems .caMenuItem.caMenuDisabled {
@@ -12761,14 +12891,14 @@ html.glacier .menuItems li.subCategory {
 
 html.glacier .menuItems li.subCategory > ul.caMenuItem {
     padding: 0.6rem 1rem !important;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
 }
 
 /* "VERSION" and the version number at the bottom of the menu */
 html.glacier .menuItems ul.caMenu > li:not([class]):not(:has(hr)) {
     padding: 0 1.2rem;
     color: var(--gl-muted);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     list-style: none;
 }
 
@@ -12800,9 +12930,32 @@ html.glacier :is(.ca_homeTemplatesHeader, .ca_applicationName) {
     letter-spacing: -0.01em;
 }
 
+/* Card buttons: the theme's outline pill, like every other secondary button. */
 html.glacier .caButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 3.2rem;
+    padding: 0 1.4rem;
+    border: 1px solid var(--gl-input);
     border-radius: var(--gl-r-full);
+    color: var(--gl-text);
+    font-size: 1.2rem;
     font-weight: 600;
+    background: var(--gl-surface);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+}
+
+html.glacier .caButton:hover {
+    border-color: var(--gl-accent);
+    color: var(--gl-accent);
+}
+
+/* Section titles get the size of every other card title. */
+html.glacier .ca_homeTemplatesHeader {
+    font-size: 1.6rem !important;
 }
 
 /* The multi-install bar CA fixes to the bottom sits above the footer. */
@@ -12828,7 +12981,7 @@ html.glacier p.gl-version {
     padding: 0.6rem 1.4rem;
     border-radius: var(--gl-r-full);
     color: var(--gl-muted);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     background: var(--gl-subtle-2);
 }
 
@@ -12949,12 +13102,13 @@ html.glacier :is(td, th) span:is(.advanced, .basic)[style*="display: block"] {
    Dialogs, menus, tooltips
    ========================================================================== */
 html.glacier .sweet-overlay {
-    background-color: rgba(15, 23, 42, 0.4) !important;
+    background-color: var(--gl-overlay) !important;
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
 }
 
 html.glacier .sweet-alert {
+    border: 1px solid var(--gl-border);
     border-radius: var(--gl-r-xl);
     font-family: var(--gl-font);
     background-color: var(--gl-surface);
@@ -12969,15 +13123,16 @@ html.glacier .sweet-alert h2 {
 
 html.glacier .sweet-alert p {
     color: var(--gl-text-2);
+    text-align: center;
 }
 
 html.glacier .sweet-alert button {
-    min-height: 4rem;
+    min-height: 3.6rem;
     margin: 0.4rem;
-    padding: 0 2rem;
+    padding: 0 1.8rem;
     border-radius: var(--gl-r-full) !important;
     font-family: var(--gl-font);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     font-weight: 600;
     text-transform: none;
     letter-spacing: 0;
@@ -13058,7 +13213,7 @@ html.glacier div.spinner:has(.unraid_mark)::before {
 }
 
 html.glacier div.spinner.fixed {
-    background: rgba(15, 23, 42, 0.4);
+    background: var(--gl-overlay);
     animation: gl-spinner-in 0.2s ease 0.15s both;
 }
 
@@ -13142,7 +13297,7 @@ html.glacier .unapi [role="dialog"].fixed.inset-y-0.right-0 {
 }
 
 html.glacier .unapi .fixed.inset-0.z-50:not([role]) {
-    background: rgba(15, 23, 42, 0.45);
+    background: var(--gl-overlay);
     backdrop-filter: blur(3px);
 }
 
@@ -13170,12 +13325,12 @@ html.glacier .unapi [role="dialog"] [role="tablist"] button {
 html.glacier .unapi [role="dialog"] [role="tab"][data-state="active"],
 html.glacier .unapi [role="dialog"] [role="tablist"] [data-state="active"],
 html.glacier .unapi [role="dialog"] [role="tablist"] [data-state="active"] button {
-    background: var(--gl-surface);
-    color: var(--gl-ink);
-    box-shadow: var(--gl-shadow-sm);
+    background: var(--gl-active-bg);
+    color: var(--gl-active-text);
+    box-shadow: inset 0 0 0 1px var(--gl-active-ring);
 }
 
-/* Importance filters: pills, the selected one in the accent tint. */
+/* Importance filters: pills, the selected one like every other selected control. */
 html.glacier .unapi [role="dialog"] [role="group"] {
     border-color: var(--gl-border);
     border-radius: var(--gl-r-full);
@@ -13187,14 +13342,12 @@ html.glacier .unapi [role="dialog"] [role="group"] button {
     white-space: nowrap;
 }
 
-html.glacier .unapi [role="dialog"] [role="group"] button[aria-pressed="true"] {
-    border-color: transparent;
-    background: var(--gl-accent-soft);
-    color: var(--gl-accent-bright, var(--gl-accent));
-}
-
+html.glacier .unapi [role="dialog"] [role="group"] button[aria-pressed="true"],
 html.glacier:not(.gl-dark) .unapi [role="dialog"] [role="group"] button[aria-pressed="true"] {
-    color: var(--gl-accent);
+    border-color: transparent;
+    background: var(--gl-active-bg);
+    color: var(--gl-active-text);
+    box-shadow: inset 0 0 0 1px var(--gl-active-ring);
 }
 
 html.glacier .unapi [role="dialog"] button:focus-visible,
@@ -13246,7 +13399,7 @@ html.glacier .ui-dialog .ui-dialog-titlebar {
 }
 
 html.glacier .ui-widget-overlay {
-    background: rgba(15, 23, 42, 0.4);
+    background: var(--gl-overlay);
     opacity: 1;
 }
 
@@ -13298,9 +13451,56 @@ html.glacier .clipboard-tooltip {
 
     html.glacier .nav-tile.right {
         flex: 1 1 100%;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         justify-content: flex-start;
         margin-left: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    html.glacier #menu .nav-tile.right .usage-bar {
+        flex: 1 0 8rem;
+    }
+
+    /* Rows that scroll sideways fade out at the right edge, so the cut reads as "more". */
+    html.glacier :is(.nav-tile, .tabs-container, .gl-toolbar > .gl-segment) {
+        -webkit-mask-image: var(--gl-fade-r);
+        mask-image: var(--gl-fade-r);
+    }
+
+    html.glacier :is(.nav-tile, .tabs-container, .gl-toolbar > .gl-segment).gl-scrolled {
+        -webkit-mask-image: var(--gl-fade-x);
+        mask-image: var(--gl-fade-x);
+    }
+
+    html.glacier :is(.nav-tile, .tabs-container, .gl-toolbar > .gl-segment).gl-scroll-end {
+        -webkit-mask-image: var(--gl-fade-l);
+        mask-image: var(--gl-fade-l);
+    }
+
+    html.glacier :is(.nav-tile, .tabs-container, .gl-toolbar > .gl-segment).gl-no-scroll {
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
+
+    /* Container editor: the input on its own line, its two buttons together below. */
+    html.glacier .buttons-no-margin > :is(input:is([type="text"], [type="number"], :not([type])), .gl-port-field) {
+        flex: 1 1 100%;
+    }
+
+    html.glacier .buttons-no-margin > .gl-port-field > input {
+        flex: 1 1 auto;
+        width: 100%;
+    }
+
+    html.glacier .tabs-container {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    html.glacier .tabs-container :is(button[role="tab"], [role="tab"]) {
+        flex: none;
     }
 
     html.glacier #header {
@@ -13491,7 +13691,7 @@ html.glacier-login :is(#login, body > section) h2:empty {
 html.glacier-login :is(#login, body > section) header p {
     margin: 1rem 0 0;
     color: var(--gl-text-2);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
 }
 
 /* The server case picture: no room for it beside the form in the narrower card. */
@@ -13601,7 +13801,7 @@ html.glacier-login #login .error {
     padding: 1.2rem 1.4rem;
     border-radius: 1.4rem;
     color: var(--gl-danger-text);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     background: var(--gl-danger-bg);
 }
 
@@ -13659,7 +13859,7 @@ done
 find /usr/local/emhttp/plugins/Glacier-Theme -type d -exec chmod 755 {} +
 find /usr/local/emhttp/plugins/Glacier-Theme -type f -exec chmod 644 {} +
 echo ""
-echo "Glacier-Theme 2026.10.29.0945 is installed."
+echo "Glacier-Theme 2026.11.04.2032 is installed."
 echo "Settings: Settings > User Utilities > Glacier Theme"
 echo "The theme shows while Settings > Display Settings > Dynamix color theme is White."
 echo ""

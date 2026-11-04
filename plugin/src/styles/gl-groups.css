@@ -19,7 +19,7 @@ html.glacier button.gl-tool-button {
     border: 1px dashed var(--gl-input);
     border-radius: var(--gl-r-full);
     color: var(--gl-text-2);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 600;
     background: transparent;
 }
@@ -125,7 +125,7 @@ html.glacier .gl-group-icon {
     place-items: center;
     width: 3.4rem;
     height: 3.4rem;
-    border-radius: 1.1rem;
+    border-radius: var(--gl-r-sm);
     color: var(--gl-accent);
     font-size: 1.5rem;
     background: var(--gl-accent-soft);
@@ -153,7 +153,7 @@ html.glacier .gl-group-name {
 
 html.glacier .gl-group-count {
     color: var(--gl-muted);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 500;
     white-space: nowrap;
 }
@@ -173,7 +173,7 @@ html.glacier .gl-group-load > span {
     padding: 0.1rem 0.9rem;
     border-radius: var(--gl-r-full);
     color: var(--gl-text-2);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
@@ -414,7 +414,7 @@ html.glacier .gl-group-chip-text {
 html.glacier .gl-group-chip-name {
     overflow: hidden;
     color: var(--gl-text);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     font-weight: 700;
     text-overflow: ellipsis;
     white-space: nowrap;
