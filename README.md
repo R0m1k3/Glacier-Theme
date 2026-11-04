@@ -58,7 +58,7 @@ Dans **Settings → User Utilities → Glacier Theme** :
 - **Panneau des notifications** : une carte flottante arrondie, onglets Non lu/Archivé en contrôle segmenté, filtres en pastilles et chaque notification sur sa carte, dans la couleur d'accent au lieu de l'orange d'Unraid.
 - **Dialogues, menus, infobulles, avis et pied de page** : harmonisés, avec un anneau de chargement aux couleurs du thème à la place des trois points verts et du logo animé (en plein écran, sur une carte au milieu de la page), avec l'état de l'array en pastille dans le pied de page.
 - **Téléphone** : le menu défile horizontalement, les actions passent à la ligne et l'en-tête se simplifie. Les listes Plugins, VMs (avec les disques, interfaces et snapshots d'une VM ouverte) et Docker « Toutes les colonnes » passent en cartes, chaque valeur sous le titre de sa colonne.
-- **Applications (CA)** : le drapeau d'état des cartes (Installé, Bêta, Obsolète…) devient une pastille aux couleurs du thème.
+- **Applications (CA)** : les cartes sont remises en page (icône à côté du nom, boutons Info / Support / Installer lisibles, trois lignes de description, badge « spotlight » réduit) et le drapeau d'état (Installé, Mis à jour, Obsolète…) devient une pastille aux couleurs du thème.
 
 ## Améliorations des pages
 

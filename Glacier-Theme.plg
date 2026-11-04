@@ -3,7 +3,7 @@
 
 <PLUGIN name="Glacier-Theme"
         author="R0m1k3"
-        version="2026.11.04.2335"
+        version="2026.11.04.2357"
         launch="Settings/GlacierThemeSettings"
         pluginURL="https://raw.githubusercontent.com/R0m1k3/Glacier-Theme/main/Glacier-Theme.plg"
         support="https://github.com/R0m1k3/Glacier-Theme/issues"
@@ -11,7 +11,7 @@
         min="7.2.0">
 
 <CHANGES>
-###2026.11.04.2335
+###2026.11.04.2357
 - Dashboard, System tile: laid out by the tile's own width. The memory legend and the usable and maximum sizes share one panel (the sizes no longer overflow a narrow box), beside the rings when the tile is wide and above them otherwise; the four rings go in one row or two by two, never three and one, each with its label under it so they line up.
 
 ###2026.10.29.0937
@@ -100,7 +100,7 @@ Title="Glacier Theme"
 // so this is where the theme attaches its files. Link="nav-user" keeps it from adding a button.
 $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierCustomDir = '/boot/config/plugins/Glacier-Theme';
-$glacierVersion = '2026.11.04.2335';
+$glacierVersion = '2026.11.04.2357';
 
 // Emergency switch: any page opened with ?glacier=off stops the theme in this browser
 // (remembered in a cookie) until a page is opened with ?glacier=on.
@@ -233,7 +233,7 @@ $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierAccent = preg_match('/^#[0-9a-fA-F]{6}$/', $glacier['accent'] ?? '') ? $glacier['accent'] : '#0f766e';
 $glacierOnTopTheme = in_array($display['theme'] ?? '', ['white', 'black'], true);
 ?>
-<p class="gl-version">_(Version)_ <strong>2026.11.04.2335</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
+<p class="gl-version">_(Version)_ <strong>2026.11.04.2357</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
 <?php if (!$glacierOnTopTheme): ?>
 <p class="notice">_(Glacier is drawn over the Dynamix White and Black themes. Choose one of them in Settings > Display Settings to see it.)_</p>
 <?php endif; ?>
@@ -12402,6 +12402,33 @@ html.glacier .usage-disk:is(.sys, .mm) > span {
     height: 100%;
 }
 
+/* A value followed by its bar (span.load, then div.usage-disk.sys pulled up beside it) in one of
+   Unraid's column cells, as plugin tiles write them (GPU Statistics...): side by side and centred.
+   Unraid's negative margin, with the theme's thinner bar, left the cell shorter than the value,
+   whose top its overflow:hidden cut off. Glacier's CPU tile has its own grid. */
+html.glacier table.dashboard tbody:not(.gl-cpu-tile) span:is(.w18, .w26, .w36, .w44, .w72):has(> .load + .usage-disk.sys) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    box-sizing: border-box;
+    padding-right: 2rem;
+    overflow: visible;
+}
+
+html.glacier table.dashboard tbody:not(.gl-cpu-tile) span:is(.w18, .w26, .w36, .w44, .w72) > .load:has(+ .usage-disk.sys) {
+    flex: none;
+    width: auto;
+    min-width: 3.8rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+html.glacier table.dashboard tbody:not(.gl-cpu-tile) span:is(.w18, .w26, .w36, .w44, .w72) > .load + .usage-disk.sys {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0 !important;
+}
+
 html.glacier .usage-bar {
     border-radius: var(--gl-r-full);
     overflow: hidden;
@@ -13207,10 +13234,13 @@ html.glacier .menuItems:not(.menuShowing) {
         width: 100%;
     }
 
-    html.glacier .ca_holder {
+    html.glacier .ca_holder,
+    html.glacier .ca_holder.spotlightHome {
         box-sizing: border-box;
         width: 100% !important;
-        max-width: 100%;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        margin-right: 0 !important; /* a flag CA puts after the card stays on the card's line */
     }
 }
 
@@ -13317,50 +13347,299 @@ html.glacier .dockerHubHolder:hover {
     box-shadow: var(--gl-shadow-md);
 }
 
-html.glacier .ca_holder > :is(.cardFlagStack, .installedCardBackground, .betaCardBackground, .warningCardBackground, .greenCardBackground, .officialCardBackground, .LTOfficialCardBackground, .spotlightCardBackground) {
-    z-index: 2;
+html.glacier :is(.ca_homeTemplatesHeader, .ca_applicationName) {
+    color: var(--gl-text);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   App cards (CA's Narrow skin). CA places the buttons, the name and the description with
+   fixed heights and position:relative offsets that only line up with its own sizes; the card
+   is laid out as a column instead: icon beside name, author and category, then the buttons,
+   then three lines of description. Works with the buttons carrying caButton (earlier CA) or not.
+   ========================================================================== */
+html.glacier :is(.ca_holder, .dockerHubHolder) {
+    position: relative;
+    display: flex !important;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 1.6rem !important;
+}
+
+html.glacier :is(.ca_holder, .dockerHubHolder) > :is(.ca_backgroundClickable, .dockerCardBackground):not(.cardDescription, .cardDescriptionRepo) {
+    order: 1;
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    height: auto !important;
+    min-height: 5.6rem;
+    padding-left: 6.8rem;
+}
+
+/* Room for the status flag or the spotlight badge in the top-right corner */
+html.glacier :is(.ca_holder, .dockerHubHolder):is(:has(> [class$="CardBackground"]:not(.favCardBackground, .dockerCardBackground)), :has(+ [class$="CardBackground"]:not(.favCardBackground, .dockerCardBackground))) > .ca_backgroundClickable:not(.cardDescription, .cardDescriptionRepo) {
+    padding-right: 8.4rem;
+}
+
+html.glacier .ca_holder:has(> .homespotlightIconArea) > .ca_backgroundClickable:not(.cardDescription, .cardDescriptionRepo) {
+    padding-right: 11rem;
+}
+
+html.glacier :is(.ca_holder, .dockerHubHolder) .ca_iconArea {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5.6rem !important;
+    height: 5.6rem !important;
+    margin: 0 !important;
+}
+
+html.glacier :is(.ca_holder, .dockerHubHolder) .ca_iconArea > img {
+    display: block;
+    box-sizing: border-box;
+    width: 5.6rem !important;
+    height: 5.6rem !important;
+    border-radius: var(--gl-r-md);
+    object-fit: contain;
+}
+
+html.glacier :is(.ca_holder, .dockerHubHolder) .ca_iconArea > i.displayIcon {
+    display: grid;
+    place-items: center;
+    width: 5.6rem;
+    height: 5.6rem;
+    padding: 0;
+    border-radius: var(--gl-r-md);
+    color: var(--gl-accent);
+    font-size: 2.8rem;
+    background: var(--gl-accent-soft);
+}
+
+html.glacier :is(.ca_holder, .dockerHubHolder) .ca_applicationName {
+    width: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0.2rem 0 0 !important;
+    overflow: hidden;
+    font-size: 1.6rem !important;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+html.glacier :is(.ca_holder, .dockerHubHolder) .ca_applicationName .cardWarning {
+    color: var(--gl-warn) !important;
+    font-size: 1.2rem;
+}
+
+html.glacier :is(.ca_holder, .dockerHubHolder) :is(.ca_author, .cardCategory, .ca_categories) {
+    margin: 0 !important;
+    overflow: hidden;
+    color: var(--gl-muted);
+    font-size: 1.1rem !important;
+    font-style: normal;
+    line-height: 1.5;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* The buttons, in a row under the name; the app type icon at the end */
+html.glacier :is(.ca_holder, .dockerHubHolder) > .ca_bottomLine {
+    order: 2;
+    position: static !important;
+    top: auto !important;
+    display: flex !important;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 1.2rem 0 0;
+}
+
+html.glacier .ca_bottomLine > :is(.appDocker, .appPlugin, .appLanguage, .appDriver, .appRepository) {
+    float: none;
+    order: 9;
+    margin: 0 0 0 auto;
+    color: var(--gl-muted);
+    font-size: 1.6rem;
+    opacity: 1;
+}
+
+html.glacier .ca_bottomLine > :is(.favCardBackground, .pinnedCard, .ca_multiselect) {
+    float: none;
+    order: 10;
+    margin: 0;
+    padding: 0;
+    font-size: 1.4rem;
+}
+
+html.glacier .ca_bottomLine > .favCardBackground {
+    color: var(--gl-danger);
+}
+
+html.glacier .ca_bottomLine > .pinnedCard {
+    color: var(--gl-accent);
+}
+
+/* Card buttons: the theme's outline pill, like every other secondary button; Install (or
+   Update) in the accent. CA forces their text colour with !important, so the theme does too. */
+html.glacier .caButton,
+html.glacier :is(.ca_bottomLine, .sidenav) :is(.infoButton, .infoButton_docker, .supportButton, .actionsButton) {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 3.2rem;
+    margin: 0 !important;
+    padding: 0 1.4rem !important;
+    border: 1px solid var(--gl-input) !important;
+    border-radius: var(--gl-r-full) !important;
+    color: var(--gl-text) !important;
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    background: var(--gl-surface) !important;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+}
+
+html.glacier :is(.ca_bottomLine, .sidenav) .supportButton :is(a, span) {
+    color: inherit !important;
+    text-decoration: none;
+}
+
+html.glacier .caButton:hover,
+html.glacier :is(.ca_bottomLine, .sidenav) :is(.infoButton, .infoButton_docker, .supportButton):hover {
+    border-color: var(--gl-accent) !important;
+    color: var(--gl-accent) !important;
+}
+
+html.glacier :is(.ca_bottomLine, .sidenav) .actionsButton {
+    border-color: var(--gl-accent) !important;
+    color: var(--gl-accent-text) !important;
+    background: var(--gl-accent) !important;
+}
+
+html.glacier :is(.ca_bottomLine, .sidenav) .actionsButton:hover {
+    border-color: color-mix(in oklab, var(--gl-accent), black 15%) !important;
+    color: var(--gl-accent-text) !important;
+    background: color-mix(in oklab, var(--gl-accent), black 15%) !important;
+}
+
+/* Cards as tall as their content (CA fixes 24rem); a home row is one card high. */
+html.glacier .ca_holder.spotlightHome {
+    height: 20.8rem !important;
+}
+
+html.glacier .ca_homeTemplates.caHomeSpotlight {
+    height: 21.4rem !important;
+}
+
+/* Three lines of description at the bottom */
+html.glacier :is(.ca_holder, .dockerHubHolder) > :is(.cardDescription, .cardDescriptionRepo) {
+    order: 3;
+    position: static !important;
+    top: auto !important;
+    height: auto !important;
+    max-height: none !important;
+    margin-top: 1.2rem;
+    overflow: hidden;
+}
+
+html.glacier :is(.ca_holder, .dockerHubHolder) .cardDesc {
+    display: -webkit-box !important;
+    max-height: none !important;
+    overflow: hidden;
+    color: var(--gl-text-2);
+    font-size: 1.2rem;
+    line-height: 1.6;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+/* Spotlight cards: CA's large "monthly spotlight" badge, reduced, with its month under it */
+html.glacier .ca_holder > .homespotlightIconArea {
+    position: absolute !important;
+    top: 1.2rem !important;
+    right: 1.2rem !important;
+    left: auto !important;
+    display: flex;
+    align-items: center;
+    flex-direction: row-reverse;
+    gap: 0.6rem;
+    width: auto;
+}
+
+html.glacier .ca_holder > .homespotlightIconArea .spotlightIcon {
+    display: block;
+    width: 4rem;
+    height: 4rem !important;
+    margin: 0 !important;
+    object-fit: contain;
+}
+
+html.glacier .ca_holder > .homespotlightIconArea .spotlightDate {
+    margin: 0 !important;
+    color: var(--gl-muted);
+    font-size: 1.1rem !important;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
 /* CA's status flag (a coloured triangle with rotated capitals, in CA's own colours) becomes a
    pill in the card's corner, in the theme's tones: installed in the accent, an update or a beta
    in orange, blacklisted / incompatible / deprecated in red, an existing template or a signed
-   container in green, official in blue. Absolute against the card, whether CA positions the
-   triangle absolutely (up to May 2026) or relatively (later versions). */
-html.glacier .ca_holder {
-    position: relative;
+   container in green, official in blue. CA puts the flag inside the card (earlier versions) or
+   right after it, pulled back over its corner (later ones); either way the flag becomes an empty
+   anchor and its label the pill. */
+html.glacier :is(.installedCardBackground, .betaCardBackground, .warningCardBackground, .greenCardBackground, .officialCardBackground, .LTOfficialCardBackground, .spotlightCardBackground) {
+    --gl-flag-bg: var(--gl-accent-soft);
+    --gl-flag-text: var(--gl-accent);
+    z-index: 2;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: none !important;
+    clip-path: none !important;
 }
 
 html.glacier .ca_holder > :is(.installedCardBackground, .betaCardBackground, .warningCardBackground, .greenCardBackground, .officialCardBackground, .LTOfficialCardBackground, .spotlightCardBackground) {
-    --gl-flag-bg: var(--gl-accent-soft);
-    --gl-flag-text: var(--gl-accent);
     position: absolute !important;
-    top: 1.2rem !important;
-    right: 1.2rem !important;
+    top: 0 !important;
+    right: 0 !important;
     left: auto !important;
-    display: inline-flex;
-    width: auto !important;
-    max-width: calc(100% - 2.4rem);
-    height: auto !important;
-    margin: 0 !important;
-    padding: 0.3rem 1rem;
-    border-radius: var(--gl-r-full);
-    background: var(--gl-flag-bg) !important;
-    clip-path: none !important;
-    pointer-events: auto;
 }
 
-html.glacier .ca_holder > .betaCardBackground { --gl-flag-bg: var(--gl-warn-bg); --gl-flag-text: var(--gl-warn-text); }
-html.glacier .ca_holder > .warningCardBackground { --gl-flag-bg: var(--gl-danger-bg); --gl-flag-text: var(--gl-danger-text); }
-html.glacier .ca_holder > :is(.greenCardBackground, .spotlightCardBackground) { --gl-flag-bg: var(--gl-success-bg); --gl-flag-text: var(--gl-success-text); }
-html.glacier .ca_holder > :is(.officialCardBackground, .LTOfficialCardBackground) { --gl-flag-bg: var(--gl-info-bg); --gl-flag-text: var(--gl-info-text); }
+html.glacier :is(.ca_holder, .dockerHubHolder) + :is(.installedCardBackground, .betaCardBackground, .warningCardBackground, .greenCardBackground, .officialCardBackground, .LTOfficialCardBackground, .spotlightCardBackground) {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    flex: none;
+    align-self: flex-start;
+}
 
-/* The label in sentence case, like every other label of the theme. */
-html.glacier .ca_holder .installedCardText {
-    position: static !important;
+html.glacier .betaCardBackground { --gl-flag-bg: var(--gl-warn-bg); --gl-flag-text: var(--gl-warn-text); }
+html.glacier .warningCardBackground { --gl-flag-bg: var(--gl-danger-bg); --gl-flag-text: var(--gl-danger-text); }
+html.glacier :is(.greenCardBackground, .spotlightCardBackground) { --gl-flag-bg: var(--gl-success-bg); --gl-flag-text: var(--gl-success-text); }
+html.glacier :is(.officialCardBackground, .LTOfficialCardBackground) { --gl-flag-bg: var(--gl-info-bg); --gl-flag-text: var(--gl-info-text); }
+
+/* The label: a pill in the card's top-right corner, in sentence case like every other label. */
+html.glacier :is(.installedCardBackground, .betaCardBackground, .warningCardBackground, .greenCardBackground, .officialCardBackground, .LTOfficialCardBackground, .spotlightCardBackground) > .installedCardText {
+    position: absolute !important;
+    top: 1.4rem !important;
+    right: 1.4rem !important;
+    left: auto !important;
     display: block;
     width: auto !important;
+    max-width: 8rem;
     height: auto !important;
     margin: 0;
+    padding: 0.2rem 1rem;
+    border-radius: var(--gl-r-full);
     color: var(--gl-flag-text) !important;
     font-size: 1.1rem !important;
     font-weight: 600;
@@ -13371,40 +13650,34 @@ html.glacier .ca_holder .installedCardText {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    background: var(--gl-flag-bg);
     transform: none !important;
 }
 
-html.glacier .ca_holder .installedCardText::first-letter {
+/* After the card: from the anchor, back over the card's right margin (1rem) into its corner. */
+html.glacier :is(.ca_holder, .dockerHubHolder) + [class$="CardBackground"] > .installedCardText {
+    right: calc(1rem + 1.4rem) !important;
+}
+
+/* Under the spotlight badge when the card has both */
+html.glacier .ca_holder:has(> .homespotlightIconArea) > [class$="CardBackground"] > .installedCardText,
+html.glacier .ca_holder:has(> .homespotlightIconArea) + [class$="CardBackground"] > .installedCardText {
+    top: 6rem !important;
+}
+
+html.glacier [class$="CardBackground"] > .installedCardText::first-letter {
     text-transform: uppercase;
 }
 
-html.glacier :is(.ca_homeTemplatesHeader, .ca_applicationName) {
-    color: var(--gl-text);
-    font-weight: 700;
-    letter-spacing: -0.01em;
+html.glacier [class$="CardBackground"] > .installedCardText br {
+    display: none;
 }
 
-/* Card buttons: the theme's outline pill, like every other secondary button. */
-html.glacier .caButton {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    min-height: 3.2rem;
-    padding: 0 1.4rem;
-    border: 1px solid var(--gl-input);
-    border-radius: var(--gl-r-full);
-    color: var(--gl-text);
-    font-size: 1.2rem;
-    font-weight: 600;
-    background: var(--gl-surface);
-    cursor: pointer;
-    transition: border-color 0.15s, color 0.15s;
-}
-
-html.glacier .caButton:hover {
-    border-color: var(--gl-accent);
-    color: var(--gl-accent);
+/* Phones: cards have no right margin (see above), so a flag after the card stays on its line. */
+@media (max-width: 767px) {
+    html.glacier :is(.ca_holder, .dockerHubHolder) + [class$="CardBackground"] > .installedCardText {
+        right: 1.4rem !important;
+    }
 }
 
 /* Section titles get the size of every other card title. */
@@ -14313,7 +14586,7 @@ done
 find /usr/local/emhttp/plugins/Glacier-Theme -type d -exec chmod 755 {} +
 find /usr/local/emhttp/plugins/Glacier-Theme -type f -exec chmod 644 {} +
 echo ""
-echo "Glacier-Theme 2026.11.04.2335 is installed."
+echo "Glacier-Theme 2026.11.04.2357 is installed."
 echo "Settings: Settings > User Utilities > Glacier Theme"
 echo "The theme shows while Settings > Display Settings > Dynamix color theme is White."
 echo ""

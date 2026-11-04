@@ -1,0 +1,33 @@
+page: Dashboard
+active: Dashboard
+sheet: DashStats.css
+include: dashboard-full
+---
+<!-- A GPU Statistics tile (plugin gpustat, gpustatusmovablemulti.page, one NVIDIA GPU with every
+     reading on), values as its script fills them in, added to the third column. Its rows use
+     Unraid's column cells (span.w18 / w26 / w36 / w44) and value + bar pairs (span.load followed
+     by div.usage-disk.sys, pulled up beside the value). -->
+<style>
+/* gpustat/css/style.css */
+span.gpu-img-span{display:none;}
+.gpu-image{padding-left:8px;height:32px;width:32px;}
+</style>
+<template id="gl-mock-gpu">
+<thead class="stopgap"><tr><td class="stopgap"></td></tr></thead><tbody id="tblGPUDash0" title="GPU #0 Stats">
+<tr><td><i class='icon-hardware f32'></i>
+<div class='section'>GPU<br><span class='vfio_notinuse0'><i class='ups fa fa-line-chart'></i><span id='load'>Load: <span class='gpu-util0'>0%</span></span><span class='vfio_notinuse0'> Temperature: <span class='gpu-temp0'>37 °C</span></span><span class='vfio_notinuse0'> Processes: <span class='gpu-sessions0'>1</span></span><br><br></div>
+<a href="/Dashboard/Settings/GPUStatSettings" title="Go to GPU Statistics settings"><i class="fa fa-fw fa-cog control"></i></a></td></tr>
+<tr class="header"><td><span class="w18">Vendor</span><span class="w18">Driver</span><span class="w44">Disque</span></td></tr>
+<tr class="updated"><td><span><span class='gpu-vendor0 w18'>NVIDIA</span><span class='gpu-driver0 w18'>580.95</span></span>&nbsp;<span class='gpu-name0 w18'>GeForce RTX 5060 Ti</span></td></td>
+<tr class='nopcie0'><td><span class='w36'><i class='ups fa fa-fw icon-hardware'></i>PCI Bus Utilization</span><span class='nopcie0' id='gpu-pciegen0'>PCIe Gen (Max): <span class='gpu-pciegen0 '>1</span>&nbsp;(<span class='gpu-pciegenmax0 '>4</span>)</span><span class=' nopcie0' id='gpu-pciewidth0'>Lanes (Max): <span class='gpu-pciewidth0 '>8</span>&nbsp;(<span class='gpu-pciewidthmax0 '>8</span>)</span></td></tr>
+<tr class='vfio_notinuse0'><td><span class='w36'><i class='ups fa fa-fw icon-ram'></i>Load - Memory</span><span class='w26'><span class='gpu-xutil0 load''>0%</span><div class='usage-disk sys'><span class='gpu-xbar0' id='gpu-xbar0' style='width:0%'></span><span></span></div></span><span class='w26'><span class='gpu-yutil0 load''>1%</span><div class='usage-disk sys'><span class='gpu-ybar0' id='gpu-ybar0' style='width:1%'></span><span></span></div></span></td></tr><tr class='vfio_notinuse0'><td><span class='w36'><i class='ups fa fa-fw icon-hardware'></i>Encoder - Decoder</span><span class='w26'><span class='gpu-xutil0 load''>0%</span><div class='usage-disk sys'><span class='gpu-xbar0' id='gpu-xbar0' style='width:0%'></span><span></span></div></span><span class='w26'><span class='gpu-yutil0 load''>0%</span><div class='usage-disk sys'><span class='gpu-ybar0' id='gpu-ybar0' style='width:0%'></span><span></span></div></span></td></tr><tr class='vfio_notinuse0'><td><span class='w36'><i class='ups fa fa-fw icon-ram'></i>GPU - Memory (MHz)</span><span class='w26'><span class='gpu-xutil0 load''>180</span><div class='usage-disk sys'><span class='gpu-xbar0' id='gpu-xbar0' style='width:6%'></span><span></span></div></span><span class='w26'><span class='gpu-yutil0 load''>405</span><div class='usage-disk sys'><span class='gpu-ybar0' id='gpu-ybar0' style='width:2%'></span><span></span></div></span></td></tr><tr class='vfio_notinuse0'><td><span class='w36'><i class='ups fa fa-fw icon-fan'></i>Fan (RPM) - Power</span><span class='w26'><span class='gpu-xutil0 load''>0%</span><div class='usage-disk sys'><span class='gpu-xbar0' id='gpu-xbar0' style='width:0%'></span><span></span></div></span><span class='w26'><span class='gpu-yutil0 load''>13W</span><div class='usage-disk sys'><span class='gpu-ybar0' id='gpu-ybar0' style='width:7%'></span><span></span></div></span></td></tr><tr class='vfio_notinuse0'><td><span class='w36'><i class='ups fa fa-fw icon-hardware'></i>PCI Bus Rx/Tx (MB/s)</span><span class='w26'><span class='gpu-xutil0 load''>0</span><div class='usage-disk sys'><span class='gpu-xbar0' id='gpu-xbar0' style='width:0%'></span><span></span></div></span><span class='w26'><span class='gpu-yutil0 load''>1</span><div class='usage-disk sys'><span class='gpu-ybar0' id='gpu-ybar0' style='width:0%'></span><span></span></div></span></td></tr>
+<tr class='vfio_notinuse0'><td colspan ='2' ><span class='w36'><i class='ups fa fa-fw icon-hardware'></i>Power State - Throttling</span><span class='w44'>State:<span class='gpu-perfstate0'>P8</span> &emsp; Throttle: <span class='gpu-throttled0'>Yes</span><span class='gpu-thrtlrsn0'> (sw_power_cap)</span></td></tr>
+<tr class='vfio_notinuse0'><td colspan ='2' ><span class='w36'><i class='ups fa fa-fw icon-hardware'></i>Active Apps</span><span id='w16 gpu-img-span-plex0' class='gpu-img-span gpu-img-span-plex0'><img id='gpu-plex0' class='gpu-image' src='/webGui/images/plg.png' style='max-width: 18px; max-height: 18px; width: auto; height: auto; object-fit: contain;'></span></td></tr>
+<tr class="vfio_inuse0" hidden><td><span></span></td></tr>
+<tr><td><span></span></td></tr>
+</tbody>
+</template>
+<script>
+  document.getElementById('db_box3').append(document.getElementById('gl-mock-gpu').content.cloneNode(true));
+  document.querySelector('.gpu-img-span-plex0').style.display = 'inline';
+</script>
