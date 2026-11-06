@@ -3,7 +3,7 @@
 
 <PLUGIN name="Glacier-Theme"
         author="R0m1k3"
-        version="2026.11.06.1040"
+        version="2026.11.06.1450"
         launch="Settings/GlacierThemeSettings"
         pluginURL="https://raw.githubusercontent.com/R0m1k3/Glacier-Theme/main/Glacier-Theme.plg"
         support="https://github.com/R0m1k3/Glacier-Theme/issues"
@@ -11,7 +11,7 @@
         min="7.2.0">
 
 <CHANGES>
-###2026.11.06.1040
+###2026.11.06.1450
 - Dashboard, System tile: laid out by the tile's own width. The memory legend and the usable and maximum sizes share one panel (the sizes no longer overflow a narrow box), beside the rings when the tile is wide and above them otherwise; the four rings go in one row or two by two, never three and one, each with its label under it so they line up.
 
 ###2026.10.29.0937
@@ -100,7 +100,7 @@ Title="Glacier Theme"
 // so this is where the theme attaches its files. Link="nav-user" keeps it from adding a button.
 $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierCustomDir = '/boot/config/plugins/Glacier-Theme';
-$glacierVersion = '2026.11.06.1040';
+$glacierVersion = '2026.11.06.1450';
 
 // Emergency switch: any page opened with ?glacier=off stops the theme in this browser
 // (remembered in a cookie) until a page is opened with ?glacier=on.
@@ -233,7 +233,7 @@ $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierAccent = preg_match('/^#[0-9a-fA-F]{6}$/', $glacier['accent'] ?? '') ? $glacier['accent'] : '#0f766e';
 $glacierOnTopTheme = in_array($display['theme'] ?? '', ['white', 'black'], true);
 ?>
-<p class="gl-version">_(Version)_ <strong>2026.11.06.1040</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
+<p class="gl-version">_(Version)_ <strong>2026.11.06.1450</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
 <?php if (!$glacierOnTopTheme): ?>
 <p class="notice">_(Glacier is drawn over the Dynamix White and Black themes. Choose one of them in Settings > Display Settings to see it.)_</p>
 <?php endif; ?>
@@ -13379,6 +13379,107 @@ html.glacier .menuItems ul.caMenu > li:not([class]):not(:has(hr)) {
     list-style: none;
 }
 
+/* CA's search bar (search box, Results Per Page, DockerHub, Apps, category line). Apps.page
+   moves it right after #menu: on wide screens, where the body is a grid, it would land in a row
+   below the whole page, under the fixed footer. It takes a row above the page content instead,
+   the sidebar spanning both rows. */
+@media (min-width: 1024px) {
+    html.glacier body:has(> .searchAreaHolder) {
+        grid-template-areas:
+            "head head"
+            "nav  search"
+            "nav  main";
+    }
+
+    html.glacier body > .searchAreaHolder {
+        grid-area: search;
+        max-width: none;
+        padding: 0 2.8rem 0 2.4rem;
+    }
+}
+
+html.glacier .searchAreaHolder {
+    top: 0;
+    height: auto;
+    margin: 0 0 1.6rem; /* CA centres it in boxed width */
+}
+
+html.glacier .searchArea {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 0 !important;
+    padding: 0.8rem 0;
+    background: var(--gl-bg);
+}
+
+html.glacier #searchFilter {
+    display: inline-flex;
+    align-items: center;
+}
+
+html.glacier #searchFilter .awesomplete {
+    display: block;
+}
+
+html.glacier #searchBox {
+    position: static;
+    width: 30rem;
+    margin: 0;
+    border: 1px solid var(--gl-input);
+    border-radius: var(--gl-r-sm);
+    background: var(--gl-surface);
+    padding: 0 3.6rem 0 1.2rem;
+    font-size: 1.3rem;
+}
+
+html.glacier .searchSubmit {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.6rem;
+    min-width: 0;
+    height: 3.6rem;
+    padding: 0;
+    color: var(--gl-muted);
+    font-size: 1.3rem;
+    background: none;
+}
+
+html.glacier .searchSubmit:hover {
+    color: var(--gl-accent);
+}
+
+html.glacier .searchArea .caButton {
+    min-height: 3.6rem;
+}
+
+html.glacier .searchArea .category {
+    margin-left: 0.4rem;
+    color: var(--gl-muted);
+    font-size: 1.3rem;
+    font-style: normal;
+}
+
+@media (max-width: 767px) {
+    html.glacier .searchAreaHolder {
+        padding: 0 1.6rem;
+    }
+
+    html.glacier #searchFilter {
+        flex: 1 1 auto;
+    }
+
+    html.glacier #searchFilter .awesomplete,
+    html.glacier #searchBox {
+        width: 100%;
+    }
+}
+
 html.glacier .ca_holder,
 html.glacier .dockerHubHolder {
     border: 1px solid var(--gl-border);
@@ -13553,6 +13654,18 @@ html.glacier :is(.ca_bottomLine, .sidenav) :is(.infoButton, .infoButton_docker, 
     background: var(--gl-surface) !important;
     cursor: pointer;
     transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+}
+
+/* CA hides some of them (the search bar's DockerHub and Apps buttons) with ca_hide or jQuery's
+   hide(), and "Results Per Page" on phones: the forced display above must not show them. */
+html.glacier .caButton:is(.ca_hide, [style*="display: none"], [style*="display:none"]) {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    html.glacier .searchArea .maxPerPage {
+        display: none !important;
+    }
 }
 
 html.glacier :is(.ca_bottomLine, .sidenav) .supportButton :is(a, span) {
@@ -14673,7 +14786,7 @@ done
 find /usr/local/emhttp/plugins/Glacier-Theme -type d -exec chmod 755 {} +
 find /usr/local/emhttp/plugins/Glacier-Theme -type f -exec chmod 644 {} +
 echo ""
-echo "Glacier-Theme 2026.11.06.1040 is installed."
+echo "Glacier-Theme 2026.11.06.1450 is installed."
 echo "Settings: Settings > User Utilities > Glacier Theme"
 echo "The theme shows while Settings > Display Settings > Dynamix color theme is White."
 echo ""
