@@ -2389,6 +2389,107 @@ html.glacier .menuItems ul.caMenu > li:not([class]):not(:has(hr)) {
     list-style: none;
 }
 
+/* CA's search bar (search box, Results Per Page, DockerHub, Apps, category line). Apps.page
+   moves it right after #menu: on wide screens, where the body is a grid, it would land in a row
+   below the whole page, under the fixed footer. It takes a row above the page content instead,
+   the sidebar spanning both rows. */
+@media (min-width: 1024px) {
+    html.glacier body:has(> .searchAreaHolder) {
+        grid-template-areas:
+            "head head"
+            "nav  search"
+            "nav  main";
+    }
+
+    html.glacier body > .searchAreaHolder {
+        grid-area: search;
+        max-width: none;
+        padding: 0 2.8rem 0 2.4rem;
+    }
+}
+
+html.glacier .searchAreaHolder {
+    top: 0;
+    height: auto;
+    margin: 0 0 1.6rem; /* CA centres it in boxed width */
+}
+
+html.glacier .searchArea {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 0 !important;
+    padding: 0.8rem 0;
+    background: var(--gl-bg);
+}
+
+html.glacier #searchFilter {
+    display: inline-flex;
+    align-items: center;
+}
+
+html.glacier #searchFilter .awesomplete {
+    display: block;
+}
+
+html.glacier #searchBox {
+    position: static;
+    width: 30rem;
+    margin: 0;
+    border: 1px solid var(--gl-input);
+    border-radius: var(--gl-r-sm);
+    background: var(--gl-surface);
+    padding: 0 3.6rem 0 1.2rem;
+    font-size: 1.3rem;
+}
+
+html.glacier .searchSubmit {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.6rem;
+    min-width: 0;
+    height: 3.6rem;
+    padding: 0;
+    color: var(--gl-muted);
+    font-size: 1.3rem;
+    background: none;
+}
+
+html.glacier .searchSubmit:hover {
+    color: var(--gl-accent);
+}
+
+html.glacier .searchArea .caButton {
+    min-height: 3.6rem;
+}
+
+html.glacier .searchArea .category {
+    margin-left: 0.4rem;
+    color: var(--gl-muted);
+    font-size: 1.3rem;
+    font-style: normal;
+}
+
+@media (max-width: 767px) {
+    html.glacier .searchAreaHolder {
+        padding: 0 1.6rem;
+    }
+
+    html.glacier #searchFilter {
+        flex: 1 1 auto;
+    }
+
+    html.glacier #searchFilter .awesomplete,
+    html.glacier #searchBox {
+        width: 100%;
+    }
+}
+
 html.glacier .ca_holder,
 html.glacier .dockerHubHolder {
     border: 1px solid var(--gl-border);
@@ -2563,6 +2664,18 @@ html.glacier :is(.ca_bottomLine, .sidenav) :is(.infoButton, .infoButton_docker, 
     background: var(--gl-surface) !important;
     cursor: pointer;
     transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+}
+
+/* CA hides some of them (the search bar's DockerHub and Apps buttons) with ca_hide or jQuery's
+   hide(), and "Results Per Page" on phones: the forced display above must not show them. */
+html.glacier .caButton:is(.ca_hide, [style*="display: none"], [style*="display:none"]) {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    html.glacier .searchArea .maxPerPage {
+        display: none !important;
+    }
 }
 
 html.glacier :is(.ca_bottomLine, .sidenav) .supportButton :is(a, span) {
