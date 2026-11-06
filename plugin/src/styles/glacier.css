@@ -2846,6 +2846,43 @@ html.glacier #footer {
     -webkit-backdrop-filter: blur(12px);
 }
 
+/* "Back to top" / "Move to end": two round buttons on the theme's surface, side by side above the
+   footer (Unraid puts its large circled arrows over the footer's bar). jQuery fades them in and
+   out with display, so only their look and place change. */
+html.glacier :is(.back_to_top, .move_to_end) {
+    bottom: calc(3.6rem + 1.2rem);
+    box-sizing: border-box;
+    width: 3.6rem;
+    height: 3.6rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-full);
+    color: var(--gl-text-2);
+    font-size: 1.4rem;
+    line-height: calc(3.6rem - 2px);
+    text-align: center;
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-md);
+    transition: color 0.2s, border-color 0.2s;
+}
+
+html.glacier :is(.back_to_top, .move_to_end):hover {
+    border-color: var(--gl-accent-ring);
+    color: var(--gl-accent);
+}
+
+html.glacier .move_to_end { right: 2.4rem; }
+html.glacier .back_to_top { right: calc(2.4rem + 3.6rem + 0.8rem); }
+html.glacier .back_to_top > i.fa::before { content: "\f062"; }
+html.glacier .move_to_end > i.fa::before { content: "\f063"; }
+
+/* Phones: the footer (about 5rem, not fixed) only shows at the end of the page; the buttons stay
+   above it. */
+@media (max-width: 767px) {
+    html.glacier :is(.back_to_top, .move_to_end) { bottom: 6.4rem; }
+    html.glacier .move_to_end { right: 1.6rem; }
+    html.glacier .back_to_top { right: calc(1.6rem + 3.6rem + 0.8rem); }
+}
+
 html.glacier #copyright {
     font-family: var(--gl-font);
     font-size: 1.2rem;

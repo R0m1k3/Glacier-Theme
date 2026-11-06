@@ -3,7 +3,7 @@
 
 <PLUGIN name="Glacier-Theme"
         author="R0m1k3"
-        version="2026.11.04.2357"
+        version="2026.11.06.0815"
         launch="Settings/GlacierThemeSettings"
         pluginURL="https://raw.githubusercontent.com/R0m1k3/Glacier-Theme/main/Glacier-Theme.plg"
         support="https://github.com/R0m1k3/Glacier-Theme/issues"
@@ -11,7 +11,7 @@
         min="7.2.0">
 
 <CHANGES>
-###2026.11.04.2357
+###2026.11.06.0815
 - Dashboard, System tile: laid out by the tile's own width. The memory legend and the usable and maximum sizes share one panel (the sizes no longer overflow a narrow box), beside the rings when the tile is wide and above them otherwise; the four rings go in one row or two by two, never three and one, each with its label under it so they line up.
 
 ###2026.10.29.0937
@@ -100,7 +100,7 @@ Title="Glacier Theme"
 // so this is where the theme attaches its files. Link="nav-user" keeps it from adding a button.
 $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierCustomDir = '/boot/config/plugins/Glacier-Theme';
-$glacierVersion = '2026.11.04.2357';
+$glacierVersion = '2026.11.06.0815';
 
 // Emergency switch: any page opened with ?glacier=off stops the theme in this browser
 // (remembered in a cookie) until a page is opened with ?glacier=on.
@@ -233,7 +233,7 @@ $glacier = parse_plugin_cfg('Glacier-Theme');
 $glacierAccent = preg_match('/^#[0-9a-fA-F]{6}$/', $glacier['accent'] ?? '') ? $glacier['accent'] : '#0f766e';
 $glacierOnTopTheme = in_array($display['theme'] ?? '', ['white', 'black'], true);
 ?>
-<p class="gl-version">_(Version)_ <strong>2026.11.04.2357</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
+<p class="gl-version">_(Version)_ <strong>2026.11.06.0815</strong> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme" target="_blank" rel="noopener">GitHub</a> &bull; <a href="https://github.com/R0m1k3/Glacier-Theme/issues" target="_blank" rel="noopener">_(Report an issue)_</a></p>
 <?php if (!$glacierOnTopTheme): ?>
 <p class="notice">_(Glacier is drawn over the Dynamix White and Black themes. Choose one of them in Settings > Display Settings to see it.)_</p>
 <?php endif; ?>
@@ -2697,6 +2697,50 @@ cat > /usr/local/emhttp/plugins/Glacier-Theme/scripts/gl-array-operation.js <<'G
     });
 
     grid.classList.add('gl-ops-ready');
+  });
+})();
+GLACIER_THEME_EOF
+cat > /usr/local/emhttp/plugins/Glacier-Theme/scripts/gl-ca-flags.js <<'GLACIER_THEME_EOF'
+/*
+ * Glacier Theme: CA's status flags (Installed, Official, Updated...) inside their card.
+ *
+ * Depending on its version, CA writes the flag inside the card, right after it, or after it with
+ * other elements in between; the stylesheet can only pin the pill into the card's corner when the
+ * flag is a child of the card (glacier.css, "CA's status flag"). Each flag that is not is moved
+ * into the card it belongs to: the card it sits in, else the nearest card before it.
+ */
+(function () {
+  'use strict';
+
+  var G = window.Glacier;
+  if (!G) return;
+
+  var CARD = '.ca_holder, .dockerHubHolder';
+  var FLAG = '.installedCardBackground, .betaCardBackground, .warningCardBackground, .greenCardBackground, ' +
+    '.officialCardBackground, .LTOfficialCardBackground, .spotlightCardBackground';
+
+  function cardOf(flag) {
+    var card = flag.parentElement && flag.parentElement.closest(CARD);
+    if (card) return card;
+    for (var node = flag.previousElementSibling; node; node = node.previousElementSibling) {
+      if (node.matches(CARD)) return node;
+      if (node.matches(FLAG)) return null; // that card already has its flag
+    }
+    return null;
+  }
+
+  function place() {
+    document.querySelectorAll(FLAG).forEach(function (flag) {
+      var parent = flag.parentElement;
+      if (parent && parent.matches(CARD)) return;
+      var card = cardOf(flag);
+      if (card) card.appendChild(flag);
+    });
+  }
+
+  G.feature('ca-flags', function () {
+    if (!/^\/Apps/i.test(location.pathname) && !document.querySelector(CARD)) return;
+    G.watch(document.body, place, { wait: 50 });
   });
 })();
 GLACIER_THEME_EOF
@@ -13786,6 +13830,43 @@ html.glacier #footer {
     -webkit-backdrop-filter: blur(12px);
 }
 
+/* "Back to top" / "Move to end": two round buttons on the theme's surface, side by side above the
+   footer (Unraid puts its large circled arrows over the footer's bar). jQuery fades them in and
+   out with display, so only their look and place change. */
+html.glacier :is(.back_to_top, .move_to_end) {
+    bottom: calc(3.6rem + 1.2rem);
+    box-sizing: border-box;
+    width: 3.6rem;
+    height: 3.6rem;
+    border: 1px solid var(--gl-border);
+    border-radius: var(--gl-r-full);
+    color: var(--gl-text-2);
+    font-size: 1.4rem;
+    line-height: calc(3.6rem - 2px);
+    text-align: center;
+    background: var(--gl-surface);
+    box-shadow: var(--gl-shadow-md);
+    transition: color 0.2s, border-color 0.2s;
+}
+
+html.glacier :is(.back_to_top, .move_to_end):hover {
+    border-color: var(--gl-accent-ring);
+    color: var(--gl-accent);
+}
+
+html.glacier .move_to_end { right: 2.4rem; }
+html.glacier .back_to_top { right: calc(2.4rem + 3.6rem + 0.8rem); }
+html.glacier .back_to_top > i.fa::before { content: "\f062"; }
+html.glacier .move_to_end > i.fa::before { content: "\f063"; }
+
+/* Phones: the footer (about 5rem, not fixed) only shows at the end of the page; the buttons stay
+   above it. */
+@media (max-width: 767px) {
+    html.glacier :is(.back_to_top, .move_to_end) { bottom: 6.4rem; }
+    html.glacier .move_to_end { right: 1.6rem; }
+    html.glacier .back_to_top { right: calc(1.6rem + 3.6rem + 0.8rem); }
+}
+
 html.glacier #copyright {
     font-family: var(--gl-font);
     font-size: 1.2rem;
@@ -14586,7 +14667,7 @@ done
 find /usr/local/emhttp/plugins/Glacier-Theme -type d -exec chmod 755 {} +
 find /usr/local/emhttp/plugins/Glacier-Theme -type f -exec chmod 644 {} +
 echo ""
-echo "Glacier-Theme 2026.11.04.2357 is installed."
+echo "Glacier-Theme 2026.11.06.0815 is installed."
 echo "Settings: Settings > User Utilities > Glacier Theme"
 echo "The theme shows while Settings > Display Settings > Dynamix color theme is White."
 echo ""
